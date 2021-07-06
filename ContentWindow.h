@@ -17,12 +17,14 @@ class ContentWindow : public WindowBase
 {
 public:
 	ContentWindow(int width, int height, const char* name) noexcept;
+	~ContentWindow();
 
 	float Height();
 	float Width();
 
 	std::shared_ptr<Layout> GetLayout() { return m_layout; }
-	Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> D2DRenderTarget();
+	std::shared_ptr<DeviceResources> GetDeviceResources() { return m_deviceResources; }
+	// Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> D2DRenderTarget();
 	
 protected:
 	LRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
@@ -46,7 +48,10 @@ private:
 	void DiscardGraphicsResources();
 
 	// Keep track of device resources for rendering to this window
-	std::unique_ptr<DeviceResources> m_deviceResources;
+	std::shared_ptr<DeviceResources> m_deviceResources;
+
+	// Keep a single instance of drawing state info that will be set for each draw call
+	Microsoft::WRL::ComPtr<ID2D1DrawingStateBlock1> m_stateBlock;
 
 	// Keep a single layout for structuring the window content
 	std::shared_ptr<Layout> m_layout;

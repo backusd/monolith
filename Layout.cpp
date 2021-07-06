@@ -4,12 +4,14 @@
 std::shared_ptr<Control> Layout::m_mouseCapturedControl = nullptr;
 bool Layout::m_mouseAlreadyCapturedForThisMessage = false;
 
-Layout::Layout(D2D1_RECT_F rect) : 
-	Layout(rect.top, rect.left, rect.bottom - rect.top, rect.right - rect.left)
+Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources, D2D1_RECT_F rect) :
+	Layout(deviceResources, rect.top, rect.left, rect.bottom - rect.top, rect.right - rect.left)
 {
 }
 
-Layout::Layout(float top, float left, float height, float width) :
+Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources, 
+	           float top, float left, float height, float width) :
+	m_deviceResources(deviceResources),
 	m_top(top),
 	m_left(left),
 	m_height(height),
@@ -21,6 +23,10 @@ Layout::Layout(float top, float left, float height, float width) :
 
 	SetRowDefinitions(defaultDefinition);
 	SetColumnDefinitions(defaultDefinition);
+}
+Layout::~Layout()
+{
+	m_controls.clear();
 }
 
 void Layout::OnResize(D2D1_RECT_F rect)
@@ -160,7 +166,7 @@ std::shared_ptr<Layout> Layout::CreateSubLayout(int rowIndex, int columnIndex)
 	float height = m_rows[rowIndex].Height();
 	float width = m_columns[columnIndex].Width();
 
-	std::shared_ptr<Layout> layout = std::make_shared<Layout>(top, left, height, width);
+	std::shared_ptr<Layout> layout = std::make_shared<Layout>(m_deviceResources, top, left, height, width);
 
 	// Add Layout to the tuple
 	m_subLayouts.push_back(
@@ -179,7 +185,7 @@ void Layout::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 	}
 
 
-	PaintBorders(renderTarget);
+	PaintBorders();
 
 
 	// Paint the sub layouts
@@ -189,12 +195,18 @@ void Layout::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 	}
 }
 
-void Layout::PaintBorders(ID2D1HwndRenderTarget* renderTarget)
+void Layout::PaintBorders()
 {
-	D2D1_POINT_2F p1, p2;
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> blackBrush;
 	const D2D1_COLOR_F color = D2D1::ColorF(0.0f, 0.0f, 0.0f);
-	renderTarget->CreateSolidColorBrush(color, blackBrush.ReleaseAndGetAddressOf());
+
+	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+	context->CreateSolidColorBrush(color, blackBrush.ReleaseAndGetAddressOf());
+
+	D2D1_POINT_2F p1, p2;
+	// Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> blackBrush;
+	// const D2D1_COLOR_F color = D2D1::ColorF(0.0f, 0.0f, 0.0f);
+	// renderTarget->CreateSolidColorBrush(color, blackBrush.ReleaseAndGetAddressOf());
 
 	for (RowCol row : m_rows)
 	{
@@ -204,12 +216,12 @@ void Layout::PaintBorders(ID2D1HwndRenderTarget* renderTarget)
 		p2.x = p1.x + row.Width();
 		p2.y = p1.y;
 
-		renderTarget->DrawLine(p1, p2, blackBrush.Get());
+		context->DrawLine(p1, p2, blackBrush.Get());
 
 		p1.y += row.Height();
 		p2.y = p1.y;
 
-		renderTarget->DrawLine(p1, p2, blackBrush.Get());
+		context->DrawLine(p1, p2, blackBrush.Get());
 	}
 
 	for (RowCol col : m_columns)
@@ -220,12 +232,12 @@ void Layout::PaintBorders(ID2D1HwndRenderTarget* renderTarget)
 		p2.x = p1.x;
 		p2.y = p1.y + col.Height();
 
-		renderTarget->DrawLine(p1, p2, blackBrush.Get());
+		context->DrawLine(p1, p2, blackBrush.Get());
 
 		p1.x += col.Width();
 		p2.x = p1.x;
 
-		renderTarget->DrawLine(p1, p2, blackBrush.Get());
+		context->DrawLine(p1, p2, blackBrush.Get());
 	}
 }
 
@@ -415,4 +427,21 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseLeave(bool triggeredFromWindow)
 		return result;
 
 	return std::make_shared<OnMessageResult>();
+}
+
+void Layout::ClearContents()
+{
+	// Call ClearContents for each control
+	for (auto control : m_controls)
+		control->ClearContents();
+
+	// Call ClearContents for each sublayout
+	for (auto sub : m_subLayouts)
+		sub._Myfirst._Val->ClearContents();
+
+	// Clear all controls
+	m_controls.clear();
+
+	// Clear all sublayouts
+	m_subLayouts.clear();
 }

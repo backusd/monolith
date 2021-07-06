@@ -4,22 +4,41 @@ using Microsoft::WRL::ComPtr;
 
 ContentWindow::ContentWindow(int width, int height, const char* name) noexcept :
 	WindowBase(width, height, name),
+	m_stateBlock(nullptr),
 	m_layout(nullptr),
 	m_mouseState(nullptr)
 {
+	OutputDebugString("ContentWindow Constructor\n");
+
 	// Create the device resources
-	m_deviceResources = std::make_unique<DeviceResources>(m_hWnd);
+	m_deviceResources = std::make_shared<DeviceResources>(m_hWnd);
 	m_deviceResources->OnResize(); // Calling OnResize will create the render target, etc.
 
+	// Create the state block 
+	ThrowIfFailed(
+		m_deviceResources->D2DFactory()->CreateDrawingStateBlock(m_stateBlock.GetAddressOf())
+	);
+
 	// Create the layout to fill the entire screen with a single grid square
-	m_layout = std::make_shared<Layout>(0.0f, 0.0f, Height(), Width());
+	m_layout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, Height(), Width());
 
 	// Create the mouse state object
 	m_mouseState = std::make_shared<MouseState>();
 
 	// Try to intialize the theme manager - will only actually initialize if it was the first window
-	ThemeManager::Initialize(D2DRenderTarget());
+	
+	//ThemeManager::Initialize(D2DRenderTarget());
+	ThemeManager::Initialize(m_deviceResources->D2DDeviceContext());
+}
 
+ContentWindow::~ContentWindow()
+{
+	// Each control bound to the layout has a reference to it, so it cannot simply
+	// be set to nullptr and destructed.
+	m_layout->ClearContents();
+	m_layout = nullptr;
+
+	m_deviceResources = nullptr;
 }
 
 LRESULT ContentWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -117,6 +136,43 @@ LRESULT ContentWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 
 LRESULT ContentWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
+
+	D3D11_VIEWPORT viewport = m_deviceResources->GetScreenViewport();
+	context->RSSetViewports(1, &viewport);
+
+	ID3D11RenderTargetView* const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
+	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
+
+	FLOAT background[4] = { 45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f };
+	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), background);
+	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+
+	ID2D1DeviceContext* context2 = m_deviceResources->D2DDeviceContext();
+	context2->SaveDrawingState(m_stateBlock.Get());
+	context2->BeginDraw();
+	context2->SetTransform(m_deviceResources->OrientationTransform2D());
+
+
+	m_layout->OnPaint(nullptr);
+
+
+	HRESULT hr = context2->EndDraw();
+	if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
+	{
+		DiscardGraphicsResources();
+	}
+
+	context2->RestoreDrawingState(m_stateBlock.Get());
+
+	m_deviceResources->Present();
+
+	// Return the default window procedure otherwise an endless stream of WM_PAINT
+	// messages will be generated because it thinks the window was not painted
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+
+	/*
 	auto renderTarget = this->D2DRenderTarget();
 
 	// If render target is nullptr, just return 0 - THIS SHOULD THROW AN EXCEPTION ====================
@@ -144,6 +200,7 @@ LRESULT ContentWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 	EndPaint(hWnd, &ps);
 
 	return 0;
+	*/
 }
 LRESULT ContentWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -201,7 +258,7 @@ LRESULT ContentWindow::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
 void ContentWindow::DiscardGraphicsResources()
 {
-	
+	m_deviceResources = nullptr;
 }
 
 float ContentWindow::Height()
@@ -217,6 +274,7 @@ float ContentWindow::Width()
 	return static_cast<float>(rect.right);
 }
 
+/*
 ComPtr<ID2D1HwndRenderTarget> ContentWindow::D2DRenderTarget()
 {
 	//return m_deviceResources->D2DRenderTarget();
@@ -234,3 +292,4 @@ ComPtr<ID2D1HwndRenderTarget> ContentWindow::D2DRenderTarget()
 	return renderTarget;
 	
 }
+*/

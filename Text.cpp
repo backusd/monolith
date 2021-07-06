@@ -2,8 +2,9 @@
 
 
 
-Text::Text(const std::shared_ptr<Layout>& parentLayout) :
-	Control(parentLayout)
+Text::Text(const std::shared_ptr<DeviceResources>& deviceResources, 
+		   const std::shared_ptr<Layout>& parentLayout) :
+	Control(deviceResources, parentLayout)
 {
 
 }

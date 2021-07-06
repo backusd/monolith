@@ -8,7 +8,7 @@ ColorTheme::ColorTheme(std::string themeName) :
 {
 }
 
-
+/*
 void ColorTheme::SetAllColors(D2D1_COLOR_F color, ID2D1HwndRenderTarget* renderTarget)
 {
 	renderTarget->CreateSolidColorBrush(color, m_color.ReleaseAndGetAddressOf());
@@ -30,6 +30,32 @@ void ColorTheme::SetColorPointerDown(D2D1_COLOR_F color, ID2D1HwndRenderTarget* 
 {
 	renderTarget->CreateSolidColorBrush(color, m_colorPointerDown.ReleaseAndGetAddressOf());
 }
+
+*/
+
+
+void ColorTheme::SetAllColors(D2D1_COLOR_F color, ID2D1DeviceContext* context)
+{
+	context->CreateSolidColorBrush(color, m_color.ReleaseAndGetAddressOf());
+	context->CreateSolidColorBrush(color, m_colorPointerOver.ReleaseAndGetAddressOf());
+	context->CreateSolidColorBrush(color, m_colorPointerDown.ReleaseAndGetAddressOf());
+}
+
+void ColorTheme::SetColor(D2D1_COLOR_F color, ID2D1DeviceContext* context)
+{
+	context->CreateSolidColorBrush(color, m_color.ReleaseAndGetAddressOf());
+}
+
+void ColorTheme::SetColorPointerOver(D2D1_COLOR_F color, ID2D1DeviceContext* context)
+{
+	context->CreateSolidColorBrush(color, m_colorPointerOver.ReleaseAndGetAddressOf());
+}
+
+void ColorTheme::SetColorPointerDown(D2D1_COLOR_F color, ID2D1DeviceContext* context)
+{
+	context->CreateSolidColorBrush(color, m_colorPointerDown.ReleaseAndGetAddressOf());
+}
+
 
 void ColorTheme::Destroy()
 {

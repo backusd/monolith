@@ -3,7 +3,6 @@
 #include <sstream>
 
 #include "WindowsMessageMap.h"
-#include "Window.h"
 #include "WindowManager.h"
 #include "ContentWindow.h"
 #include "LayoutConfig.h"
@@ -41,8 +40,10 @@ int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 	WindowManager::AddWindow(main);
 
 	// Initialize the Theme manager
-	Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> rt = main->D2DRenderTarget();
-	ThemeManager::Initialize(rt);
+	// Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> rt = main->D2DRenderTarget();
+	// ThemeManager::Initialize(rt);
+
+	ThemeManager::Initialize(main->GetDeviceResources()->D2DDeviceContext());
 
 	MSG msg;
 	BOOL gResult;

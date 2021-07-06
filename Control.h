@@ -10,8 +10,13 @@
 class Control
 {
 public:
-	Control(const std::shared_ptr<Layout>& parentLayout);
-	Control(const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
+	Control(const std::shared_ptr<DeviceResources>& deviceResources, 
+		    const std::shared_ptr<Layout>& parentLayout);
+
+	Control(const std::shared_ptr<DeviceResources>& deviceResources, 
+		    const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
+
+	~Control();
 
 	void Row(int row) { m_row = row; }
 	void Column(int col) { m_column = col; }
@@ -24,6 +29,7 @@ public:
 	void Margin(float left, float top, float right, float bottom);
 
 	// Virtual functions
+	virtual void ClearContents() {}
 	virtual void OnPaint(ID2D1HwndRenderTarget* renderTarget) = 0;
 	virtual void OnLayoutResize() {}
 	virtual void OnMarginChanged() {}
@@ -32,15 +38,14 @@ public:
 	virtual std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState)   { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState)   { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnMouseLeave() { return std::make_shared<OnMessageResult>(); }
-
+	
 protected:
 
-	// Add shared pointer to device resources
-
-	//...
+	// Pointer to device resources
+	std::shared_ptr<DeviceResources> m_deviceResources;
 
 	// Keep pointer to the layout the control resides within
-	const std::shared_ptr<Layout> m_parentLayout;
+	std::shared_ptr<Layout> m_parentLayout;
 
 	int m_row;
 	int m_column;

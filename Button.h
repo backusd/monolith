@@ -16,8 +16,14 @@ enum class ButtonMouseState
 class Button : public Control
 {
 public:
-	Button(const std::shared_ptr<Layout>& parentLayout);
-	Button(const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
+	Button(const std::shared_ptr<DeviceResources>& deviceResources, 
+		   const std::shared_ptr<Layout>& parentLayout);
+
+	Button(const std::shared_ptr<DeviceResources>& deviceResources, 
+		   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
+
+	// To clear the button's contents, just pass along to the button's layout
+	void ClearContents() override { m_buttonLayout->ClearContents(); }
 
 	void OnPaint(ID2D1HwndRenderTarget* renderTarget) override;
 	void OnLayoutResize() override { Resize(); }

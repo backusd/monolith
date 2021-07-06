@@ -29,10 +29,10 @@ DeviceResources::DeviceResources(HWND hWnd) :
 	m_d3dRenderTargetView(nullptr),
 	m_d3dDepthStencilView(nullptr),
 	m_dxgiSwapChain(nullptr),
-	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
+	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1)
 	// ==========================================================
 	// Temporary D2D Resources
-	m_d2dRenderTarget(nullptr)
+	//m_d2dRenderTarget(nullptr)
 {
 	// Must initialize COM library
 	try { ThrowIfFailed( CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE) ); }
@@ -44,6 +44,25 @@ DeviceResources::DeviceResources(HWND hWnd) :
 
 	CreateDeviceIndependentResources();
 	CreateDeviceDependentResources();
+}
+
+DeviceResources::~DeviceResources()
+{
+	m_d2dFactory = nullptr;
+	m_d2dDevice = nullptr;
+	m_d2dDeviceContext = nullptr;
+	m_d2dBitmap = nullptr;
+	m_dwriteFactory = nullptr;
+	m_wicImagingFactory = nullptr;
+	m_d3dDevice = nullptr;
+	m_d3dDeviceContext = nullptr;
+	m_d3dRenderTargetView = nullptr;
+	m_d3dDepthStencilView = nullptr;
+	m_dxgiSwapChain = nullptr;
+
+	// ==========================================================
+	// Temporary D2D Resources
+	// m_d2dRenderTarget = nullptr;
 }
 
 void DeviceResources::CreateDeviceDependentResources()
@@ -90,9 +109,9 @@ void DeviceResources::CreateDeviceDependentResources()
 			featureLevels,				// List of feature levels this app can support
 			ARRAYSIZE(featureLevels),	// Size of feature levels list
 			D3D11_SDK_VERSION,			// Always set this to D3D11_SDK_VERSION for Windows Store apps
-			device.GetAddressOf(),		// Address of pointer to Direct3D device being created
+			device.ReleaseAndGetAddressOf(),		// Address of pointer to Direct3D device being created
 			&m_d3dFeatureLevel,			// Address of feature level of device that was created
-			context.GetAddressOf()		// Address of pointer to device context being created
+			context.ReleaseAndGetAddressOf()		// Address of pointer to device context being created
 		);
 
 		if (FAILED(hr))
@@ -127,13 +146,13 @@ void DeviceResources::CreateDeviceDependentResources()
 		ThrowIfFailed(
 			m_d2dFactory->CreateDevice(
 				dxgiDevice.Get(),
-				m_d2dDevice.GetAddressOf()
+				m_d2dDevice.ReleaseAndGetAddressOf()
 			)
 		);
 		ThrowIfFailed(
 			m_d2dDevice->CreateDeviceContext(
 				D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
-				m_d2dDeviceContext.GetAddressOf()
+				m_d2dDeviceContext.ReleaseAndGetAddressOf()
 			)
 		);
 	}
@@ -162,7 +181,7 @@ void DeviceResources::CreateDeviceIndependentResources()
 				D2D1_FACTORY_TYPE_SINGLE_THREADED,
 				__uuidof(ID2D1Factory7),
 				&options,
-				(void**)m_d2dFactory.GetAddressOf()
+				(void**)m_d2dFactory.ReleaseAndGetAddressOf()
 			)
 		);
 
@@ -170,7 +189,7 @@ void DeviceResources::CreateDeviceIndependentResources()
 			DWriteCreateFactory(
 				DWRITE_FACTORY_TYPE_SHARED,
 				__uuidof(IDWriteFactory7),
-				reinterpret_cast<IUnknown**>(m_dwriteFactory.GetAddressOf())
+				reinterpret_cast<IUnknown**>(m_dwriteFactory.ReleaseAndGetAddressOf())
 			)
 		);
 
@@ -179,7 +198,7 @@ void DeviceResources::CreateDeviceIndependentResources()
 				CLSID_WICImagingFactory2,
 				nullptr,
 				CLSCTX_INPROC_SERVER,
-				IID_PPV_ARGS(m_wicImagingFactory.GetAddressOf())
+				IID_PPV_ARGS(m_wicImagingFactory.ReleaseAndGetAddressOf())
 			)
 		);
 	}
@@ -265,7 +284,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
 		ComPtr<IDXGIFactory5> dxgiFactory;
 		ThrowIfFailed(
-			dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.GetAddressOf()))
+			dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.ReleaseAndGetAddressOf()))
 		);
 
 
@@ -278,7 +297,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 				&swapChainDesc,
 				nullptr,
 				nullptr,
-				swapChain.GetAddressOf()
+				swapChain.ReleaseAndGetAddressOf()
 			)
 		);
 		ThrowIfFailed(swapChain.As(&m_dxgiSwapChain));
@@ -298,14 +317,14 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	// Create a render target view of the swap chain back buffer
 	ComPtr<ID3D11Texture2D1> backBuffer;
 	ThrowIfFailed(
-		m_dxgiSwapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.GetAddressOf()))
+		m_dxgiSwapChain->GetBuffer(0, IID_PPV_ARGS(backBuffer.ReleaseAndGetAddressOf()))
 	);
 
 	ThrowIfFailed(
 		m_d3dDevice->CreateRenderTargetView1(
 			backBuffer.Get(),
 			nullptr,
-			m_d3dRenderTargetView.GetAddressOf()
+			m_d3dRenderTargetView.ReleaseAndGetAddressOf()
 		)
 	);
 
@@ -324,7 +343,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 		m_d3dDevice->CreateTexture2D1(
 			&depthStencilDesc,
 			nullptr,
-			depthStencil.GetAddressOf()
+			depthStencil.ReleaseAndGetAddressOf()
 		)
 	);
 
@@ -333,7 +352,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 		m_d3dDevice->CreateDepthStencilView(
 			depthStencil.Get(),
 			&depthStencilViewDesc,
-			m_d3dDepthStencilView.GetAddressOf()
+			m_d3dDepthStencilView.ReleaseAndGetAddressOf()
 		)
 	);
 
@@ -356,7 +375,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	rd.AntialiasedLineEnable = false;
 
 	ComPtr<ID3D11RasterizerState> rasterState;
-	m_d3dDevice->CreateRasterizerState(&rd, rasterState.GetAddressOf());
+	m_d3dDevice->CreateRasterizerState(&rd, rasterState.ReleaseAndGetAddressOf());
 	m_d3dDeviceContext->RSSetState(rasterState.Get());
 
 	// Create a Direct2D target bitmap associated with the
@@ -371,14 +390,14 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
 	ComPtr<IDXGISurface2> dxgiBackBuffer;
 	ThrowIfFailed(
-		m_dxgiSwapChain->GetBuffer(0, IID_PPV_ARGS(dxgiBackBuffer.GetAddressOf()))
+		m_dxgiSwapChain->GetBuffer(0, IID_PPV_ARGS(dxgiBackBuffer.ReleaseAndGetAddressOf()))
 	);
 
 	ThrowIfFailed(
 		m_d2dDeviceContext->CreateBitmapFromDxgiSurface(
 			dxgiBackBuffer.Get(),
 			&bitmapProperties,
-			m_d2dBitmap.GetAddressOf()
+			m_d2dBitmap.ReleaseAndGetAddressOf()
 		)
 	);
 
@@ -394,7 +413,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
 	// ==========================================================
 	// Temporary D2D Resources
-
+	/*
 	D2D1_SIZE_U size = D2D1::SizeU(width, height);
 
 	if (m_d2dRenderTarget == nullptr)
@@ -409,6 +428,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	{
 		m_d2dRenderTarget->Resize(size);
 	}
+	*/
 }
 
 
@@ -418,4 +438,23 @@ void DeviceResources::HandleDeviceLost()
 	m_dxgiSwapChain = nullptr;
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
+}
+
+void DeviceResources::Present()
+{
+	DXGI_PRESENT_PARAMETERS parameters = { 0 };
+	HRESULT hr = m_dxgiSwapChain->Present1(1, 0, &parameters);
+
+	m_d3dDeviceContext->DiscardView1(m_d3dRenderTargetView.Get(), nullptr, 0);
+	m_d3dDeviceContext->DiscardView1(m_d3dDepthStencilView.Get(), nullptr, 0);
+
+	if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
+	{
+		HandleDeviceLost();
+	}
+	else
+	{
+		ThrowIfFailed(hr);
+	}
+
 }

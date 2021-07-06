@@ -12,7 +12,7 @@
 class ThemeManager
 {
 public:
-	static void Initialize(Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> renderTarget);
+	static void Initialize(ID2D1DeviceContext* context);
 
 	static std::shared_ptr<Theme> GetTheme(std::string name);
 	static void AddTheme(std::shared_ptr<Theme> theme);

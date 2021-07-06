@@ -176,7 +176,6 @@
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Theme.cpp" />
     <ClCompile Include="ThemeManager.cpp" />
-    <ClCompile Include="Window.cpp" />
     <ClCompile Include="WindowBase.cpp" />
     <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="WindowsMessageMap.cpp" />
@@ -201,7 +200,6 @@
     <ClInclude Include="Theme.h" />
     <ClInclude Include="ThemeDefines.h" />
     <ClInclude Include="ThemeManager.h" />
-    <ClInclude Include="Window.h" />
     <ClInclude Include="WindowBase.h" />
     <ClInclude Include="WindowBaseTemplate.h" />
     <ClInclude Include="WindowManager.h" />

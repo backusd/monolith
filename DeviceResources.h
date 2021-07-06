@@ -7,32 +7,49 @@ class DeviceResources
 {
 public:
 	DeviceResources(HWND hWnd);
+	~DeviceResources();
 
 	// May need to expand this method...
 	void OnResize() { CreateWindowSizeDependentResources(); }
 
 	// Direct 2D drawing components
-	const Microsoft::WRL::ComPtr<ID2D1Factory7>& D2DFactory() { return m_d2dFactory; }
-	const Microsoft::WRL::ComPtr<ID2D1Device6>& D2DDevice() { return m_d2dDevice; }
-	const Microsoft::WRL::ComPtr<ID2D1DeviceContext6>& D2DDeviceContext() { return m_d2dDeviceContext; }
-	const Microsoft::WRL::ComPtr<ID2D1Bitmap1>& D2DBitmap() { return m_d2dBitmap; }
+	ID2D1Factory7* D2DFactory() const { return m_d2dFactory.Get(); }
+	ID2D1Device6* D2DDevice() const { return m_d2dDevice.Get(); }
+	ID2D1DeviceContext6* D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
+	ID2D1Bitmap1* D2DBitmap() const { return m_d2dBitmap.Get(); }
+
+	// const Microsoft::WRL::ComPtr<ID2D1Factory7>& D2DFactory() { return m_d2dFactory; }
+	// const Microsoft::WRL::ComPtr<ID2D1Device6>& D2DDevice() { return m_d2dDevice; }
+	// const Microsoft::WRL::ComPtr<ID2D1DeviceContext6>& D2DDeviceContext() { return m_d2dDeviceContext; }
+	// const Microsoft::WRL::ComPtr<ID2D1Bitmap1>& D2DBitmap() { return m_d2dBitmap; }
+	D2D1::Matrix3x2F OrientationTransform2D() const { return m_orientationTransform2D; }
 
 	// Direct Write drawing components
-	const Microsoft::WRL::ComPtr<IDWriteFactory7>& DWriteFactory() { return m_dwriteFactory; }
-	const Microsoft::WRL::ComPtr<IWICImagingFactory2>& WICImagingFactory() { return m_wicImagingFactory; }
+	IDWriteFactory7* DWriteFactory() const { return m_dwriteFactory.Get(); }
+	IWICImagingFactory2* WICImagingFactory() const { return m_wicImagingFactory.Get(); }
+
+	// const Microsoft::WRL::ComPtr<IDWriteFactory7>& DWriteFactory() { return m_dwriteFactory; }
+	// const Microsoft::WRL::ComPtr<IWICImagingFactory2>& WICImagingFactory() { return m_wicImagingFactory; }
 
 	// Direct3D objects
-	const Microsoft::WRL::ComPtr<ID3D11Device5>& D3DDevice() { return m_d3dDevice; }
-	const Microsoft::WRL::ComPtr<ID3D11DeviceContext4>& D3DDeviceContext() { return m_d3dDeviceContext; }
+	ID3D11Device5* D3DDevice() const { return m_d3dDevice.Get(); }
+	ID3D11DeviceContext4* D3DDeviceContext() const { return m_d3dDeviceContext.Get(); }
+
+	// const Microsoft::WRL::ComPtr<ID3D11Device5>& D3DDevice() { return m_d3dDevice; }
+	// const Microsoft::WRL::ComPtr<ID3D11DeviceContext4>& D3DDeviceContext() { return m_d3dDeviceContext; }
 	D3D_FEATURE_LEVEL D3DFeatureLevel() { return m_d3dFeatureLevel; }
 
 
 	// ==========================================================
 	// Temporary D2D Resources
-	const Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget>& D2DRenderTarget() { return m_d2dRenderTarget; }
+	//const Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget>& D2DRenderTarget() { return m_d2dRenderTarget; }
 
 	// ==========================================================
 
+	D3D11_VIEWPORT GetScreenViewport() const { return m_viewport; }
+	ID3D11RenderTargetView1* GetBackBufferRenderTargetView() const { return m_d3dRenderTargetView.Get(); }
+	ID3D11DepthStencilView* GetDepthStencilView() const { return m_d3dDepthStencilView.Get(); }
+	void Present();
 
 private:
 
@@ -46,7 +63,7 @@ private:
 
 	// ==========================================================
 	// Temporary D2D Resources
-	Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> m_d2dRenderTarget;
+	//Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> m_d2dRenderTarget;
 
 	// ==========================================================
 
@@ -71,7 +88,6 @@ private:
 
 	D3D11_VIEWPORT m_viewport;
 	
-
 	// Cached device properties
 	D3D_FEATURE_LEVEL m_d3dFeatureLevel;
 

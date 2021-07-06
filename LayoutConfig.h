@@ -25,6 +25,7 @@ namespace LayoutConfiguration
 		coldefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 200.0f);
 		mainLayout->SetColumnDefinitions(coldefs);
 
+		
 		// Menu Bar Layout
 		std::shared_ptr<Layout> menuBarLayout = mainLayout->CreateSubLayout(0, 0);
 
@@ -39,8 +40,9 @@ namespace LayoutConfiguration
 		// Themes ======================================================================
 		// All themes are defined/created in ThemeManager::Initialize()
 
+		
 		// Menu controls ===============================================================
-		std::shared_ptr<Button> button = menuBarLayout->CreateControl<Button>(0, 0, 1, 2);
+		std::shared_ptr<Button> button = menuBarLayout->CreateControl<Button>(0, 0);
 		button->Margin(1.0f);
 		button->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
 
@@ -80,5 +82,7 @@ namespace LayoutConfiguration
 
 		std::shared_ptr<Button> testButtonInternal2 = testButtonInternalLayout2->CreateControl<Button>(1, 1, 2, 1);
 		testButtonInternal2->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+
+		
 	}
 }

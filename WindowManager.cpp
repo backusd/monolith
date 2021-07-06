@@ -10,6 +10,7 @@ void WindowManager::DestroyWindow(WindowBase* window)
 		if (iii->get() == window)
 		{
 			m_windows.erase(iii);
+
 			break;
 		}
 	}

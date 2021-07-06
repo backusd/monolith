@@ -1,11 +1,14 @@
 #include "Button.h"
 
-Button::Button(const std::shared_ptr<Layout>& parentLayout) : Button(parentLayout, 0, 0, 0, 0)
+Button::Button(const std::shared_ptr<DeviceResources>& deviceResources, 
+			   const std::shared_ptr<Layout>& parentLayout) : 
+	Button(deviceResources, parentLayout, 0, 0, 0, 0)
 {
 }
 
-Button::Button(const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) : 
-	Control(parentLayout, row, column, rowSpan, columnSpan),
+Button::Button(const std::shared_ptr<DeviceResources>& deviceResources, 
+			   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
+	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_buttonLayout(nullptr),
 	m_colorTheme(nullptr),
 	m_buttonMouseState(ButtonMouseState::NONE)
@@ -15,11 +18,13 @@ Button::Button(const std::shared_ptr<Layout>& parentLayout, int row, int column,
 	// Create its own sub layout not as a child of the parent
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1
 	// we can automatically assign the layout to be the same as the (0,0) rectangle of the parent layout
-	m_buttonLayout = std::make_shared<Layout>( GetParentRect() );
+	m_buttonLayout = std::make_shared<Layout>( m_deviceResources, GetParentRect() );
 }
 
 void Button::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 {
+	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+
 	D2D1_RECT_F rect = m_buttonLayout->GetRect(
 		0, 
 		0, 
@@ -29,13 +34,13 @@ void Button::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 
 	switch (m_buttonMouseState)
 	{
-	case ButtonMouseState::NONE:       renderTarget->FillRectangle(rect, m_colorTheme->Color().Get()); break;
-	case ButtonMouseState::MOUSE_OVER: renderTarget->FillRectangle(rect, m_colorTheme->ColorPointerOver().Get()); break;
-	case ButtonMouseState::MOUSE_DOWN: renderTarget->FillRectangle(rect, m_colorTheme->ColorPointerDown().Get()); break;
+	case ButtonMouseState::NONE:       context->FillRectangle(rect, m_colorTheme->Color()); break;
+	case ButtonMouseState::MOUSE_OVER: context->FillRectangle(rect, m_colorTheme->ColorPointerOver()); break;
+	case ButtonMouseState::MOUSE_DOWN: context->FillRectangle(rect, m_colorTheme->ColorPointerDown()); break;
 	}
 
 	// Now paint the layout and child controls
-	m_buttonLayout->OnPaint(renderTarget);
+	m_buttonLayout->OnPaint(nullptr);
 }
 
 void Button::Resize()

@@ -3,6 +3,7 @@
 #include "RowCol.h"
 #include "MouseState.h"
 #include "OnMessageResult.h"
+#include "DeviceResources.h"
 
 #include <memory>
 #include <vector>
@@ -14,8 +15,13 @@ class Control;
 class Layout : public std::enable_shared_from_this<Layout>
 {
 public:
-	Layout(float top, float left, float height, float width);
-	Layout(D2D1_RECT_F rect);
+	Layout(const std::shared_ptr<DeviceResources>& deviceResources,
+		   float top, float left, float height, float width);
+	Layout(const std::shared_ptr<DeviceResources>& deviceResources, 
+		   D2D1_RECT_F rect);
+	~Layout();
+
+	void ClearContents();
 
 	void SetRowDefinitions(RowColDefinitions rowDefs)    { m_rowDefinitions = rowDefs; UpdateLayout(); }
 	void SetColumnDefinitions(RowColDefinitions colDefs) { m_columnDefinitions = colDefs; UpdateLayout(); }
@@ -42,12 +48,13 @@ public:
 	template<typename T>
 	std::shared_ptr<T> CreateControl(int row, int column, int rowSpan, int columnSpan);
 
-	void AddControl(std::shared_ptr<Control> control) { m_controls.push_back(control); }
+	template<typename T>
+	void AddControl(std::shared_ptr<T> control) { m_controls.push_back(control); }
 
 	D2D1_RECT_F GetRect(int rowIndex, int columnIndex, int rowSpan, int columnSpan);
 
 	void OnPaint(ID2D1HwndRenderTarget* renderTarget);
-	void PaintBorders(ID2D1HwndRenderTarget* renderTarget);
+	void PaintBorders();
 	
 	bool MouseIsOver(int x, int y) { return x >= Left() && x <= Right() && y >= Top() && y <= Bottom(); }
 
@@ -58,6 +65,8 @@ public:
 
 private:
 	void UpdateLayout();
+
+	std::shared_ptr<DeviceResources> m_deviceResources;
 
 	// Row and Column definitions
 	RowColDefinitions m_rowDefinitions;
@@ -99,10 +108,10 @@ template<typename T>
 std::shared_ptr<T> Layout::CreateControl(int row, int column, int rowSpan, int columnSpan)
 {
 	// Create the control - must use shared_from_this to pass shared pointer to Layout
-	std::shared_ptr<T> control = std::make_shared<T>(shared_from_this(), row, column, rowSpan, columnSpan);
+	std::shared_ptr<T> control = std::make_shared<T>(m_deviceResources, shared_from_this(), row, column, rowSpan, columnSpan);
 
 	// Add control to the list within the layout
-	AddControl(control);
+	AddControl(std::static_pointer_cast<Control>(control));
 
 	// return the control
 	return control;
