@@ -203,6 +203,8 @@ void Layout::PaintBorders()
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
 	context->CreateSolidColorBrush(color, blackBrush.ReleaseAndGetAddressOf());
 
+	context->SetTransform(m_deviceResources->OrientationTransform2D());
+
 	D2D1_POINT_2F p1, p2;
 	// Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> blackBrush;
 	// const D2D1_COLOR_F color = D2D1::ColorF(0.0f, 0.0f, 0.0f);

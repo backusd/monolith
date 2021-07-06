@@ -6,6 +6,7 @@
 #include "Button.h"
 #include "ColorTheme.h"
 #include "ThemeDefines.h"
+#include "Text.h"
 
 namespace LayoutConfiguration
 {
@@ -24,6 +25,12 @@ namespace LayoutConfiguration
 		coldefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 		coldefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 200.0f);
 		mainLayout->SetColumnDefinitions(coldefs);
+
+
+
+		std::shared_ptr<Text> text = mainLayout->CreateControl<Text>();
+
+
 
 		
 		// Menu Bar Layout

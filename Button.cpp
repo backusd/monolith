@@ -25,6 +25,8 @@ void Button::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 {
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
 
+	context->SetTransform(m_deviceResources->OrientationTransform2D());
+
 	D2D1_RECT_F rect = m_buttonLayout->GetRect(
 		0, 
 		0, 
