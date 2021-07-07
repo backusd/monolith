@@ -30,7 +30,7 @@ public:
 
 	// Virtual functions
 	virtual void ClearContents() {}
-	virtual void OnPaint(ID2D1HwndRenderTarget* renderTarget) = 0;
+	virtual void OnPaint() = 0;
 	virtual void OnLayoutResize() {}
 	virtual void OnMarginChanged() {}
 	virtual bool MouseIsOver(int x, int y) { return false; }	// true if mouse is deemed over the control

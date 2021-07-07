@@ -53,7 +53,7 @@ public:
 
 	D2D1_RECT_F GetRect(int rowIndex, int columnIndex, int rowSpan, int columnSpan);
 
-	void OnPaint(ID2D1HwndRenderTarget* renderTarget);
+	void OnPaint();
 	void PaintBorders();
 	
 	bool MouseIsOver(int x, int y) { return x >= Left() && x <= Right() && y >= Top() && y <= Bottom(); }

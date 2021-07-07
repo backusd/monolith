@@ -81,6 +81,12 @@
     <ClCompile Include="ThemeManager.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="TextTheme.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="FontFamily.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowsMessageMap.h">
@@ -147,6 +153,15 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="MouseState.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="TextTheme.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseOverDown.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="FontFamily.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>

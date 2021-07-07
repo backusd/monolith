@@ -4,14 +4,44 @@ using Microsoft::WRL::ComPtr;
 
 Text::Text(const std::shared_ptr<DeviceResources>& deviceResources, 
 		   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
-	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan)
+	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
+	m_textMetrics(DWRITE_TEXT_METRICS())
 {
+	SetTextTheme(THEME_DEFAULT_TEXT);
 
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 }
 
 
-void Text::OnPaint(ID2D1HwndRenderTarget* renderTarget)
+void Text::OnPaint()
 {
+	float maxWidth = 800.0f; // std::max(0, width of parent rect)
+	float maxHeight = 800.0f; // std::max(0, height of parent rect)
+
+	std::wstring text = L"Suck Me";
+	ComPtr<IDWriteTextLayout4> textLayout = m_textTheme->CreateTextLayout(text, maxWidth, maxHeight);
+
+	ThrowIfFailed(textLayout->GetMetrics(&m_textMetrics));
+
+
+	// Update Screen Translation ---
+	D2D1::Matrix3x2F screenTranslation = D2D1::Matrix3x2F::Translation(200.0f, 200.0f);
+
+
+	// Render ---
+	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+
+	context->SetTransform(screenTranslation * m_deviceResources->OrientationTransform2D());
+
+	context->DrawTextLayout(
+		D2D1::Point2F(0.0f, 0.0f),
+		textLayout.Get(),
+		m_textTheme->GetColorBrush()
+	);
+
+
+
+	/*
 	// Constructor ---
 
 	DWRITE_TEXT_METRICS textMetrics;
@@ -103,5 +133,6 @@ void Text::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 		textLayout4.Get(),
 		blackBrush.Get()
 	);
+	*/
 
 }

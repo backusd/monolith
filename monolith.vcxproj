@@ -167,6 +167,7 @@
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="DPIHelper.cpp" />
     <ClCompile Include="ContentWindow.cpp" />
+    <ClCompile Include="FontFamily.cpp" />
     <ClCompile Include="Layout.cpp" />
     <ClCompile Include="MouseState.cpp" />
     <ClCompile Include="OnMessageResult.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="RowCol.cpp" />
     <ClCompile Include="SecondaryWindow.cpp" />
     <ClCompile Include="Text.cpp" />
+    <ClCompile Include="TextTheme.cpp" />
     <ClCompile Include="Theme.cpp" />
     <ClCompile Include="ThemeManager.cpp" />
     <ClCompile Include="WindowBase.cpp" />
@@ -189,14 +191,17 @@
     <ClInclude Include="DirectXHelper.h" />
     <ClInclude Include="DPIHelper.h" />
     <ClInclude Include="ContentWindow.h" />
+    <ClInclude Include="FontFamily.h" />
     <ClInclude Include="Layout.h" />
     <ClInclude Include="LayoutConfig.h" />
+    <ClInclude Include="MouseOverDown.h" />
     <ClInclude Include="MouseState.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RowCol.h" />
     <ClInclude Include="SecondaryWindow.h" />
     <ClInclude Include="OnMessageResult.h" />
     <ClInclude Include="Text.h" />
+    <ClInclude Include="TextTheme.h" />
     <ClInclude Include="Theme.h" />
     <ClInclude Include="ThemeDefines.h" />
     <ClInclude Include="ThemeManager.h" />

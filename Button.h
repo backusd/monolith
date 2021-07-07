@@ -3,15 +3,9 @@
 #include "Control.h"
 #include "ThemeManager.h"
 #include "ColorTheme.h"
+#include "MouseOverDown.h"
 
 #include <string>
-
-enum class ButtonMouseState
-{
-	NONE,
-	MOUSE_OVER,
-	MOUSE_DOWN
-};
 
 class Button : public Control
 {
@@ -25,7 +19,7 @@ public:
 	// To clear the button's contents, just pass along to the button's layout
 	void ClearContents() override { m_buttonLayout->ClearContents(); }
 
-	void OnPaint(ID2D1HwndRenderTarget* renderTarget) override;
+	void OnPaint() override;
 	void OnLayoutResize() override { Resize(); }
 	void OnMarginChanged() override { Resize(); }
 	bool MouseIsOver(int x, int y) override;
@@ -41,11 +35,11 @@ public:
 private:
 	D2D1_RECT_F GetParentRect() { return m_parentLayout->GetRect(m_row, m_column, m_rowSpan, m_columnSpan); }
 	void Resize();
-	void UpdateButtonMouseState(ButtonMouseState newState, std::shared_ptr<OnMessageResult> result);
+	void UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result);
 
 	std::shared_ptr<Layout> m_buttonLayout;
 
-	ButtonMouseState m_buttonMouseState;
+	MouseOverDown m_mouseOverDownState;
 
 	// Themes
 	std::shared_ptr<ColorTheme> m_colorTheme;

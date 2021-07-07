@@ -176,12 +176,12 @@ std::shared_ptr<Layout> Layout::CreateSubLayout(int rowIndex, int columnIndex)
 	return layout;
 }
 
-void Layout::OnPaint(ID2D1HwndRenderTarget* renderTarget)
+void Layout::OnPaint()
 {
 	// Paint controls first
 	for (std::shared_ptr<Control> control : m_controls)
 	{
-		control->OnPaint(renderTarget);
+		control->OnPaint();
 	}
 
 
@@ -191,7 +191,7 @@ void Layout::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 	// Paint the sub layouts
 	for (auto sub : m_subLayouts) 
 	{
-		sub._Myfirst._Val->OnPaint(renderTarget);
+		sub._Myfirst._Val->OnPaint();
 	}
 }
 

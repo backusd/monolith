@@ -28,7 +28,7 @@ ContentWindow::ContentWindow(int width, int height, const char* name) noexcept :
 	// Try to intialize the theme manager - will only actually initialize if it was the first window
 	
 	//ThemeManager::Initialize(D2DRenderTarget());
-	ThemeManager::Initialize(m_deviceResources->D2DDeviceContext());
+	ThemeManager::Initialize(m_deviceResources);
 }
 
 ContentWindow::~ContentWindow()
@@ -155,7 +155,7 @@ LRESULT ContentWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 	context2->SetTransform(m_deviceResources->OrientationTransform2D());
 
 
-	m_layout->OnPaint(nullptr);
+	m_layout->OnPaint();
 
 
 	HRESULT hr = context2->EndDraw();

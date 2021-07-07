@@ -11,7 +11,7 @@ Button::Button(const std::shared_ptr<DeviceResources>& deviceResources,
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_buttonLayout(nullptr),
 	m_colorTheme(nullptr),
-	m_buttonMouseState(ButtonMouseState::NONE)
+	m_mouseOverDownState(MouseOverDown::NONE)
 {
 	SetColorTheme(THEME_DEFAULT_BUTTON_COLOR);
 
@@ -21,7 +21,8 @@ Button::Button(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_buttonLayout = std::make_shared<Layout>( m_deviceResources, GetParentRect() );
 }
 
-void Button::OnPaint(ID2D1HwndRenderTarget* renderTarget)
+
+void Button::OnPaint()
 {
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
 
@@ -34,15 +35,10 @@ void Button::OnPaint(ID2D1HwndRenderTarget* renderTarget)
 		m_buttonLayout->ColumnCount()
 	);
 
-	switch (m_buttonMouseState)
-	{
-	case ButtonMouseState::NONE:       context->FillRectangle(rect, m_colorTheme->Color()); break;
-	case ButtonMouseState::MOUSE_OVER: context->FillRectangle(rect, m_colorTheme->ColorPointerOver()); break;
-	case ButtonMouseState::MOUSE_DOWN: context->FillRectangle(rect, m_colorTheme->ColorPointerDown()); break;
-	}
+	context->FillRectangle(rect, m_colorTheme->GetBrush(m_mouseOverDownState));
 
 	// Now paint the layout and child controls
-	m_buttonLayout->OnPaint(nullptr);
+	m_buttonLayout->OnPaint();
 }
 
 void Button::Resize()
@@ -76,7 +72,7 @@ std::shared_ptr<OnMessageResult> Button::OnLButtonDown(std::shared_ptr<MouseStat
 	// The same behavior is required when the mouse is not over the button
 	if (result->MessageHandled() || !MouseIsOver(mouseState->X(), mouseState->Y()))
 	{
-		UpdateButtonMouseState(ButtonMouseState::NONE, result);
+		UpdateButtonMouseState(MouseOverDown::NONE, result);
 
 		return result;
 	}
@@ -90,7 +86,7 @@ std::shared_ptr<OnMessageResult> Button::OnLButtonDown(std::shared_ptr<MouseStat
 	result->CaptureMouse(true);
 
 	// Set the state to MOUSE_DOWN
-	UpdateButtonMouseState(ButtonMouseState::MOUSE_DOWN, result);
+	UpdateButtonMouseState(MouseOverDown::MOUSE_DOWN, result);
 
 	return result;
 }
@@ -104,7 +100,7 @@ std::shared_ptr<OnMessageResult> Button::OnLButtonUp(std::shared_ptr<MouseState>
 	// The same behavior is required when the mouse is not over the button
 	if (result->MessageHandled() || !MouseIsOver(mouseState->X(), mouseState->Y()))
 	{
-		UpdateButtonMouseState(ButtonMouseState::NONE, result);
+		UpdateButtonMouseState(MouseOverDown::NONE, result);
 
 		return result;
 	}
@@ -118,7 +114,7 @@ std::shared_ptr<OnMessageResult> Button::OnLButtonUp(std::shared_ptr<MouseState>
 	result->CaptureMouse(true);
 
 	// Set the state to MOUSE_DOWN
-	UpdateButtonMouseState(ButtonMouseState::MOUSE_OVER, result);
+	UpdateButtonMouseState(MouseOverDown::MOUSE_OVER, result);
 
 	return result;
 }
@@ -132,7 +128,7 @@ std::shared_ptr<OnMessageResult> Button::OnMouseMove(std::shared_ptr<MouseState>
 	// The same behavior is required when the mouse is not over the button
 	if (result->MessageHandled() || !MouseIsOver(mouseState->X(), mouseState->Y()))
 	{
-		UpdateButtonMouseState(ButtonMouseState::NONE, result);
+		UpdateButtonMouseState(MouseOverDown::NONE, result);
 
 		return result;
 	}
@@ -149,23 +145,23 @@ std::shared_ptr<OnMessageResult> Button::OnMouseMove(std::shared_ptr<MouseState>
 	if (mouseState->LButtonDown())
 	{
 		// Set the state to MOUSE_DOWN
-		UpdateButtonMouseState(ButtonMouseState::MOUSE_DOWN, result);
+		UpdateButtonMouseState(MouseOverDown::MOUSE_DOWN, result);
 	}
 	else
 	{
 		// Set the state to MOUSE_OVER
-		UpdateButtonMouseState(ButtonMouseState::MOUSE_OVER, result);
+		UpdateButtonMouseState(MouseOverDown::MOUSE_OVER, result);
 	}
 
 	return result;
 }
 
-void Button::UpdateButtonMouseState(ButtonMouseState newState, std::shared_ptr<OnMessageResult> result)
+void Button::UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result)
 {
 	// If the buttonMouseState needs updating, update and set the redraw flag
-	if (m_buttonMouseState != newState)
+	if (m_mouseOverDownState != newState)
 	{
-		m_buttonMouseState = newState;
+		m_mouseOverDownState = newState;
 		result->Redraw(true);
 	}
 }
@@ -176,7 +172,7 @@ std::shared_ptr<OnMessageResult> Button::OnMouseLeave()
 	std::shared_ptr<OnMessageResult> result = m_buttonLayout->OnMouseLeave();
 
 	// Update the mouse state to NONE 
-	UpdateButtonMouseState(ButtonMouseState::NONE, result);
+	UpdateButtonMouseState(MouseOverDown::NONE, result);
 
 	return result;
 }

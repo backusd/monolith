@@ -29,6 +29,7 @@ namespace LayoutConfiguration
 
 
 		std::shared_ptr<Text> text = mainLayout->CreateControl<Text>();
+		text->SetTextTheme(THEME_MENU_BAR_TEXT);
 
 
 
