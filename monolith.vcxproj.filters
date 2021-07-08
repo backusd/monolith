@@ -87,6 +87,9 @@
     <ClCompile Include="FontFamily.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
+    <ClCompile Include="ButtonClickMethods.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WindowsMessageMap.h">
@@ -162,6 +165,9 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="FontFamily.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonClickMethods.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>

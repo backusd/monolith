@@ -4,6 +4,8 @@
 #include "ThemeManager.h"
 #include "ColorTheme.h"
 #include "MouseOverDown.h"
+#include "ButtonClickMethods.h"
+
 
 #include <string>
 
@@ -33,7 +35,8 @@ public:
 	std::shared_ptr<Layout> GetLayout() { return m_buttonLayout; }
 
 private:
-	D2D1_RECT_F GetParentRect() { return m_parentLayout->GetRect(m_row, m_column, m_rowSpan, m_columnSpan); }
+	//D2D1_RECT_F GetParentRect() { return m_parentLayout->GetRect(m_row, m_column, m_rowSpan, m_columnSpan); }
+	
 	void Resize();
 	void UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result);
 
@@ -44,4 +47,8 @@ private:
 	// Themes
 	std::shared_ptr<ColorTheme> m_colorTheme;
 	//std::string m_borderTheme;
+
+
+
+	std::function<void()> ClickMethod;
 };

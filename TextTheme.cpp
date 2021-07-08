@@ -39,10 +39,12 @@ void TextTheme::Destroy()
 void TextTheme::SetColor(D2D1_COLOR_F color)
 {
 	m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(color, m_color.ReleaseAndGetAddressOf());
+	UpdateTextFormat();
 }
 void TextTheme::SetFontFamily(FONT_FAMILY fontFamily)
 {
 	m_fontFamily = fontFamily;
+	UpdateTextFormat();
 }
 void TextTheme::SetFontCollection() // Not sure how to do this - m_fontCollection is okay to be nullptr
 {
@@ -51,38 +53,47 @@ void TextTheme::SetFontCollection() // Not sure how to do this - m_fontCollectio
 void TextTheme::SetFontWeight(DWRITE_FONT_WEIGHT fontWeight)
 {
 	m_fontWeight = fontWeight;
+	UpdateTextFormat();
 }
 void TextTheme::SetFontStyle(DWRITE_FONT_STYLE fontStyle)
 {
 	m_fontStyle = fontStyle;
+	UpdateTextFormat();
 }
 void TextTheme::SetFontStretch(DWRITE_FONT_STRETCH fontStretch)
 {
 	m_fontStretch = fontStretch;
+	UpdateTextFormat();
 }
 void TextTheme::SetFontSize(float fontSize)
 {
 	m_fontSize = fontSize;
+	UpdateTextFormat();
 }
 void TextTheme::SetLocale() // Not sure how to do this - m_locale is "en-US" for all known cases
 {
 	m_locale = L"en-US";
+	UpdateTextFormat();
 }
 void TextTheme::SetTextAlignment(DWRITE_TEXT_ALIGNMENT textAlignment)
 {
 	m_textAlignment = textAlignment;
+	UpdateTextFormat();
 }
 void TextTheme::SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment)
 {
 	m_paragraphAlignment = paragraphAlignment;
+	UpdateTextFormat();
 }
 void TextTheme::SetWordWrapping(DWRITE_WORD_WRAPPING wordWrapping) 
 {
 	m_wordWrapping = wordWrapping;
+	UpdateTextFormat();
 }
 void TextTheme::SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity)
 {
 	m_trimming.granularity = granularity;
+	UpdateTextFormat();
 }
 
 

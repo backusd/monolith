@@ -17,9 +17,9 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 
 		// Menu Button Color
 		std::shared_ptr<ColorTheme> menuButtonColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_MENU_BAR_BUTTON_COLOR, deviceResources);
-		menuButtonColorTheme->SetColor(D2D1::ColorF(D2D1::ColorF::Green));
-		menuButtonColorTheme->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::Red));
-		menuButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Blue));
+		menuButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
+		menuButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+		menuButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
 
 		// Default Text
 		std::shared_ptr<TextTheme> defaultTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_TEXT, deviceResources);
@@ -31,9 +31,9 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 		menuButtonTextTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
 		menuButtonTextTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
 		menuButtonTextTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
-		menuButtonTextTheme->SetFontSize(12.0f);
-		menuButtonTextTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
-		menuButtonTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+		menuButtonTextTheme->SetFontSize(13.0f);
+		menuButtonTextTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+		menuButtonTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 		menuButtonTextTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 		menuButtonTextTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 

@@ -18,6 +18,8 @@ public:
 	void OnMarginChanged() override {  }
 
 	void SetTextTheme(std::string name) { m_textTheme = std::static_pointer_cast<TextTheme>(ThemeManager::GetTheme(name)); }
+	void SetText(std::wstring text) { m_text = text; }
+
 
 	// Use default behavior defined by Control for these methods
 	// 
@@ -30,4 +32,6 @@ public:
 private:
 	std::shared_ptr<TextTheme>	m_textTheme;
 	DWRITE_TEXT_METRICS			m_textMetrics;
+	std::wstring				m_text;
+
 };

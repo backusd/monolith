@@ -11,7 +11,8 @@ Button::Button(const std::shared_ptr<DeviceResources>& deviceResources,
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_buttonLayout(nullptr),
 	m_colorTheme(nullptr),
-	m_mouseOverDownState(MouseOverDown::NONE)
+	m_mouseOverDownState(MouseOverDown::NONE),
+	ClickMethod(DefaultClickMethod)
 {
 	SetColorTheme(THEME_DEFAULT_BUTTON_COLOR);
 
@@ -113,8 +114,11 @@ std::shared_ptr<OnMessageResult> Button::OnLButtonUp(std::shared_ptr<MouseState>
 	// Capture the mouse for as long as the mouse is over the control
 	result->CaptureMouse(true);
 
-	// Set the state to MOUSE_DOWN
+	// Set the state to MOUSE_OVER
 	UpdateButtonMouseState(MouseOverDown::MOUSE_OVER, result);
+
+	// Call the click method
+	ClickMethod();
 
 	return result;
 }

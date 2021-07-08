@@ -162,6 +162,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ButtonClickMethods.cpp" />
     <ClCompile Include="ColorTheme.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="ButtonClickMethods.h" />
     <ClInclude Include="ColorTheme.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="DeviceResources.h" />

@@ -40,6 +40,7 @@ public:
 	virtual std::shared_ptr<OnMessageResult> OnMouseLeave() { return std::make_shared<OnMessageResult>(); }
 	
 protected:
+	D2D1_RECT_F GetParentRect() { return m_parentLayout->GetRect(m_row, m_column, m_rowSpan, m_columnSpan); }
 
 	// Pointer to device resources
 	std::shared_ptr<DeviceResources> m_deviceResources;
