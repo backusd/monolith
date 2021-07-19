@@ -2,7 +2,7 @@
 #include "Control.h"
 
 std::shared_ptr<Control> Layout::m_mouseCapturedControl = nullptr;
-bool Layout::m_mouseAlreadyCapturedForThisMessage = false;
+//bool Layout::m_mouseAlreadyCapturedForThisMessage = false;
 
 Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources, D2D1_RECT_F rect) :
 	Layout(deviceResources, rect.top, rect.left, rect.bottom - rect.top, rect.right - rect.left)
@@ -257,9 +257,6 @@ D2D1_RECT_F Layout::GetRect(int rowIndex, int columnIndex, int rowSpan = 1, int 
 
 std::shared_ptr<OnMessageResult> Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow)
 {
-	// We are going to say that in order for a control to react to the LButtonDown, it must capture the control
-	// So there is no need to check all sublayouts and controls, just the captured control
-	// 
 	// Pass OnLButtonDown message to the control that has captured the mouse if it exists
 	// Only run this section on the main window layout i.e. it must be triggered by the main window
 	if (triggeredFromWindow && m_mouseCapturedControl != nullptr)
@@ -287,8 +284,8 @@ std::shared_ptr<OnMessageResult> Layout::OnLButtonUp(const std::shared_ptr<Mouse
 std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow)
 {
 	// If this is the main window layout, initialize the already captured variable to false
-	if(triggeredFromWindow)
-		m_mouseAlreadyCapturedForThisMessage = false;
+	// if(triggeredFromWindow)
+	//	m_mouseAlreadyCapturedForThisMessage = false;
 
 	std::shared_ptr<OnMessageResult> result = nullptr;
 
@@ -298,12 +295,20 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<Mouse
 	// Only run this section on the main window layout i.e. it must be triggered by the main window
 	if (triggeredFromWindow && m_mouseCapturedControl != nullptr)
 	{
+		// If the captured control contains sub controls (i.e. DropDown contains Buttons), then the 
+		// m_mouseCapturedControl variable may become reassigned during the call to OnMouseMove
+		std::shared_ptr<Control> capturedControl = m_mouseCapturedControl;
 		result = m_mouseCapturedControl->OnMouseMove(mouseState);
 
 		// If the control wants to continue to capture the mouse, then set already captured flag
 		// Else, set captured control to nullptr
 		if (result->CaptureMouse())
+		{
 			m_mouseAlreadyCapturedForThisMessage = true;
+
+			// Make sure the m_mouseCapturedControl variable retains its original value
+			m_mouseCapturedControl = capturedControl;
+		}
 		else
 			m_mouseCapturedControl = nullptr;
 
@@ -320,7 +325,7 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<Mouse
 	// First, attempt to pass the message along to one of the controls bound to the layout
 	for (std::shared_ptr<Control> control : m_controls)
 	{
-		if (control->MouseIsOver(mouseState->X(), mouseState->Y()))
+		if (forceMessagePass || control->MouseIsOver(mouseState->X(), mouseState->Y()))
 		{
 			result = control->OnMouseMove(mouseState);
 
@@ -329,10 +334,14 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<Mouse
 
 			// Capture the mouse if necessary
 			// Only update the m_mouseCapturedControl if it has not already been assigned for this message
-			if (result->CaptureMouse() && !m_mouseAlreadyCapturedForThisMessage)
+			// or override was set
+			if (result->CaptureMouse() && (result->CaptureOverride() || !m_mouseAlreadyCapturedForThisMessage))
 			{
 				m_mouseCapturedControl = control;
 				m_mouseAlreadyCapturedForThisMessage = true;
+
+				// unset the override flag
+				result->CaptureOverride(false);
 			}
 
 			// return if handled

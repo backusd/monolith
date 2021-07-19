@@ -81,7 +81,7 @@ private:
 	// List of all controls
 	std::vector<std::shared_ptr<Control>> m_controls;
 	static std::shared_ptr<Control> m_mouseCapturedControl;
-	static bool m_mouseAlreadyCapturedForThisMessage;
+	// static bool m_mouseAlreadyCapturedForThisMessage;
 
 	// Lists of all rows and columns in actual pixels within the layout
 	std::vector<RowCol> m_rows;

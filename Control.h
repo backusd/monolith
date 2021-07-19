@@ -48,6 +48,9 @@ protected:
 	// Keep pointer to the layout the control resides within
 	std::shared_ptr<Layout> m_parentLayout;
 
+	// Keep pointer to the sub-control that has captured the mouse
+	std::shared_ptr<Control> m_mouseCapturedControl;
+
 	int m_row;
 	int m_column;
 

@@ -11,7 +11,7 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 
 		// Create all themes for the application
 		//
-		// Default Color - White
+		// Default Button Color - White
 		std::shared_ptr<ColorTheme> defaultColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_BUTTON_COLOR, deviceResources);
 		defaultColorTheme->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
 
@@ -20,6 +20,15 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 		menuButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
 		menuButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
 		menuButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+
+		// Default drop down color
+		std::shared_ptr<ColorTheme> defaultDropDownColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_DROP_DOWN_COLOR, deviceResources);
+		defaultDropDownColorTheme->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+
+
+
 
 		// Default Text
 		std::shared_ptr<TextTheme> defaultTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_TEXT, deviceResources);

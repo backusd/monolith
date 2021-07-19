@@ -35,8 +35,6 @@ public:
 	std::shared_ptr<Layout> GetLayout() { return m_buttonLayout; }
 
 private:
-	//D2D1_RECT_F GetParentRect() { return m_parentLayout->GetRect(m_row, m_column, m_rowSpan, m_columnSpan); }
-	
 	void Resize();
 	void UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result);
 

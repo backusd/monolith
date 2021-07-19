@@ -4,6 +4,7 @@ Control::Control(const std::shared_ptr<DeviceResources>& deviceResources,
 	             const std::shared_ptr<Layout>& parentLayout) :
 	m_deviceResources(deviceResources),
 	m_parentLayout(parentLayout),
+	m_mouseCapturedControl(nullptr),
 	m_row(0),
 	m_column(0),
 	m_rowSpan(1),
@@ -13,13 +14,13 @@ Control::Control(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_marginRight(0.0f),
 	m_marginBottom(0.0f)
 {
-	OutputDebugString("Control Constructor\n");
 }
 
 Control::Control(const std::shared_ptr<DeviceResources>& deviceResources,
 				 const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
 	m_deviceResources(deviceResources),
 	m_parentLayout(parentLayout),
+	m_mouseCapturedControl(nullptr),
 	m_row(row),
 	m_column(column),
 	m_rowSpan(rowSpan),
