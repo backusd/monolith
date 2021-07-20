@@ -42,6 +42,7 @@ namespace LayoutConfiguration
 		menuBarLayout->SetColumnDefinitions(menuBarColumnDefs);
 
 		// Menu controls ===============================================================
+		/*
 		std::shared_ptr<DropDown> fileDropDown = menuBarLayout->CreateControl<DropDown>(0, 0);
 		fileDropDown->SetDropDownSize(400, 50);
 		fileDropDown->Margin(0.0f, 4.0f);
@@ -72,8 +73,9 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text>   fileDropDownButtonText2 = fileDropDownButton2->GetLayout()->CreateControl<Text>();
 		fileDropDownButtonText2->SetTextTheme(THEME_MENU_BAR_TEXT);
 		fileDropDownButtonText2->SetText(L"Drop Down Item 1");
+		*/
 
-		/*
+		
 		std::shared_ptr<Button> fileDropDown = menuBarLayout->CreateControl<Button>(0, 0);
 		fileDropDown->Margin(0.0f, 4.0f);
 		fileDropDown->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
@@ -81,7 +83,7 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> fileText = fileDropDown->GetLayout()->CreateControl<Text>();
 		fileText->SetTextTheme(THEME_MENU_BAR_TEXT);
 		fileText->SetText(L"File");
-		*/
+		
 
 
 		std::shared_ptr<Button> editDropDown = menuBarLayout->CreateControl<Button>(0, 1);

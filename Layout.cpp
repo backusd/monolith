@@ -1,7 +1,7 @@
 #include "Layout.h"
 #include "Control.h"
 
-std::shared_ptr<Control> Layout::m_mouseCapturedControl = nullptr;
+// std::shared_ptr<Control> Layout::m_mouseCapturedControl = nullptr;
 //bool Layout::m_mouseAlreadyCapturedForThisMessage = false;
 
 Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources, D2D1_RECT_F rect) :
@@ -15,7 +15,9 @@ Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_top(top),
 	m_left(left),
 	m_height(height),
-	m_width(width)
+	m_width(width),
+	m_mouseCapturedControl(nullptr),
+	m_mouseCapturedLayout(nullptr)
 {
 	// Default grid layout to one row and one column that fills the window
 	RowColDefinitions defaultDefinition;
@@ -255,61 +257,48 @@ D2D1_RECT_F Layout::GetRect(int rowIndex, int columnIndex, int rowSpan = 1, int 
 	return rect;
 }
 
-std::shared_ptr<OnMessageResult> Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow)
+std::shared_ptr<OnMessageResult> Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseState)
 {
 	// Pass OnLButtonDown message to the control that has captured the mouse if it exists
-	// Only run this section on the main window layout i.e. it must be triggered by the main window
-	if (triggeredFromWindow && m_mouseCapturedControl != nullptr)
+	if (m_mouseCapturedControl != nullptr)
 	{
 		return m_mouseCapturedControl->OnLButtonDown(mouseState);
 	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		return m_mouseCapturedLayout->OnLButtonDown(mouseState);
+	}
 
 	return std::make_shared<OnMessageResult>();
 }
-std::shared_ptr<OnMessageResult> Layout::OnLButtonUp(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow)
+std::shared_ptr<OnMessageResult> Layout::OnLButtonUp(const std::shared_ptr<MouseState>& mouseState)
 {
-	// We are going to say that in order for a control to react to the LButtonUp, it must capture the control
-	// So there is no need to check all sublayouts and controls, just the captured control
-	// 
 	// Pass LButtonUp message to the control that has captured the mouse if it exists
-	// Only run this section on the main window layout i.e. it must be triggered by the main window
-	if (triggeredFromWindow && m_mouseCapturedControl != nullptr)
+	if (m_mouseCapturedControl != nullptr)
 	{
 		return m_mouseCapturedControl->OnLButtonUp(mouseState);
+	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		return m_mouseCapturedLayout->OnLButtonUp(mouseState);
 	}
 
 	return std::make_shared<OnMessageResult>();
 }
 
-std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow)
+std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<MouseState>& mouseState)
 {
-	// If this is the main window layout, initialize the already captured variable to false
-	// if(triggeredFromWindow)
-	//	m_mouseAlreadyCapturedForThisMessage = false;
-
 	std::shared_ptr<OnMessageResult> result = nullptr;
 
 	bool redraw = false;
 
-	// Pass mouse moved message to the control that has captured the mouse if it exists
-	// Only run this section on the main window layout i.e. it must be triggered by the main window
-	if (triggeredFromWindow && m_mouseCapturedControl != nullptr)
+	// If there is already a control within this layout that has been captured, immediately pass the message
+	if (m_mouseCapturedControl != nullptr)
 	{
-		// If the captured control contains sub controls (i.e. DropDown contains Buttons), then the 
-		// m_mouseCapturedControl variable may become reassigned during the call to OnMouseMove
-		std::shared_ptr<Control> capturedControl = m_mouseCapturedControl;
 		result = m_mouseCapturedControl->OnMouseMove(mouseState);
 
-		// If the control wants to continue to capture the mouse, then set already captured flag
-		// Else, set captured control to nullptr
-		if (result->CaptureMouse())
-		{
-			m_mouseAlreadyCapturedForThisMessage = true;
-
-			// Make sure the m_mouseCapturedControl variable retains its original value
-			m_mouseCapturedControl = capturedControl;
-		}
-		else
+		// If the control no longer wants to be captured, release it
+		if (!result->CaptureMouse())
 			m_mouseCapturedControl = nullptr;
 
 		if (result->Redraw())
@@ -319,34 +308,48 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<Mouse
 		if (result->MessageHandled())
 			return result;
 	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		result = m_mouseCapturedLayout->OnMouseMove(mouseState);
+
+		// If the layout no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedLayout = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+
 
 	// Message has not been fully handled, so pass message along to controls then sub-layouts
 	//
 	// First, attempt to pass the message along to one of the controls bound to the layout
 	for (std::shared_ptr<Control> control : m_controls)
 	{
-		if (forceMessagePass || control->MouseIsOver(mouseState->X(), mouseState->Y()))
+		// Pass message only if mouse is over the control
+		if (control->MouseIsOver(mouseState->X(), mouseState->Y()))
 		{
 			result = control->OnMouseMove(mouseState);
 
 			redraw = redraw || result->Redraw();
-			result->Redraw(redraw || result->Redraw());
 
 			// Capture the mouse if necessary
-			// Only update the m_mouseCapturedControl if it has not already been assigned for this message
-			// or override was set
-			if (result->CaptureMouse() && (result->CaptureOverride() || !m_mouseAlreadyCapturedForThisMessage))
+			if (result->CaptureMouse())
 			{
 				m_mouseCapturedControl = control;
-				m_mouseAlreadyCapturedForThisMessage = true;
-
-				// unset the override flag
-				result->CaptureOverride(false);
+				m_mouseCapturedLayout = nullptr;
 			}
 
 			// return if handled
 			if (result->MessageHandled())
+			{
+				result->Redraw(redraw || result->Redraw());
 				return result;
+			}
 		}
 	}
 
@@ -356,11 +359,20 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<Mouse
 	{
 		layout = subLayoutTuple._Myfirst._Val;
 
+		// Two child layouts cannot overlap, so if mouse is over one of them, can pass the message
+		// and immediately return the result
 		if (layout->MouseIsOver(mouseState->X(), mouseState->Y()))
 		{
 			result = layout->OnMouseMove(mouseState);
-			if (result != nullptr)
-				result->Redraw(redraw || result->Redraw());
+
+			// Capture the mouse if necessary
+			if (result->CaptureMouse())
+			{
+				m_mouseCapturedControl = nullptr;
+				m_mouseCapturedLayout = layout;
+			}
+
+			result->Redraw(redraw || result->Redraw());
 			return result;
 		}
 	}
@@ -370,28 +382,35 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<Mouse
 	
 	return std::make_shared<OnMessageResult>();
 }
-std::shared_ptr<OnMessageResult> Layout::OnMouseLeave(bool triggeredFromWindow)
+std::shared_ptr<OnMessageResult> Layout::OnMouseLeave()
 {
-	// If this is the main window layout, initialize the already captured variable to false
-	if (triggeredFromWindow)
-		m_mouseAlreadyCapturedForThisMessage = false;
-
 	std::shared_ptr<OnMessageResult> result = nullptr;
 
 	bool redraw = false;
 
 	// Pass mouse moved message to the control that has captured the mouse if it exists
-	// Only run this section on the main window layout i.e. it must be triggered by the main window
-	if (triggeredFromWindow && m_mouseCapturedControl != nullptr)
+	if (m_mouseCapturedControl != nullptr)
 	{
 		result = m_mouseCapturedControl->OnMouseLeave();
 
-		// If the control wants to continue to capture the mouse, then set already captured flag
-		// Else, set captured control to nullptr
-		if (result->CaptureMouse())
-			m_mouseAlreadyCapturedForThisMessage = true;
-		else
+		// If the control no longer wants to be captured, release it
+		if (!result->CaptureMouse())
 			m_mouseCapturedControl = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		result = m_mouseCapturedLayout->OnMouseLeave();
+
+		// If the layout no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedLayout = nullptr;
 
 		if (result->Redraw())
 			redraw = true;
@@ -403,31 +422,44 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseLeave(bool triggeredFromWindow)
 
 	// Message has not been fully handled, so pass message along to controls then sub-layouts
 	//
-	// Should only reach here if there is no captured control, so make sure it is nullptr
-	m_mouseCapturedControl = nullptr;
-
 	// Pass message along to all controls
 	for (std::shared_ptr<Control> control : m_controls)
 	{
 		result = control->OnMouseLeave();
 
-		// Controls are not allowed to newly capture the mouse on this message
-		// (however they are allowed to continue to capture the mouse)
-		if (result->CaptureMouse())
-			result->CaptureMouse(false);
-
-		// Keep track of whether or not we need to redraw
 		redraw = redraw || result->Redraw();
-		result->Redraw(redraw || result->Redraw());
+
+		// Capture the mouse if necessary
+		// NOTE: This should not ever be the case. A control should not necessarily be able to capture the mouse
+		//       after it has left the client area. 
+		if (result->CaptureMouse())
+		{
+			m_mouseCapturedControl = control;
+			m_mouseCapturedLayout = nullptr;
+		}
+
+		// return if handled
+		if (result->MessageHandled())
+		{
+			result->Redraw(redraw || result->Redraw());
+			return result;
+		}
 	}
 
-	// Next, attempt to pass the event to all of the sub-layouts
+	// Next, pass the event to all of the sub-layouts
 	std::shared_ptr<Layout> layout;
 	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
 	{
 		layout = subLayoutTuple._Myfirst._Val;
 
 		result = layout->OnMouseLeave();
+
+		// Capture the mouse if necessary
+		if (result->CaptureMouse())
+		{
+			m_mouseCapturedControl = nullptr;
+			m_mouseCapturedLayout = layout;
+		}
 
 		// Keep track of whether or not we need to redraw
 		redraw = redraw || result->Redraw();

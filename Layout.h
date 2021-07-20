@@ -58,10 +58,10 @@ public:
 	
 	bool MouseIsOver(int x, int y) { return x >= Left() && x <= Right() && y >= Top() && y <= Bottom(); }
 
-	std::shared_ptr<OnMessageResult> OnLButtonDown(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow = false);
-	std::shared_ptr<OnMessageResult> OnLButtonUp(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow = false);
-	std::shared_ptr<OnMessageResult> OnMouseMove(const std::shared_ptr<MouseState>& mouseState, bool triggeredFromWindow = false);
-	std::shared_ptr<OnMessageResult> OnMouseLeave(bool triggeredFromWindow = false);
+	std::shared_ptr<OnMessageResult> OnLButtonDown(const std::shared_ptr<MouseState>& mouseState);
+	std::shared_ptr<OnMessageResult> OnLButtonUp(const std::shared_ptr<MouseState>& mouseState);
+	std::shared_ptr<OnMessageResult> OnMouseMove(const std::shared_ptr<MouseState>& mouseState);
+	std::shared_ptr<OnMessageResult> OnMouseLeave();
 
 private:
 	void UpdateLayout();
@@ -80,8 +80,8 @@ private:
 
 	// List of all controls
 	std::vector<std::shared_ptr<Control>> m_controls;
-	static std::shared_ptr<Control> m_mouseCapturedControl;
-	// static bool m_mouseAlreadyCapturedForThisMessage;
+	std::shared_ptr<Control> m_mouseCapturedControl;
+	std::shared_ptr<Layout> m_mouseCapturedLayout;
 
 	// Lists of all rows and columns in actual pixels within the layout
 	std::vector<RowCol> m_rows;

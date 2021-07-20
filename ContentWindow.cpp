@@ -64,7 +64,7 @@ LRESULT ContentWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	m_mouseState->LButtonDown(true);
 
 	// Pass the coordinates of the mouse click to the main layout
-	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonDown(m_mouseState, true);
+	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonDown(m_mouseState);
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
 
@@ -82,7 +82,7 @@ LRESULT ContentWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	m_mouseState->LButtonDown(false);
 
 	// Pass the coordinates of the mouse click to the main layout
-	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonUp(m_mouseState, true);
+	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonUp(m_mouseState);
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
 
@@ -231,11 +231,9 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	const POINTS pt = MAKEPOINTS(lParam);
 	m_mouseState->X(pt.x);
 	m_mouseState->Y(pt.y);
-	m_mouseState->MButtonDown(true);
 
-
-	// Pass the coordinates of the mouse click to the main layout
-	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseMove(m_mouseState, true);
+	// Pass the coordinates of the mouse to the main layout
+	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseMove(m_mouseState);
 	if (result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
 
@@ -248,7 +246,7 @@ LRESULT ContentWindow::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	m_mouseState->DisableMouseTracking();
 
 	// Pass the OnMouseLeave event to the layout
-	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseLeave(true);
+	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseLeave();
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
 

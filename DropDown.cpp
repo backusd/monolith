@@ -9,7 +9,6 @@ DropDown::DropDown(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_dropDownIsOpen(false),
 	m_dropDownHeight(100.0f),
 	m_dropDownWidth(100.0f)
-	//m_mouseOverDownState(MouseOverDown::NONE)
 {
 	// Create a sub layout not as a child of the parent that will house the main button
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1
@@ -89,6 +88,9 @@ bool DropDown::MouseIsOverDropDownLayout(int x, int y)
 
 std::shared_ptr<OnMessageResult> DropDown::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
 {
+	return nullptr;
+
+	/*
 	// Because the mouse can move between the two layouts, we need to pass the message along to both layouts
 	std::shared_ptr<OnMessageResult> result1 = m_mainLayout->OnLButtonDown(mouseState, true);
 
@@ -118,10 +120,14 @@ std::shared_ptr<OnMessageResult> DropDown::OnLButtonDown(std::shared_ptr<MouseSt
 		result1->CaptureOverride(true);
 
 	return result1;
+	*/
 }
 
 std::shared_ptr<OnMessageResult> DropDown::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 {
+	return nullptr;
+
+	/*
 	// If the main layout handles the message, just change the visibility of the drop down
 	std::shared_ptr<OnMessageResult> result1 = m_mainLayout->OnLButtonUp(mouseState, true);
 
@@ -154,10 +160,14 @@ std::shared_ptr<OnMessageResult> DropDown::OnLButtonUp(std::shared_ptr<MouseStat
 		result1->CaptureOverride(true);
 
 	return result1;
+	*/
 }
 
 std::shared_ptr<OnMessageResult> DropDown::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 {
+	return nullptr;
+
+	/*
 	// Because the mouse can move between the two layouts, we need to pass the message along to both layouts
 	// Set forceMessagePass to true because we need the sub controls to react to it
 	std::shared_ptr<OnMessageResult> result1 = m_mainLayout->OnMouseMove(mouseState, false, true);
@@ -190,6 +200,7 @@ std::shared_ptr<OnMessageResult> DropDown::OnMouseMove(std::shared_ptr<MouseStat
 		result1->CaptureOverride(true);
 
 	return result1;
+	*/
 
 	/*
 	std::shared_ptr<OnMessageResult> result = nullptr;
