@@ -84,8 +84,6 @@ namespace LayoutConfiguration
 		fileText->SetTextTheme(THEME_MENU_BAR_TEXT);
 		fileText->SetText(L"File");
 		
-
-
 		std::shared_ptr<Button> editDropDown = menuBarLayout->CreateControl<Button>(0, 1);
 		editDropDown->Margin(0.0f, 4.0f);
 		editDropDown->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
@@ -102,6 +100,7 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> viewText = viewDropDown->GetLayout()->CreateControl<Text>();
 		viewText->SetTextTheme(THEME_MENU_BAR_TEXT);
 		viewText->SetText(L"View");
+
 
 		
 

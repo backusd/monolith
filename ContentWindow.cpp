@@ -20,7 +20,8 @@ ContentWindow::ContentWindow(int width, int height, const char* name) noexcept :
 	);
 
 	// Create the layout to fill the entire screen with a single grid square
-	m_layout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, Height(), Width());
+	// Because the layout will be rendered using DIPS, we must pass the DIPS values for height/width
+	m_layout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, m_deviceResources->PixelsToDIPS(Height()), m_deviceResources->PixelsToDIPS(Width()));
 
 	// Create the mouse state object
 	m_mouseState = std::make_shared<MouseState>();
@@ -208,7 +209,7 @@ LRESULT ContentWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	m_deviceResources->OnResize();
 
 	// Update the Layout
-	m_layout->OnResize(0.0f, 0.0f, Height(), Width());
+	m_layout->OnResize(0.0f, 0.0f, m_deviceResources->PixelsToDIPS(Height()), m_deviceResources->PixelsToDIPS(Width()));
 
 	// Invalidate window so it redraws the whole client area
 	InvalidateRect(hWnd, NULL, FALSE);
@@ -220,7 +221,7 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 {
 	const POINTS pts = MAKEPOINTS(lParam);
 	std::ostringstream oss;
-	oss << "(" << pts.x << ", " << pts.y << ") - Main";
+	oss << "(" << m_deviceResources->PixelsToDIPS(pts.x) << ", " << m_deviceResources->PixelsToDIPS(pts.y) << ") - Main";
 	SetWindowText(hWnd, oss.str().c_str());
 
 	// ====================================
@@ -228,9 +229,10 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	// Make sure mouse tracking is enabled
 	m_mouseState->EnableMouseTracking(m_hWnd);
 
+	// Store the mouse location in DIPS
 	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(pt.x);
-	m_mouseState->Y(pt.y);
+	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
+	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
 
 	// Pass the coordinates of the mouse to the main layout
 	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseMove(m_mouseState);

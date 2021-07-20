@@ -34,6 +34,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
+	// All other hard coded pixel values will be in DIPS. However, because we don't have access to the D2DFactory
+	// at the time of window creation (that could probably be changed), these values are physical pixels for the window size
 	std::shared_ptr<ContentWindow> main = std::make_shared<ContentWindow>(800, 300, "Main Window");
 	LayoutConfiguration::ConfigureMainWindow(main);
 

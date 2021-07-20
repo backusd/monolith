@@ -29,10 +29,8 @@ DeviceResources::DeviceResources(HWND hWnd) :
 	m_d3dRenderTargetView(nullptr),
 	m_d3dDepthStencilView(nullptr),
 	m_dxgiSwapChain(nullptr),
-	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1)
-	// ==========================================================
-	// Temporary D2D Resources
-	//m_d2dRenderTarget(nullptr)
+	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
+	m_dpiScale(96.0f)
 {
 	// Must initialize COM library
 	try { ThrowIfFailed( CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE) ); }
@@ -219,6 +217,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	float width = rect.right;
 
 	float dpi = static_cast<float>(GetDpiForWindow(m_hWnd));
+	m_dpiScale = dpi / 96.0f;
 
 	// Clear the previous window size specific context
 	ID3D11RenderTargetView* nullViews[] = { nullptr };

@@ -51,6 +51,10 @@ public:
 	ID3D11DepthStencilView* GetDepthStencilView() const { return m_d3dDepthStencilView.Get(); }
 	void Present();
 
+	// DPI Scaling functions
+	float DIPSToPixels(float dips) { return dips * m_dpiScale; }
+	float PixelsToDIPS(float pixels) { return pixels / m_dpiScale; }
+
 private:
 
 	void CreateDeviceDependentResources();
@@ -60,6 +64,9 @@ private:
 
 	// Keep handle to window
 	HWND m_hWnd;
+
+	// DPI scale for the window
+	float m_dpiScale;
 
 	// ==========================================================
 	// Temporary D2D Resources
