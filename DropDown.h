@@ -36,7 +36,7 @@ public:
 	std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
-	// std::shared_ptr<OnMessageResult> OnMouseLeave() override;
+	std::shared_ptr<OnMessageResult> OnMouseLeave() override;
 	
 
 	std::shared_ptr<Layout> GetMainLayout() { return m_mainLayout; }
@@ -47,14 +47,11 @@ private:
 	void Resize();
 	bool MouseIsOverMainLayout(int x, int y);
 	bool MouseIsOverDropDownLayout(int x, int y);
-	// void UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result);
 
 	std::shared_ptr<Layout> m_mainLayout;
 	std::shared_ptr<Layout> m_dropDownLayout;
 
 	bool m_dropDownIsOpen;
-
-	// MouseOverDown m_mouseOverDownState;
 
 	float m_dropDownWidth;
 	float m_dropDownHeight;

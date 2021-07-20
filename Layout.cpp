@@ -378,7 +378,10 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<Mouse
 	}
 
 	if (result != nullptr)
+	{
+		result->Redraw(redraw || result->Redraw());
 		return result;
+	}
 	
 	return std::make_shared<OnMessageResult>();
 }
@@ -467,7 +470,10 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseLeave()
 	}
 
 	if (result != nullptr)
+	{
+		result->Redraw(redraw || result->Redraw());
 		return result;
+	}
 
 	return std::make_shared<OnMessageResult>();
 }
