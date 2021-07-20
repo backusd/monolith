@@ -47,7 +47,7 @@ WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* nam
 	wc.cbWndExtra = 0;
 	wc.hInstance = hInst;
 	wc.hIcon = nullptr;
-	wc.hCursor = nullptr;
+	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = wndBaseClassName;

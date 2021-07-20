@@ -7,9 +7,10 @@ ContentWindow::ContentWindow(int width, int height, const char* name) noexcept :
 	m_stateBlock(nullptr),
 	m_layout(nullptr),
 	m_mouseState(nullptr)
+	//
+	//
+	//m_cursor(LoadCursor(NULL, ))
 {
-	OutputDebugString("ContentWindow Constructor\n");
-
 	// Create the device resources
 	m_deviceResources = std::make_shared<DeviceResources>(m_hWnd);
 	m_deviceResources->OnResize(); // Calling OnResize will create the render target, etc.
@@ -225,6 +226,9 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	SetWindowText(hWnd, oss.str().c_str());
 
 	// ====================================
+
+	// Change cursor to arrow
+
 
 	// Make sure mouse tracking is enabled
 	m_mouseState->EnableMouseTracking(m_hWnd);

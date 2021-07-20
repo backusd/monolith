@@ -58,4 +58,9 @@ private:
 
 	// Keep track off mouse details to pass to layout/controls
 	std::shared_ptr<MouseState> m_mouseState;
+
+
+
+
+	//HCURSOR m_cursor;
 };
