@@ -88,7 +88,16 @@ bool DropDown::MouseIsOverDropDownLayout(int x, int y)
 
 std::shared_ptr<OnMessageResult> DropDown::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
 {
-	return nullptr;
+	// If the drop down is open and mouse is over, send message to drop down layout.
+	// Otherwise, just send message to main layout
+	if (m_dropDownIsOpen && m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		return m_dropDownLayout->OnLButtonDown(mouseState);
+	}
+
+	return m_mainLayout->OnLButtonDown(mouseState);
+
+
 
 	/*
 	// Because the mouse can move between the two layouts, we need to pass the message along to both layouts
@@ -125,7 +134,23 @@ std::shared_ptr<OnMessageResult> DropDown::OnLButtonDown(std::shared_ptr<MouseSt
 
 std::shared_ptr<OnMessageResult> DropDown::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 {
-	return nullptr;
+	// If the drop down is open and mouse is over, send message to drop down layout.
+	// Otherwise, just send message to main layout
+	if (m_dropDownIsOpen && m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		return m_dropDownLayout->OnLButtonUp(mouseState);
+	}
+
+	std::shared_ptr<OnMessageResult> result = m_mainLayout->OnLButtonUp(mouseState);
+
+	// If the click was handled, then expand/collapse the drop down
+	if (result->MessageHandled())
+	{
+		m_dropDownIsOpen = !m_dropDownIsOpen;
+		result->Redraw(true);
+	}
+
+	return result;
 
 	/*
 	// If the main layout handles the message, just change the visibility of the drop down
@@ -165,11 +190,36 @@ std::shared_ptr<OnMessageResult> DropDown::OnLButtonUp(std::shared_ptr<MouseStat
 
 std::shared_ptr<OnMessageResult> DropDown::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 {
-	return nullptr;
+	// If the drop down is not open, just send the message to the main layout. Otherwise,
+	// send to both layouts
+	std::shared_ptr<OnMessageResult> result1 = m_mainLayout->OnMouseMove(mouseState);
+	std::shared_ptr<OnMessageResult> result2 = nullptr;
+	if (m_dropDownIsOpen)
+	{
+		result2 = m_dropDownLayout->OnMouseMove(mouseState);
+
+		// If the message was not handled and is not over either layouts, collapse the dropdown
+		if (!result2->MessageHandled() && 
+			!m_mainLayout->MouseIsOver(mouseState->X(), mouseState->Y()) && 
+			!m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
+		{
+			m_dropDownIsOpen = false;
+			result1->Redraw(true);
+		}
+	}
+	else
+		result2 = std::make_shared<OnMessageResult>();
+
+	// Combine results
+	result1->CaptureMouse(result1->CaptureMouse() || result2->CaptureMouse());
+	result1->Redraw(result1->Redraw() || result2->Redraw());
+	result1->MessageHandled(result1->MessageHandled() || result2->MessageHandled());
+
+	return result1;
+
 
 	/*
 	// Because the mouse can move between the two layouts, we need to pass the message along to both layouts
-	// Set forceMessagePass to true because we need the sub controls to react to it
 	std::shared_ptr<OnMessageResult> result1 = m_mainLayout->OnMouseMove(mouseState, false, true);
 
 	if (result1->MessageHandled())
@@ -200,9 +250,8 @@ std::shared_ptr<OnMessageResult> DropDown::OnMouseMove(std::shared_ptr<MouseStat
 		result1->CaptureOverride(true);
 
 	return result1;
-	*/
 
-	/*
+	
 	std::shared_ptr<OnMessageResult> result = nullptr;
 
 	// If the mouse is over the main control, get the result from there

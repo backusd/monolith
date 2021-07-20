@@ -2,10 +2,10 @@
 
 void DefaultClickMethod()
 {
-	OutputDebugString("Suck weener sauce");
+	//OutputDebugString("Suck weener sauce");
 }
 
 void WriteDebugMessage()
 {
-	OutputDebugString("Suck weener");
+	//OutputDebugString("Suck weener");
 }
