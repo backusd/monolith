@@ -166,7 +166,6 @@
     <ClCompile Include="ColorTheme.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
-    <ClCompile Include="DPIHelper.cpp" />
     <ClCompile Include="ContentWindow.cpp" />
     <ClCompile Include="DropDown.cpp" />
     <ClCompile Include="FontFamily.cpp" />
@@ -192,7 +191,6 @@
     <ClInclude Include="Control.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="DirectXHelper.h" />
-    <ClInclude Include="DPIHelper.h" />
     <ClInclude Include="ContentWindow.h" />
     <ClInclude Include="DropDown.h" />
     <ClInclude Include="FontFamily.h" />

@@ -22,159 +22,195 @@
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{0016a610-b3fb-48f2-ab6d-71ed936abe61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI\Controls">
+      <UniqueIdentifier>{ca1bcdc6-a4fc-4a8b-bd1d-a9b8afa01d4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Themes">
+      <UniqueIdentifier>{05bdf0f6-cdd3-4071-ae5f-c61dbdb9fe19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Other">
+      <UniqueIdentifier>{289ab96a-f75b-406d-83a4-6769454f1da8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Click Methods">
+      <UniqueIdentifier>{98b3eaba-729d-4212-b6b9-23d1929d005a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Controls">
+      <UniqueIdentifier>{86a7d132-5891-4afb-bec2-b70911b73d1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Themes">
+      <UniqueIdentifier>{288e2f56-b3af-40ab-820a-d78646c6eade}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Other">
+      <UniqueIdentifier>{2c831836-8169-4323-bd84-b8c99036d9df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Window">
+      <UniqueIdentifier>{7eb8ce43-fa22-4dc9-83ff-dcb577ffdef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Window">
+      <UniqueIdentifier>{32e5bd66-1d97-4801-83b1-16f4e3fb7c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Click Methods">
+      <UniqueIdentifier>{3cde908f-40b7-449f-be9b-aeb8934e0a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\UI\Layout">
+      <UniqueIdentifier>{e1604258-c230-44c5-ab7c-cbe1262488f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI\Layout">
+      <UniqueIdentifier>{2c4d5ace-1494-4dfa-a6ea-d813fa9847e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rendering">
+      <UniqueIdentifier>{f41302d0-2ff9-4dc0-b046-80b38811e7d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rendering">
+      <UniqueIdentifier>{da3fe63c-34e2-4039-8018-42fc61b0419b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WinMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowsMessageMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ContentWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SecondaryWindow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WindowManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DPIHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DeviceResources.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Layout.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RowCol.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
     </ClCompile>
     <ClCompile Include="Control.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Theme.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="ColorTheme.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseState.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="OnMessageResult.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="ThemeManager.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="TextTheme.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="FontFamily.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="ButtonClickMethods.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\UI\Controls</Filter>
     </ClCompile>
     <ClCompile Include="DropDown.cpp">
-      <Filter>Source Files\UI</Filter>
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorTheme.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="TextTheme.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="Theme.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="ThemeManager.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
+    <ClCompile Include="FontFamily.cpp">
+      <Filter>Source Files\UI\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseState.cpp">
+      <Filter>Source Files\UI\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="OnMessageResult.cpp">
+      <Filter>Source Files\UI\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsMessageMap.cpp">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowManager.cpp">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowBase.cpp">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="SecondaryWindow.cpp">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ContentWindow.cpp">
+      <Filter>Source Files\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonClickMethods.cpp">
+      <Filter>Source Files\UI\Click Methods</Filter>
+    </ClCompile>
+    <ClCompile Include="Layout.cpp">
+      <Filter>Source Files\UI\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="RowCol.cpp">
+      <Filter>Source Files\UI\Layout</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WindowsMessageMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WindowBaseTemplate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ContentWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SecondaryWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DPIHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DeviceResources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectXHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Layout.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RowCol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LayoutConfig.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Button.h">
+      <Filter>Header Files\UI\Controls</Filter>
     </ClInclude>
     <ClInclude Include="Control.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Theme.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorTheme.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThemeDefines.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThemeManager.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="OnMessageResult.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseState.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="TextTheme.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseOverDown.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="FontFamily.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="ButtonClickMethods.h">
-      <Filter>Header Files\UI</Filter>
+      <Filter>Header Files\UI\Controls</Filter>
     </ClInclude>
     <ClInclude Include="DropDown.h">
-      <Filter>Header Files\UI</Filter>
+      <Filter>Header Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorTheme.h">
+      <Filter>Header Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="TextTheme.h">
+      <Filter>Header Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="Theme.h">
+      <Filter>Header Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeDefines.h">
+      <Filter>Header Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="ThemeManager.h">
+      <Filter>Header Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseOverDown.h">
+      <Filter>Header Files\UI\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="FontFamily.h">
+      <Filter>Header Files\UI\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseState.h">
+      <Filter>Header Files\UI\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="OnMessageResult.h">
+      <Filter>Header Files\UI\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonClickMethods.h">
+      <Filter>Header Files\UI\Click Methods</Filter>
+    </ClInclude>
+    <ClInclude Include="ContentWindow.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowBase.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowBaseTemplate.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowManager.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsMessageMap.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="SecondaryWindow.h">
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="Layout.h">
+      <Filter>Header Files\UI\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutConfig.h">
+      <Filter>Header Files\UI\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="RowCol.h">
+      <Filter>Header Files\UI\Layout</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXHelper.h">
+      <Filter>Header Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

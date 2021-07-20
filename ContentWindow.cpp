@@ -222,7 +222,7 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 {
 	const POINTS pts = MAKEPOINTS(lParam);
 	std::ostringstream oss;
-	oss << "(" << m_deviceResources->PixelsToDIPS(pts.x) << ", " << m_deviceResources->PixelsToDIPS(pts.y) << ") - Main";
+	oss << "Pixels: (" << pts.x << ", " << pts.y << ") - DIPS: (" << m_deviceResources->PixelsToDIPS(pts.x) << ", " << m_deviceResources->PixelsToDIPS(pts.y) << ") - Main";
 	SetWindowText(hWnd, oss.str().c_str());
 
 	// ====================================
@@ -278,22 +278,13 @@ float ContentWindow::Width()
 	return static_cast<float>(rect.right);
 }
 
-/*
-ComPtr<ID2D1HwndRenderTarget> ContentWindow::D2DRenderTarget()
+LRESULT ContentWindow::OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
-	//return m_deviceResources->D2DRenderTarget();
-	
-	ComPtr<ID2D1HwndRenderTarget> renderTarget = m_deviceResources->D2DRenderTarget();
+	// Minimums should be set in DIPS to be uniform across devices
+	LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
+	lpMMI->ptMinTrackSize.x = m_deviceResources->DIPSToPixels(500);
+	lpMMI->ptMinTrackSize.y = m_deviceResources->DIPSToPixels(300);
 
-	// If render target is nullptr, try to call OnResize to create it
-	if (renderTarget == nullptr)
-	{
-		m_deviceResources->OnResize();
-
-		renderTarget = m_deviceResources->D2DRenderTarget();
-	}
-
-	return renderTarget;
-	
+	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-*/
+

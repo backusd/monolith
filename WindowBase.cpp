@@ -32,6 +32,7 @@ LRESULT WindowBase::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:			return OnResize(hWnd, msg, wParam, lParam);
 	case WM_MOUSEMOVE:		return OnMouseMove(hWnd, msg, wParam, lParam);
 	case WM_MOUSELEAVE:		return OnMouseLeave(hWnd, msg, wParam, lParam);
+	case WM_GETMINMAXINFO:	return OnGetMinMaxInfo(hWnd, msg, wParam, lParam);
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -103,6 +104,11 @@ LRESULT WindowBase::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 }
 
 LRESULT WindowBase::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+LRESULT WindowBase::OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
