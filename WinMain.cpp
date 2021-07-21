@@ -7,6 +7,7 @@
 #include "ContentWindow.h"
 #include "LayoutConfig.h"
 #include "ThemeManager.h"
+#include "MonolithException.h"
 
 #include <memory>
 
@@ -34,33 +35,49 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 int CALLBACK WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
-	// All other hard coded pixel values will be in DIPS. However, because we don't have access to the D2DFactory
-	// at the time of window creation (that could probably be changed), these values are physical pixels for the window size
-	std::shared_ptr<ContentWindow> main = std::make_shared<ContentWindow>(1000, 800, "Main Window");
-	LayoutConfiguration::ConfigureMainWindow(main);
-
-	WindowManager::AddWindow(main);
-
-	ThemeManager::Initialize(main->GetDeviceResources());
-
-	MSG msg;
-	BOOL gResult;
-	while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
+	try
 	{
-		// TranslateMessage will post auxilliary WM_CHAR messages from key msgs
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+		// All other hard coded pixel values will be in DIPS. However, because we don't have access to the D2DFactory
+		// at the time of window creation (that could probably be changed), these values are physical pixels for the window size
+		std::shared_ptr<ContentWindow> main = std::make_shared<ContentWindow>(1000, 800, "Main Window");
+		LayoutConfiguration::ConfigureMainWindow(main);
 
-	// check if GetMessage call itself borked
-	if (gResult == -1)
+		WindowManager::AddWindow(main);
+
+		ThemeManager::Initialize(main->GetDeviceResources());
+
+		MSG msg;
+		BOOL gResult;
+		while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
+		{
+			// TranslateMessage will post auxilliary WM_CHAR messages from key msgs
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		// check if GetMessage call itself borked
+		if (gResult == -1)
+		{
+			return -1;
+		}
+
+		// Destroy Theme resources
+		ThemeManager::Destroy();
+
+		// wParam here is the value passed to PostQuitMessage
+		return static_cast<int>(msg.wParam);
+	}
+	catch (const MonolithException& e)
 	{
-		return -1;
+		MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
 	}
-
-	// Destroy Theme resources
-	ThemeManager::Destroy();
-
-	// wParam here is the value passed to PostQuitMessage
-	return static_cast<int>(msg.wParam);
+	catch (const std::exception& e)
+	{
+		MessageBox(nullptr, e.what(), "Standard Exception", MB_OK | MB_ICONEXCLAMATION);
+	}
+	catch (...)
+	{
+		MessageBox(nullptr, "No details available", "Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+	}
+	return -1;
 }

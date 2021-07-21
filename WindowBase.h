@@ -8,7 +8,7 @@
 class WindowBase : public WindowBaseTemplate<WindowBase>
 {
 public:
-	WindowBase(int width, int height, const char* name) noexcept;
+	WindowBase(int width, int height, const char* name);
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
 
 protected:
@@ -32,4 +32,6 @@ protected:
 	virtual LRESULT OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
 	virtual LRESULT OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
+
+	virtual LRESULT OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 };

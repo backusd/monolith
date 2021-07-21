@@ -1,12 +1,13 @@
 #pragma once
 #include "pch.h"
-
+#include "WindowException.h"
+#include "resource.h"
 
 template<typename T>
 class WindowBaseTemplate
 {
 public:
-	WindowBaseTemplate(int width, int height, const char* name) noexcept;
+	WindowBaseTemplate(int width, int height, const char* name);
 	~WindowBaseTemplate();
 
 	virtual LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -21,7 +22,7 @@ protected:
 
 	// Window Class Data
 	static constexpr const char* wndBaseClassName = "Engine Window";
-	HINSTANCE hInst;
+	HINSTANCE m_hInst;
 
 
 	// Window Data
@@ -33,10 +34,10 @@ protected:
 };
 
 template<typename T>
-WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* name) noexcept :
+WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* name) :
 	m_height(height),
 	m_width(width),
-	hInst(GetModuleHandle(nullptr))
+	m_hInst(GetModuleHandle(nullptr))
 {
 	// Register the window class
 	WNDCLASSEX wc = { 0 };
@@ -45,13 +46,19 @@ WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* nam
 	wc.lpfnWndProc = HandleMsgSetupBase;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
-	wc.hInstance = hInst;
-	wc.hIcon = nullptr;
+	wc.hInstance = m_hInst;
+	wc.hIcon = static_cast<HICON>(LoadImage(
+		m_hInst, MAKEINTRESOURCE(IDI_ICON2),
+		IMAGE_ICON, 32, 32, 0
+	));
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = wndBaseClassName;
-	wc.hIconSm = nullptr;
+	wc.hIconSm = static_cast<HICON>(LoadImage(
+		m_hInst, MAKEINTRESOURCE(IDI_ICON2),
+		IMAGE_ICON, 16, 16, 0
+	));
 	RegisterClassEx(&wc);
 
 	// calculate window size based on desired client region size
@@ -63,14 +70,25 @@ WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* nam
 
 	auto WS_options = WS_SYSMENU | WS_MINIMIZEBOX | WS_CAPTION | WS_MAXIMIZEBOX | WS_SIZEBOX;
 
-	AdjustWindowRect(&wr, WS_options, FALSE);
+	if (FAILED(AdjustWindowRect(&wr, WS_options, FALSE)))
+	{
+		throw WINDOW_LAST_EXCEPT();
+	};
+	//AdjustWindowRect(&wr, WS_options, FALSE)
+
 	// create window & get hWnd
 	m_hWnd = CreateWindow(
 		wndBaseClassName, name,
 		WS_options,
 		CW_USEDEFAULT, CW_USEDEFAULT, wr.right - wr.left, wr.bottom - wr.top,
-		nullptr, nullptr, hInst, this
+		nullptr, nullptr, m_hInst, this
 	);
+
+	if (m_hWnd == nullptr)
+	{
+		throw WINDOW_LAST_EXCEPT();
+	}
+
 	// show window
 	ShowWindow(m_hWnd, SW_SHOWDEFAULT);
 };
@@ -78,7 +96,7 @@ WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* nam
 template<typename T>
 WindowBaseTemplate<T>::~WindowBaseTemplate()
 {
-	UnregisterClass(wndBaseClassName, hInst);
+	UnregisterClass(wndBaseClassName, m_hInst);
 	DestroyWindow(m_hWnd);
 };
 

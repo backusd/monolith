@@ -4,14 +4,13 @@
 #include "WindowsMessageMap.h"
 
 
-WindowBase::WindowBase(int width, int height, const char* name) noexcept :
+WindowBase::WindowBase(int width, int height, const char* name) :
 	WindowBaseTemplate(width, height, name)
 {
 }
 
 LRESULT WindowBase::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
-	
 	//static WindowsMessageMap mm;
 	//OutputDebugString(mm(msg, wParam, lParam).c_str());
 	
@@ -33,6 +32,7 @@ LRESULT WindowBase::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEMOVE:		return OnMouseMove(hWnd, msg, wParam, lParam);
 	case WM_MOUSELEAVE:		return OnMouseLeave(hWnd, msg, wParam, lParam);
 	case WM_GETMINMAXINFO:	return OnGetMinMaxInfo(hWnd, msg, wParam, lParam);
+	case WM_CHAR:			return OnChar(hWnd, msg, wParam, lParam);
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -109,6 +109,11 @@ LRESULT WindowBase::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 }
 
 LRESULT WindowBase::OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+LRESULT WindowBase::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

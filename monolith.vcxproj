@@ -170,6 +170,7 @@
     <ClCompile Include="DropDown.cpp" />
     <ClCompile Include="FontFamily.cpp" />
     <ClCompile Include="Layout.cpp" />
+    <ClCompile Include="MonolithException.cpp" />
     <ClCompile Include="MouseState.cpp" />
     <ClCompile Include="OnMessageResult.cpp" />
     <ClCompile Include="pch.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Theme.cpp" />
     <ClCompile Include="ThemeManager.cpp" />
     <ClCompile Include="WindowBase.cpp" />
+    <ClCompile Include="WindowException.cpp" />
     <ClCompile Include="WindowManager.cpp" />
     <ClCompile Include="WindowsMessageMap.cpp" />
     <ClCompile Include="WinMain.cpp" />
@@ -196,9 +198,11 @@
     <ClInclude Include="FontFamily.h" />
     <ClInclude Include="Layout.h" />
     <ClInclude Include="LayoutConfig.h" />
+    <ClInclude Include="MonolithException.h" />
     <ClInclude Include="MouseOverDown.h" />
     <ClInclude Include="MouseState.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RowCol.h" />
     <ClInclude Include="SecondaryWindow.h" />
     <ClInclude Include="OnMessageResult.h" />
@@ -209,11 +213,18 @@
     <ClInclude Include="ThemeManager.h" />
     <ClInclude Include="WindowBase.h" />
     <ClInclude Include="WindowBaseTemplate.h" />
+    <ClInclude Include="WindowException.h" />
     <ClInclude Include="WindowManager.h" />
     <ClInclude Include="WindowsMessageMap.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="dpi-aware-manifest.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="monolith.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Downloads\m1_g9x_icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

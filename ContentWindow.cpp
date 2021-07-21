@@ -2,7 +2,7 @@
 
 using Microsoft::WRL::ComPtr;
 
-ContentWindow::ContentWindow(int width, int height, const char* name) noexcept :
+ContentWindow::ContentWindow(int width, int height, const char* name) :
 	WindowBase(width, height, name),
 	m_stateBlock(nullptr),
 	m_layout(nullptr),
@@ -288,3 +288,11 @@ LRESULT ContentWindow::OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+LRESULT ContentWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	static std::string title;
+	title.push_back((char)wParam);
+	SetWindowText(hWnd, title.c_str());
+
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}

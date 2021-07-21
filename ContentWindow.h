@@ -16,7 +16,7 @@
 class ContentWindow : public WindowBase
 {
 public:
-	ContentWindow(int width, int height, const char* name) noexcept;
+	ContentWindow(int width, int height, const char* name);
 	~ContentWindow();
 
 	float Height();
@@ -44,6 +44,8 @@ protected:
 	LRESULT OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
 
 	LRESULT OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
+
+	LRESULT OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
 
 private:
 	void DiscardGraphicsResources();
