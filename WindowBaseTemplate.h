@@ -15,6 +15,7 @@ public:
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
+	
 
 protected:
 	static LRESULT CALLBACK HandleMsgSetupBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
@@ -30,14 +31,15 @@ protected:
 	int m_height;
 	HWND m_hWnd;
 
-
+	WindowBaseTemplate<T>* m_windowToDestroy;
 };
 
 template<typename T>
 WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* name) :
 	m_height(height),
 	m_width(width),
-	m_hInst(GetModuleHandle(nullptr))
+	m_hInst(GetModuleHandle(nullptr)),
+	m_windowToDestroy(nullptr)
 {
 	// Register the window class
 	WNDCLASSEX wc = { 0 };

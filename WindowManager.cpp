@@ -2,12 +2,13 @@
 
 // Have to define static member variables in .cpp file
 std::vector<std::shared_ptr<WindowBase>> WindowManager::m_windows;
+class WindowBase;
 
-void WindowManager::DestroyWindow(WindowBase* window)
+void WindowManager::DestroyWindows()
 {
 	for (auto iii = m_windows.begin(); iii != m_windows.end(); ++iii)
 	{
-		if (iii->get() == window)
+		if (iii->get()->Destroy())
 		{
 			m_windows.erase(iii);
 
@@ -34,9 +35,25 @@ std::optional<int> WindowManager::ProcessMessages()
 
 		// TranslateMessage will post auxilliary WM_CHAR messages from key msgs
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		LRESULT result = DispatchMessage(&msg);
+
+		// Check for windows that need to be destroyed
+		DestroyWindows();
 	}
 
 	// return empty optional when not quitting app
 	return {};
+}
+
+void WindowManager::UpdateRenderPresent()
+{
+	for (auto iii = m_windows.begin(); iii != m_windows.end(); ++iii)
+		iii->get()->Update();
+
+	for (auto iii = m_windows.begin(); iii != m_windows.end(); ++iii)
+		iii->get()->Render();
+
+	for (auto iii = m_windows.begin(); iii != m_windows.end(); ++iii)
+		iii->get()->Present();
+	
 }

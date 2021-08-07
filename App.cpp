@@ -46,5 +46,6 @@ int App::Run()
 
 void App::DoFrame()
 {
-
+	// For each window: Update state, render, and present
+	WindowManager::UpdateRenderPresent();
 }

@@ -3,7 +3,7 @@
 
 #include "ThemeManager.h"
 #include "WindowBaseTemplate.h"
-#include "WindowManager.h"
+//#include "WindowManager.h"
 
 #include <sstream>
 
@@ -13,7 +13,16 @@ public:
 	WindowBase(int width, int height, const char* name);
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
 
+	bool Destroy() { return m_destroy; }
+
+	virtual void Update() {}
+	virtual void Render() {}
+	virtual void Present() {}
+
 protected:
+
+	// Destroy flag
+	bool m_destroy;
 
 	// Virtual functions to handle all input 
 	virtual LRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;

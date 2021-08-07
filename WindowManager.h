@@ -1,17 +1,19 @@
 #pragma once
 #include "pch.h"
 
+#include "WindowBase.h"
+
 #include <memory>
 #include <optional>
 #include <vector>
-
-class WindowBase;
 
 class WindowManager
 {
 public:
 	static void AddWindow(std::shared_ptr<WindowBase> window) { m_windows.push_back(window); }
-	static void DestroyWindow(WindowBase*);
+	static void DestroyWindows();
+
+	static void UpdateRenderPresent();
 
 	static std::optional<int> ProcessMessages();
 

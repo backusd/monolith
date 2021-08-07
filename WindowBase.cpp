@@ -5,7 +5,8 @@
 
 
 WindowBase::WindowBase(int width, int height, const char* name) :
-	WindowBaseTemplate(width, height, name)
+	WindowBaseTemplate(width, height, name),
+	m_destroy(false)
 {
 }
 
@@ -49,8 +50,11 @@ LRESULT WindowBase::OnClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) n
 	// we want our destructor to destroy the window, so return 0 instead of break
 
 	// Don't post quit - Just set the destroy window flag
+	// WindowManager will worry about posting WM_QUIT
+	m_destroy = true;
 
-	WindowManager::DestroyWindow(this);
+	/* Perform any clean up work here */
+
 	return 0;
 }
 
