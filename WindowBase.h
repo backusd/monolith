@@ -1,5 +1,7 @@
 #pragma once
 #include "pch.h"
+
+#include "ThemeManager.h"
 #include "WindowBaseTemplate.h"
 #include "WindowManager.h"
 

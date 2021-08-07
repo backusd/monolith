@@ -144,6 +144,12 @@
     <ClCompile Include="WindowException.cpp">
       <Filter>Source Files\Exceptions</Filter>
     </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutConfig.cpp">
+      <Filter>Source Files\UI\Layout</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -231,6 +237,9 @@
       <Filter>Header Files\Exceptions</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

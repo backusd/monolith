@@ -161,6 +161,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="App.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="ButtonClickMethods.cpp" />
     <ClCompile Include="ColorTheme.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="DropDown.cpp" />
     <ClCompile Include="FontFamily.cpp" />
     <ClCompile Include="Layout.cpp" />
+    <ClCompile Include="LayoutConfig.cpp" />
     <ClCompile Include="MonolithException.cpp" />
     <ClCompile Include="MouseState.cpp" />
     <ClCompile Include="OnMessageResult.cpp" />
@@ -187,6 +189,7 @@
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="ButtonClickMethods.h" />
     <ClInclude Include="ColorTheme.h" />
