@@ -23,6 +23,9 @@ public:
 	// Don't override Render2D() because there is no 2D rendering needed here
 	bool Render3D() override;
 
+	void OnLayoutResize() override { CreateWindowSizeDependentResources(); }
+	void OnMarginChanged() override { CreateWindowSizeDependentResources(); }
+
 
 private:
 	void CreateDeviceDependentResources();

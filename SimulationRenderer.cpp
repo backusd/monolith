@@ -46,10 +46,10 @@ void SimulationRenderer::CreateWindowSizeDependentResources()
 
 	// viewport	
 	m_viewport = CD3D11_VIEWPORT(
-		m_deviceResources->DIPSToPixels(rect.left),
-		m_deviceResources->DIPSToPixels(rect.top),
-		m_deviceResources->DIPSToPixels(rect.right - rect.left),
-		m_deviceResources->DIPSToPixels(rect.bottom - rect.top)
+		m_deviceResources->DIPSToPixels(rect.left + m_marginLeft),
+		m_deviceResources->DIPSToPixels(rect.top + m_marginTop),
+		m_deviceResources->DIPSToPixels(rect.right - m_marginRight - rect.left - m_marginLeft),
+		m_deviceResources->DIPSToPixels(rect.bottom - m_marginBottom - rect.top - m_marginTop)
 	);
 
 	// Perspective Matrix
@@ -438,139 +438,6 @@ void SimulationRenderer::Update(StepTimer const& stepTimer)
 
 bool SimulationRenderer::Render3D()
 {
-	/*
-	ID3D11Device5* device = m_deviceResources->D3DDevice();
-	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
-
-	// Set a custom view port
-	context->RSSetViewports(1, &m_viewport);
-
-	struct Vertex
-	{
-		struct {
-			float x;
-			float y;
-		} pos;
-		struct {
-			unsigned char r;
-			unsigned char g;
-			unsigned char b;
-			unsigned char a;
-		} color;
-	};
-
-	// create vertex buffer (1 2d triangle at center of screen)
-	const Vertex vertices[] =
-	{
-		{ 0.0f,   0.5f, 255, 0,   0,   0 },
-		{ 0.5f,  -0.5f, 0,   255, 0,   0 },
-		{ -0.5f, -0.5f, 0,   0,   255, 0},
-		{ -0.3f,  0.3f, 0,   255, 0,   0 },
-		{ 0.3f,   0.3f, 0,   0,   255, 0 },
-		{ 0.0f,  -0.8f, 255, 0,   0,   0},		
-	};
-
-	ComPtr<ID3D11Buffer> pVertexBuffer;
-
-	D3D11_BUFFER_DESC bd = {};
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.CPUAccessFlags = 0u;
-	bd.MiscFlags = 0u;
-	bd.ByteWidth = sizeof(vertices);
-	bd.StructureByteStride = sizeof(Vertex);
-
-	D3D11_SUBRESOURCE_DATA sd = {};
-	sd.pSysMem = vertices;
-
-	ThrowIfFailed(
-		device->CreateBuffer(&bd, &sd, pVertexBuffer.ReleaseAndGetAddressOf())
-	);
-
-	// Create index buffer
-	const unsigned short indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3,
-		0, 4, 1, 
-		2, 1, 5,
-	};
-
-	ComPtr<ID3D11Buffer> indexBuffer;
-	D3D11_BUFFER_DESC ibd = {};
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.Usage = D3D11_USAGE_DEFAULT;
-	ibd.CPUAccessFlags = 0u;
-	ibd.MiscFlags = 0u;
-	ibd.ByteWidth = sizeof(indices);
-	ibd.StructureByteStride = sizeof(unsigned short);
-	D3D11_SUBRESOURCE_DATA isd = {};
-	isd.pSysMem = indices;
-	ThrowIfFailed(
-		device->CreateBuffer(&ibd, &isd, indexBuffer.ReleaseAndGetAddressOf())
-	);
-
-	// Bind index buffer
-	context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
-
-	// create pixel shader
-	ComPtr<ID3D11PixelShader> pPixelShader;
-	ComPtr<ID3DBlob> pBlob;
-	ThrowIfFailed(
-		D3DReadFileToBlob(L"PixelShader.cso", pBlob.ReleaseAndGetAddressOf())
-	);
-	ThrowIfFailed(
-		device->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, pPixelShader.ReleaseAndGetAddressOf())
-	);
-
-	// bind pixel shader
-	context->PSSetShader(pPixelShader.Get(), nullptr, 0u);
-
-	// Bind vertex buffer to pipeline
-	const UINT stride = sizeof(Vertex);
-	const UINT offset = 0u;
-	context->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
-
-
-	// create vertex shader
-	ComPtr<ID3D11VertexShader> pVertexShader;
-	ThrowIfFailed(
-		D3DReadFileToBlob(L"VertexShader.cso", pBlob.ReleaseAndGetAddressOf())
-	);
-	ThrowIfFailed(
-		device->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, pVertexShader.ReleaseAndGetAddressOf())
-	);
-
-	// bind vertex shader
-	context->VSSetShader(pVertexShader.Get(), nullptr, 0u);
-
-	// input (vertex) layout (2d position only)
-	ComPtr<ID3D11InputLayout> pInputLayout;
-	const D3D11_INPUT_ELEMENT_DESC ied[] =
-	{
-		{ "Position",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
-		{ "Color",0,DXGI_FORMAT_R8G8B8A8_UNORM,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 },
-	};
-	ThrowIfFailed(
-		device->CreateInputLayout(
-			ied, (UINT)std::size(ied),
-			pBlob->GetBufferPointer(),
-			pBlob->GetBufferSize(),
-			pInputLayout.ReleaseAndGetAddressOf()
-		)
-	);
-
-	// bind vertex layout
-	context->IASetInputLayout(pInputLayout.Get());
-
-	// Set primitive topology to triangle list (groups of 3 vertices)
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	//context->Draw((UINT)std::size(vertices), 0u);
-
-	context->DrawIndexed((UINT)std::size(indices), 0u, 0u);
-	*/
-
  	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
 
 	// Compute the view/projection matrix
@@ -587,7 +454,6 @@ bool SimulationRenderer::Render3D()
 
 	// Update the Material constant buffer and Light constant buffer then bind it to the pixel shader
 	context->UpdateSubresource(m_lightPropertiesConstantBuffer.Get(), 0, nullptr, &m_lightProperties, 0, 0);
-
 
 	context->RSSetViewports(1, &m_viewport);
 
