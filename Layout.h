@@ -4,6 +4,7 @@
 #include "MouseState.h"
 #include "OnMessageResult.h"
 #include "DeviceResources.h"
+#include "StepTimer.h"
 
 #include <memory>
 #include <vector>
@@ -63,7 +64,7 @@ public:
 	std::shared_ptr<OnMessageResult> OnMouseMove(const std::shared_ptr<MouseState>& mouseState);
 	std::shared_ptr<OnMessageResult> OnMouseLeave();
 
-	void Update();
+	void Update(StepTimer const& stepTimer);
 	bool Render3DControls();
 	bool Render2DControls();
 

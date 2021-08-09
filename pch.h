@@ -54,3 +54,6 @@
 #pragma comment(lib, "D3D11")
 #include <wrl/client.h>
 #include <DirectXMath.h>
+#include <DirectXColors.h>
+#include <d3dcompiler.h>
+#pragma comment(lib, "D3DCompiler")

@@ -498,20 +498,20 @@ void Layout::ClearContents()
 }
 
 
-void Layout::Update()
+void Layout::Update(StepTimer const& stepTimer)
 {
 	// Pass the Update call along to each child control
 	// ONLY 3D rendering controls should react to this - other controls
 	// should NOT override Control::Update
 	for (std::shared_ptr<Control> control : m_controls)
 	{
-		control->Update();
+		control->Update(stepTimer);
 	}
 
 	// Pass the Update call along to each sub layout as a 3D control can live in a sub-layout
 	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
 	{
-		subLayoutTuple._Myfirst._Val->Update();
+		subLayoutTuple._Myfirst._Val->Update(stepTimer);
 	}
 }
 

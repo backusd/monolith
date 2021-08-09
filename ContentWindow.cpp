@@ -28,8 +28,6 @@ ContentWindow::ContentWindow(int width, int height, const char* name) :
 	m_mouseState = std::make_shared<MouseState>();
 
 	// Try to intialize the theme manager - will only actually initialize if it was the first window
-	
-	//ThemeManager::Initialize(D2DRenderTarget());
 	ThemeManager::Initialize(m_deviceResources);
 }
 
@@ -43,14 +41,33 @@ ContentWindow::~ContentWindow()
 	m_deviceResources = nullptr;
 }
 
+void ContentWindow::InitializeSimulation()
+{
+	SimulationManager::CreateSimulation(m_deviceResources);
+}
+
 void ContentWindow::Update()
 {
-	// Pass the Update call along to the layout, which will pass it along to each child control
-	m_layout->Update();
+	m_timer.Tick([&]() 
+		{
+			// Pass the Update call along to the layout, which will pass it along to each child control
+			m_layout->Update(m_timer);
+
+			// There should only be a single simulation which is accessible via SimulationManager
+			// Because multiple controls may need to read from the simulation data, the update to the simulation
+			// must come from the main window, so that multiple controls don't try updating the simulation
+			SimulationManager::Update(m_timer);		
+		}
+	);
+	
 }
 
 bool ContentWindow::Render()
 {
+	// Don't try to render anything before the first Update.
+	if (m_timer.GetFrameCount() == 0)
+		return false;
+
 	// Pass the Render call along to the layout, which will pass it along to each child control
 	// return m_layout->Render();
 
@@ -60,16 +77,15 @@ bool ContentWindow::Render()
 	//context->RSSetViewports(1, &viewport);
 	m_deviceResources->ResetViewport();
 
-	ID3D11RenderTargetView* const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
-	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
-
 	FLOAT background[4] = { 45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f };
 	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), background);
 	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	ID3D11RenderTargetView* const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
+	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
+
 	// Draw all 3D simulation controls first
 	m_layout->Render3DControls();
-
 
 	// Draw all 2D / Menu controls next
 	m_deviceResources->ResetViewport();
@@ -79,8 +95,6 @@ bool ContentWindow::Render()
 	context2->BeginDraw();
 	context2->SetTransform(m_deviceResources->OrientationTransform2D());
 
-
-	//m_layout->OnPaint();
 	m_layout->Render2DControls();
 
 

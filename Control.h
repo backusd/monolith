@@ -4,6 +4,7 @@
 #include "OnMessageResult.h"
 #include "MouseState.h"
 #include "DeviceResources.h"
+#include "StepTimer.h"
 
 #include <memory>
 
@@ -40,7 +41,7 @@ public:
 	virtual std::shared_ptr<OnMessageResult> OnMouseLeave() { return std::make_shared<OnMessageResult>(); }
 	
 	// Should ONLY be overridden by 3D rendering controls
-	virtual void Update() {}
+	virtual void Update(StepTimer const& stepTimer) {}
 
 	// All 3D rendering is performed prior to 2D rendering so that any menu
 	// will be rendered on top of 3D controls. In theory, a custom control could implement

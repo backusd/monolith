@@ -162,23 +162,40 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Atom.cpp" />
+    <ClCompile Include="AtomGenerator.cpp" />
+    <ClCompile Include="Beryllium.cpp" />
+    <ClCompile Include="Boron.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="ButtonClickMethods.cpp" />
+    <ClCompile Include="Carbon.cpp" />
     <ClCompile Include="ColorTheme.cpp" />
     <ClCompile Include="Control.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="ContentWindow.cpp" />
     <ClCompile Include="DropDown.cpp" />
+    <ClCompile Include="Electron.cpp" />
+    <ClCompile Include="Flourine.cpp" />
     <ClCompile Include="FontFamily.cpp" />
+    <ClCompile Include="Helium.cpp" />
+    <ClCompile Include="Hydrogen.cpp" />
     <ClCompile Include="Layout.cpp" />
     <ClCompile Include="LayoutConfig.cpp" />
+    <ClCompile Include="Lithium.cpp" />
     <ClCompile Include="MonolithException.cpp" />
     <ClCompile Include="MouseState.cpp" />
+    <ClCompile Include="MoveLookController.cpp" />
+    <ClCompile Include="Neon.cpp" />
+    <ClCompile Include="Nitrogen.cpp" />
     <ClCompile Include="OnMessageResult.cpp" />
+    <ClCompile Include="Oxygen.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="RowCol.cpp" />
     <ClCompile Include="SecondaryWindow.cpp" />
+    <ClCompile Include="Simulation.cpp" />
+    <ClCompile Include="SimulationManager.cpp" />
     <ClCompile Include="SimulationRenderer.cpp" />
+    <ClCompile Include="SphereMesh.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextTheme.cpp" />
     <ClCompile Include="Theme.cpp" />
@@ -191,26 +208,48 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="Atom.h" />
+    <ClInclude Include="AtomGenerator.h" />
+    <ClInclude Include="Beryllium.h" />
+    <ClInclude Include="Boron.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="ButtonClickMethods.h" />
+    <ClInclude Include="Carbon.h" />
     <ClInclude Include="ColorTheme.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Control.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="DirectXHelper.h" />
     <ClInclude Include="ContentWindow.h" />
     <ClInclude Include="DropDown.h" />
+    <ClInclude Include="Electron.h" />
+    <ClInclude Include="Elements.h" />
+    <ClInclude Include="Enums.h" />
+    <ClInclude Include="Flourine.h" />
     <ClInclude Include="FontFamily.h" />
+    <ClInclude Include="Helium.h" />
+    <ClInclude Include="HLSLStructures.h" />
+    <ClInclude Include="Hydrogen.h" />
     <ClInclude Include="Layout.h" />
     <ClInclude Include="LayoutConfig.h" />
+    <ClInclude Include="Lithium.h" />
     <ClInclude Include="MonolithException.h" />
     <ClInclude Include="MouseOverDown.h" />
     <ClInclude Include="MouseState.h" />
+    <ClInclude Include="MoveLookController.h" />
+    <ClInclude Include="Neon.h" />
+    <ClInclude Include="Nitrogen.h" />
+    <ClInclude Include="Oxygen.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RowCol.h" />
     <ClInclude Include="SecondaryWindow.h" />
     <ClInclude Include="OnMessageResult.h" />
+    <ClInclude Include="Simulation.h" />
+    <ClInclude Include="SimulationManager.h" />
     <ClInclude Include="SimulationRenderer.h" />
+    <ClInclude Include="SphereMesh.h" />
+    <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextTheme.h" />
     <ClInclude Include="Theme.h" />
@@ -230,6 +269,60 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\Downloads\m1_g9x_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="MyPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="MyVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="PixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">6.5</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">6.5</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.5</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.5</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

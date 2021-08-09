@@ -18,33 +18,20 @@ public:
 	ID2D1DeviceContext6* D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
 	ID2D1Bitmap1* D2DBitmap() const { return m_d2dBitmap.Get(); }
 
-	// const Microsoft::WRL::ComPtr<ID2D1Factory7>& D2DFactory() { return m_d2dFactory; }
-	// const Microsoft::WRL::ComPtr<ID2D1Device6>& D2DDevice() { return m_d2dDevice; }
-	// const Microsoft::WRL::ComPtr<ID2D1DeviceContext6>& D2DDeviceContext() { return m_d2dDeviceContext; }
-	// const Microsoft::WRL::ComPtr<ID2D1Bitmap1>& D2DBitmap() { return m_d2dBitmap; }
 	D2D1::Matrix3x2F OrientationTransform2D() const { return m_orientationTransform2D; }
 
 	// Direct Write drawing components
 	IDWriteFactory7* DWriteFactory() const { return m_dwriteFactory.Get(); }
 	IWICImagingFactory2* WICImagingFactory() const { return m_wicImagingFactory.Get(); }
 
-	// const Microsoft::WRL::ComPtr<IDWriteFactory7>& DWriteFactory() { return m_dwriteFactory; }
-	// const Microsoft::WRL::ComPtr<IWICImagingFactory2>& WICImagingFactory() { return m_wicImagingFactory; }
-
 	// Direct3D objects
 	ID3D11Device5* D3DDevice() const { return m_d3dDevice.Get(); }
 	ID3D11DeviceContext4* D3DDeviceContext() const { return m_d3dDeviceContext.Get(); }
 
-	// const Microsoft::WRL::ComPtr<ID3D11Device5>& D3DDevice() { return m_d3dDevice; }
-	// const Microsoft::WRL::ComPtr<ID3D11DeviceContext4>& D3DDeviceContext() { return m_d3dDeviceContext; }
 	D3D_FEATURE_LEVEL D3DFeatureLevel() { return m_d3dFeatureLevel; }
 
+	DirectX::XMFLOAT4X4 OrientationTransform3D() const { return m_orientationTransform3D; }
 
-	// ==========================================================
-	// Temporary D2D Resources
-	//const Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget>& D2DRenderTarget() { return m_d2dRenderTarget; }
-
-	// ==========================================================
 
 	D3D11_VIEWPORT GetScreenViewport() const { return m_viewport; }
 	void SetViewport(CD3D11_VIEWPORT viewport);

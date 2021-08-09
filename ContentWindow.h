@@ -7,6 +7,8 @@
 #include "ThemeManager.h"
 #include "MouseState.h"
 #include "OnMessageResult.h"
+#include "StepTimer.h"
+#include "SimulationManager.h"
 
 #include <memory>
 #include <map>
@@ -21,6 +23,8 @@ public:
 
 	float Height();
 	float Width();
+
+	void InitializeSimulation();
 
 	std::shared_ptr<Layout> GetLayout() { return m_layout; }
 	std::shared_ptr<DeviceResources> GetDeviceResources() { return m_deviceResources; }
@@ -66,7 +70,7 @@ private:
 	std::shared_ptr<MouseState> m_mouseState;
 
 
-
+	StepTimer m_timer;
 
 	//HCURSOR m_cursor;
 };

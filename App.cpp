@@ -9,6 +9,9 @@ App::App()
 		std::shared_ptr<ContentWindow> main = std::make_shared<ContentWindow>(1000, 800, "Main Window");
 		LayoutConfiguration::ConfigureMainWindow(main);
 
+		// Only the main window should create the simulation
+		main->InitializeSimulation();
+
 		WindowManager::AddWindow(main);
 
 		ThemeManager::Initialize(main->GetDeviceResources());
