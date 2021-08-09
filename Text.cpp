@@ -14,7 +14,7 @@ Text::Text(const std::shared_ptr<DeviceResources>& deviceResources,
 }
 
 
-void Text::OnPaint()
+bool Text::Render2D()
 {
 	D2D1_RECT_F rect = GetParentRect();
 
@@ -42,6 +42,7 @@ void Text::OnPaint()
 		D2D1_DRAW_TEXT_OPTIONS_CLIP			// <-- investigate these options, clipping is interesting
 	);
 
+	return true;
 
 
 	/*

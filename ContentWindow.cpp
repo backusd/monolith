@@ -43,6 +43,66 @@ ContentWindow::~ContentWindow()
 	m_deviceResources = nullptr;
 }
 
+void ContentWindow::Update()
+{
+	// Pass the Update call along to the layout, which will pass it along to each child control
+	m_layout->Update();
+}
+
+bool ContentWindow::Render()
+{
+	// Pass the Render call along to the layout, which will pass it along to each child control
+	// return m_layout->Render();
+
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
+
+	//D3D11_VIEWPORT viewport = m_deviceResources->GetScreenViewport();
+	//context->RSSetViewports(1, &viewport);
+	m_deviceResources->ResetViewport();
+
+	ID3D11RenderTargetView* const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
+	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
+
+	FLOAT background[4] = { 45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f };
+	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), background);
+	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// Draw all 3D simulation controls first
+	m_layout->Render3DControls();
+
+
+	// Draw all 2D / Menu controls next
+	m_deviceResources->ResetViewport();
+
+	ID2D1DeviceContext* context2 = m_deviceResources->D2DDeviceContext();
+	context2->SaveDrawingState(m_stateBlock.Get());
+	context2->BeginDraw();
+	context2->SetTransform(m_deviceResources->OrientationTransform2D());
+
+
+	//m_layout->OnPaint();
+	m_layout->Render2DControls();
+
+
+	HRESULT hr = context2->EndDraw();
+	if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
+	{
+		DiscardGraphicsResources();
+	}
+
+	context2->RestoreDrawingState(m_stateBlock.Get());
+
+	return true;
+}
+
+void ContentWindow::Present()
+{
+	// Present the render target to the screen
+	m_deviceResources->Present();
+}
+
+
+
 LRESULT ContentWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	return 0;
@@ -138,6 +198,7 @@ LRESULT ContentWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 
 LRESULT ContentWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+	/*
 	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
 
 	D3D11_VIEWPORT viewport = m_deviceResources->GetScreenViewport();
@@ -169,40 +230,11 @@ LRESULT ContentWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 	context2->RestoreDrawingState(m_stateBlock.Get());
 
 	m_deviceResources->Present();
+	*/
 
 	// Return the default window procedure otherwise an endless stream of WM_PAINT
 	// messages will be generated because it thinks the window was not painted
 	return DefWindowProc(hWnd, msg, wParam, lParam);
-
-	/*
-	auto renderTarget = this->D2DRenderTarget();
-
-	// If render target is nullptr, just return 0 - THIS SHOULD THROW AN EXCEPTION ====================
-	if (renderTarget == nullptr)
-	{
-		return 0;
-	}
-
-	PAINTSTRUCT ps;
-	BeginPaint(hWnd, &ps);
-
-	renderTarget->BeginDraw();
-	
-	renderTarget->Clear(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
-	//renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::SkyBlue));
-	
-	m_layout->OnPaint(renderTarget.Get());
-
-	HRESULT hr = renderTarget->EndDraw();
-
-	if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
-	{
-		DiscardGraphicsResources();
-	}
-	EndPaint(hWnd, &ps);
-
-	return 0;
-	*/
 }
 LRESULT ContentWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {

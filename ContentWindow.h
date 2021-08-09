@@ -24,7 +24,10 @@ public:
 
 	std::shared_ptr<Layout> GetLayout() { return m_layout; }
 	std::shared_ptr<DeviceResources> GetDeviceResources() { return m_deviceResources; }
-	// Microsoft::WRL::ComPtr<ID2D1HwndRenderTarget> D2DRenderTarget();
+	
+	void Update() override;
+	bool Render() override;
+	void Present() override;
 	
 protected:
 	LRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;

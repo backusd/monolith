@@ -23,7 +23,7 @@ Button::Button(const std::shared_ptr<DeviceResources>& deviceResources,
 }
 
 
-void Button::OnPaint()
+bool Button::Render2D()
 {
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
 
@@ -39,7 +39,9 @@ void Button::OnPaint()
 	context->FillRectangle(rect, m_colorTheme->GetBrush(m_mouseOverDownState));
 
 	// Now paint the layout and child controls
-	m_buttonLayout->OnPaint();
+	m_buttonLayout->Render2DControls();
+
+	return true;
 }
 
 void Button::Resize()

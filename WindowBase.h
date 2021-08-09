@@ -16,7 +16,7 @@ public:
 	bool Destroy() { return m_destroy; }
 
 	virtual void Update() {}
-	virtual void Render() {}
+	virtual bool Render() { return true; }
 	virtual void Present() {}
 
 protected:

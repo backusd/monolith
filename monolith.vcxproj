@@ -178,6 +178,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="RowCol.cpp" />
     <ClCompile Include="SecondaryWindow.cpp" />
+    <ClCompile Include="SimulationRenderer.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextTheme.cpp" />
     <ClCompile Include="Theme.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="RowCol.h" />
     <ClInclude Include="SecondaryWindow.h" />
     <ClInclude Include="OnMessageResult.h" />
+    <ClInclude Include="SimulationRenderer.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="TextTheme.h" />
     <ClInclude Include="Theme.h" />

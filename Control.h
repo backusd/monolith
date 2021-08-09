@@ -30,7 +30,7 @@ public:
 
 	// Virtual functions
 	virtual void ClearContents() {}
-	virtual void OnPaint() = 0;
+	// virtual void OnPaint() = 0;
 	virtual void OnLayoutResize() {}
 	virtual void OnMarginChanged() {}
 	virtual bool MouseIsOver(int x, int y) { return false; }	// true if mouse is deemed over the control
@@ -39,6 +39,15 @@ public:
 	virtual std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState)   { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnMouseLeave() { return std::make_shared<OnMessageResult>(); }
 	
+	// Should ONLY be overridden by 3D rendering controls
+	virtual void Update() {}
+
+	// All 3D rendering is performed prior to 2D rendering so that any menu
+	// will be rendered on top of 3D controls. In theory, a custom control could implement
+	// both 2D and 3D features, but the 3D features will still get rendered first
+	virtual bool Render3D() { return false; } // false indicates the control has not made a draw call
+	virtual bool Render2D() { return false; }
+
 protected:
 	D2D1_RECT_F GetParentRect() { return m_parentLayout->GetRect(m_row, m_column, m_rowSpan, m_columnSpan); }
 

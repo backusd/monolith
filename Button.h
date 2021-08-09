@@ -21,7 +21,11 @@ public:
 	// To clear the button's contents, just pass along to the button's layout
 	void ClearContents() override { m_buttonLayout->ClearContents(); }
 
-	void OnPaint() override;
+
+	bool Render2D() override;
+	// void OnPaint() override;
+
+
 	void OnLayoutResize() override { Resize(); }
 	void OnMarginChanged() override { Resize(); }
 	bool MouseIsOver(int x, int y) override;

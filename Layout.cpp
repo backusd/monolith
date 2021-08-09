@@ -180,6 +180,7 @@ std::shared_ptr<Layout> Layout::CreateSubLayout(int rowIndex, int columnIndex)
 
 void Layout::OnPaint()
 {
+	/*
 	// Paint controls first
 	for (std::shared_ptr<Control> control : m_controls)
 	{
@@ -195,6 +196,7 @@ void Layout::OnPaint()
 	{
 		sub._Myfirst._Val->OnPaint();
 	}
+	*/
 }
 
 void Layout::PaintBorders()
@@ -493,4 +495,70 @@ void Layout::ClearContents()
 
 	// Clear all sublayouts
 	m_subLayouts.clear();
+}
+
+
+void Layout::Update()
+{
+	// Pass the Update call along to each child control
+	// ONLY 3D rendering controls should react to this - other controls
+	// should NOT override Control::Update
+	for (std::shared_ptr<Control> control : m_controls)
+	{
+		control->Update();
+	}
+
+	// Pass the Update call along to each sub layout as a 3D control can live in a sub-layout
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		subLayoutTuple._Myfirst._Val->Update();
+	}
+}
+
+bool Layout::Render3DControls()
+{
+	// Pass the Render call along to each child control
+	// ONLY 3D rendering controls should react to this - other controls
+	// should NOT override Control::Render3D
+	bool needsPresent = false;
+	for (std::shared_ptr<Control> control : m_controls)
+	{
+		if (control->Render3D())
+			needsPresent = true;
+	}
+
+	// Pass the Render call along to each sub layout as a 3D control can live in a sub-layout
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		if (subLayoutTuple._Myfirst._Val->Render3DControls())
+			needsPresent = true;
+	}
+
+	return needsPresent;
+}
+
+bool Layout::Render2DControls()
+{
+	// Pass the Render call along to each child control
+	// ONLY 2D rendering controls should react to this - other controls
+	// should NOT override Control::Render2D
+	bool needsPresent = false;
+	for (std::shared_ptr<Control> control : m_controls)
+	{
+		if (control->Render2D())
+			needsPresent = true;
+	}
+
+
+	PaintBorders();
+
+
+	// Pass the Render call along to each sub layout as a 2D control can live in a sub-layout
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		if (subLayoutTuple._Myfirst._Val->Render2DControls())
+			needsPresent = true;
+	}
+
+	return needsPresent;
 }

@@ -430,6 +430,18 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	*/
 }
 
+void DeviceResources::SetViewport(CD3D11_VIEWPORT viewport)
+{
+	m_viewport = viewport;
+	m_d3dDeviceContext->RSSetViewports(1, &m_viewport);
+}
+
+// Reset the viewport to the viewport stored in DeviceResources (should represent the entire window)
+void DeviceResources::ResetViewport()
+{
+	m_d3dDeviceContext->RSSetViewports(1, &m_viewport);
+}
+
 
 // Recreate all device resources and set them back to the current state
 void DeviceResources::HandleDeviceLost()

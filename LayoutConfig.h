@@ -8,6 +8,7 @@
 #include "DropDown.h"
 #include "ThemeDefines.h"
 #include "Text.h"
+#include "SimulationRenderer.h"
 
 namespace LayoutConfiguration
 {

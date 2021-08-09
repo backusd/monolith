@@ -37,15 +37,11 @@ int App::Run()
 			// if return optional has value, means we're quitting so return exit code
 			return *ecode;
 		}
-		DoFrame();
+
+		// For each window: Update state, render, and present
+		WindowManager::UpdateRenderPresent();
 	}
 
 	// Release Theme resources
 	ThemeManager::Destroy();
-}
-
-void App::DoFrame()
-{
-	// For each window: Update state, render, and present
-	WindowManager::UpdateRenderPresent();
 }

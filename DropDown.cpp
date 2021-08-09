@@ -40,12 +40,14 @@ void DropDown::ClearContents()
 	m_dropDownLayout->ClearContents();
 }
 
-void DropDown::OnPaint()
+bool DropDown::Render2D()
 {
-	m_mainLayout->OnPaint();
+	m_mainLayout->Render2DControls();
 
 	if (m_dropDownIsOpen)
-		m_dropDownLayout->OnPaint();
+		m_dropDownLayout->Render2DControls();
+
+	return true;
 }
 
 void DropDown::Resize()

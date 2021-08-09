@@ -51,9 +51,8 @@ void WindowManager::UpdateRenderPresent()
 		iii->get()->Update();
 
 	for (auto iii = m_windows.begin(); iii != m_windows.end(); ++iii)
-		iii->get()->Render();
-
-	for (auto iii = m_windows.begin(); iii != m_windows.end(); ++iii)
-		iii->get()->Present();
-	
+	{
+		if (iii->get()->Render())
+			iii->get()->Present();
+	}
 }

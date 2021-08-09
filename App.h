@@ -15,7 +15,6 @@ public:
 
 	int Run();
 
-private:
-	void DoFrame();
+
 
 };

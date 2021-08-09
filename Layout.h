@@ -63,6 +63,10 @@ public:
 	std::shared_ptr<OnMessageResult> OnMouseMove(const std::shared_ptr<MouseState>& mouseState);
 	std::shared_ptr<OnMessageResult> OnMouseLeave();
 
+	void Update();
+	bool Render3DControls();
+	bool Render2DControls();
+
 private:
 	void UpdateLayout();
 

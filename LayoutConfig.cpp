@@ -93,7 +93,8 @@ namespace LayoutConfiguration
 		viewText->SetText(L"View");
 
 
-
+		// Simulation Window ================================================================
+		std::shared_ptr<SimulationRenderer> simulationRenderer = mainLayout->CreateControl<SimulationRenderer>(1, 0);
 
 
 

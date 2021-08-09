@@ -150,6 +150,9 @@
     <ClCompile Include="LayoutConfig.cpp">
       <Filter>Source Files\UI\Layout</Filter>
     </ClCompile>
+    <ClCompile Include="SimulationRenderer.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -241,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="App.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationRenderer.h">
+      <Filter>Header Files\UI\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

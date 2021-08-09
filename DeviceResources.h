@@ -47,6 +47,9 @@ public:
 	// ==========================================================
 
 	D3D11_VIEWPORT GetScreenViewport() const { return m_viewport; }
+	void SetViewport(CD3D11_VIEWPORT viewport);
+	void ResetViewport();
+
 	ID3D11RenderTargetView1* GetBackBufferRenderTargetView() const { return m_d3dRenderTargetView.Get(); }
 	ID3D11DepthStencilView* GetDepthStencilView() const { return m_d3dDepthStencilView.Get(); }
 	void Present();

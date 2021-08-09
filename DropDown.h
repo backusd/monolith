@@ -27,7 +27,8 @@ public:
 
 	void ClearContents() override;
 
-	void OnPaint() override;
+	bool Render2D() override;
+	//void OnPaint() override;
 
 	void OnLayoutResize() override { Resize(); }
 	void OnMarginChanged() override { Resize(); }
