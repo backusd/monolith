@@ -19,7 +19,8 @@ SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& d
 
 SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& deviceResources,
 									   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
-	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan)
+	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
+	m_atomHoveredOver(nullptr)
 {
 	// Create resources that will not change on window resizing and not device dependent
 	// -- Must call this first because it will create the MoveLookController which will be used later
@@ -474,6 +475,7 @@ bool SimulationRenderer::Render3D()
 	// Set the current element to invalid so that the first atom will set the material properties
 	Element currentElement = Element::INVALID;
 
+	/*
 	for (Atom* atom : atoms)
 	{
 		if (atom->ElementType() != currentElement)
@@ -484,6 +486,45 @@ bool SimulationRenderer::Render3D()
 
 			ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+		}
+
+		atom->Render(viewProjectionMatrix);
+	}
+	*/
+
+	MaterialProperties* hoverAtomMaterialPropertiesOLD;
+	MaterialProperties* hoverAtomMaterialPropertiesNEW;
+
+	for (Atom* atom : atoms)
+	{
+		// If the atom is the atom that is hovered over, then we need to adjust its color directly
+		if (atom == m_atomHoveredOver)
+		{
+			hoverAtomMaterialPropertiesOLD = m_materialProperties[atom->ElementType()];
+
+			// Copy the material settings and adjust the Emission of the material
+			hoverAtomMaterialPropertiesNEW = new MaterialProperties();
+			hoverAtomMaterialPropertiesNEW->Material = hoverAtomMaterialPropertiesOLD->Material;
+			hoverAtomMaterialPropertiesNEW->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, hoverAtomMaterialPropertiesNEW, 0, 0);
+			ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+
+			// Set the atom element to invalid so that the materials properties will get updated for the next atom
+			currentElement = Element::INVALID;
+		}
+		else
+		{
+			if (atom->ElementType() != currentElement)
+			{
+				currentElement = atom->ElementType();
+
+				context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[currentElement], 0, 0);
+
+				ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+				context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+			}
 		}
 
 		atom->Render(viewProjectionMatrix);
@@ -568,6 +609,10 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseMove(std::shared_ptr
 
 	m_moveLookController->OnMouseMove(_x, _y);
 
+	// if the LButton is not down, perform picking
+	if (!m_moveLookController->LButtonIsDown())
+		PerformPicking(_x, _y);
+
 	result->MessageHandled(true);
 	result->CaptureMouse(true);
 
@@ -596,4 +641,106 @@ bool SimulationRenderer::MouseIsOver(int x, int y)
 		m_viewport.TopLeftY <= _y &&
 		m_viewport.TopLeftX + m_viewport.Width >= _x &&
 		m_viewport.TopLeftY + m_viewport.Height >= _y;
+}
+
+void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
+{
+	/* Will update which atom the pointer is over
+	*  To not affect performance, this method should only be called
+	*  when the simulation is paused
+	*/
+	std::vector<Atom*> atoms = SimulationManager::Atoms();
+
+	XMFLOAT3 clickpointNear = XMFLOAT3(mouseX, mouseY, 0.0f);
+	XMFLOAT3 clickpointFar = XMFLOAT3(mouseX, mouseY, 1.0f);
+
+	XMVECTOR clickpointNearVector = XMLoadFloat3(&clickpointNear);
+	XMVECTOR clickpointFarVector = XMLoadFloat3(&clickpointFar);
+
+	XMVECTOR origin, destination, direction;
+
+	float shortestDistance = FLT_MAX; // Set initial to the maximum possible float value
+	float distance = FLT_MAX;
+	m_atomHoveredOver = nullptr;
+
+	for (Atom* atom : atoms)
+	{
+		origin = XMVector3Unproject(
+			clickpointNearVector,
+			m_viewport.TopLeftX,
+			m_viewport.TopLeftY,
+			m_viewport.Width,
+			m_viewport.Height,
+			0,
+			1,
+			m_projectionMatrix,
+			m_viewMatrix,
+			atom->TranslationMatrix());
+
+		destination = XMVector3Unproject(
+			clickpointFarVector,
+			m_viewport.TopLeftX,
+			m_viewport.TopLeftY,
+			m_viewport.Width,
+			m_viewport.Height,
+			0,
+			1,
+			m_projectionMatrix,
+			m_viewMatrix,
+			atom->TranslationMatrix());
+
+		direction = XMVector3Normalize(destination - origin);
+
+		// if an intersection is found, the distance will be returned in the 'distance' variable
+		if (SphereIntersection(origin, direction, atom, distance))
+		{
+			if (distance < shortestDistance)
+			{
+				m_atomHoveredOver = atom;
+				shortestDistance = distance;
+			}
+		}
+	}
+}
+
+bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, Atom* atom, float& distance)
+{
+	XMFLOAT3 origin, direction;
+	XMStoreFloat3(&origin, rayOrigin);
+	XMStoreFloat3(&direction, rayDirection);
+
+	float a, b, c, discriminant;
+	float radius = atom->Radius();
+
+	// Calculate the a, b, and c coefficients.
+	a = (direction.x * direction.x) + (direction.y * direction.y) + (direction.z * direction.z);
+	b = ((direction.x * origin.x) + (direction.y * origin.y) + (direction.z * origin.z)) * 2.0f;
+	c = ((origin.x * origin.x) + (origin.y * origin.y) + (origin.z * origin.z)) - (radius * radius);
+
+	// Find the discriminant.
+	discriminant = (b * b) - (4 * a * c);
+
+	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
+	if (discriminant < 0.0f)
+		return false;
+
+	// determine the distance to the closest point
+	float minRoot = (-b + std::sqrtf(discriminant)) / (2 * a);
+	float maxRoot = (-b - std::sqrtf(discriminant)) / (2 * a);
+
+	if (minRoot > maxRoot)
+		std::swap(minRoot, maxRoot);
+
+	// Get the smallest positive root
+	if (minRoot < 0)
+	{
+		minRoot = maxRoot;
+		if (minRoot < 0)
+			return false;		// Both roots are negative so return false
+	}
+
+	// Return the distance to the sphere
+	distance = minRoot;
+
+	return true;
 }

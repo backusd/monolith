@@ -44,11 +44,18 @@ private:
 	void CreateBuffers();
 	void CreateBox();
 
+	void PerformPicking(float mouseX, float mouseY);
+	bool SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, Atom* atom, float& distance);
+
+
 
 
 	std::unique_ptr<MoveLookController> m_moveLookController;
 
 	CD3D11_VIEWPORT m_viewport;
+
+	// Picking parameters
+	Atom* m_atomHoveredOver;
 
 	DirectX::XMFLOAT4X4 m_projection;
 	DirectX::XMFLOAT4X4 m_view;
