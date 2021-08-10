@@ -32,6 +32,8 @@ private:
 	void CreateModelViewProjectionBuffer();
 	void CreateAndLoadVertexAndIndexBuffers();
 
+	
+
 public:
 	SphereMesh(const std::shared_ptr<DeviceResources>& deviceResources);
 

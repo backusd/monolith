@@ -433,7 +433,18 @@ void SimulationRenderer::Update(StepTimer const& stepTimer)
 	// Because multiple controls may need to read from the simulation data, the update to the simulation
 	// must come from the main window, so that multiple controls don't try updating the simulation
 	// 
-	// So for now, I don't think there is anything I need to do here...
+	// So for now, all I need to do is update the MoveLookController
+	D2D1_RECT_F rect = {};
+	rect.left = m_viewport.TopLeftX;
+	rect.top = m_viewport.TopLeftY;
+	rect.right = rect.left + m_viewport.Width;
+	rect.bottom = rect.top + m_viewport.Height;
+
+	m_moveLookController->Update(stepTimer, rect);
+
+	// If the move look controller is actively moving, update the view matrix
+	if (m_moveLookController->IsMoving())
+		m_viewMatrix = m_moveLookController->ViewMatrix();
 }
 
 bool SimulationRenderer::Render3D()
@@ -510,3 +521,79 @@ bool SimulationRenderer::Render3D()
 	return true;
 }
 
+
+
+
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
+{
+	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
+	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
+
+	m_moveLookController->OnLButtonDown(_x, _y);
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
+	result->MessageHandled(true);
+	result->CaptureMouse(true);
+	//result->Redraw(true);
+
+	return result;
+}
+
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
+{
+	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
+	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
+
+	m_moveLookController->OnLButtonUp(_x, _y);
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
+	result->MessageHandled(true);
+	result->CaptureMouse(false);
+	//result->Redraw(true);
+
+	return result;
+}
+
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseMove(std::shared_ptr<MouseState> mouseState)
+{
+	// There are no subcontrols or layouts, so we can just create the result directly
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
+	if (!m_moveLookController->LButtonIsDown() && !MouseIsOver(mouseState->X(), mouseState->Y()))
+		return result;
+
+	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
+	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
+
+	m_moveLookController->OnMouseMove(_x, _y);
+
+	result->MessageHandled(true);
+	result->CaptureMouse(true);
+
+	return result;
+}
+
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseLeave()
+{
+	m_moveLookController->OnMouseLeave();
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
+	result->MessageHandled(false);
+	result->CaptureMouse(false);
+	//result->Redraw(true);
+
+	return result;
+}
+
+bool SimulationRenderer::MouseIsOver(int x, int y)
+{
+	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(x));
+	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(y));
+
+	return m_viewport.TopLeftX <= _x &&
+		m_viewport.TopLeftY <= _y &&
+		m_viewport.TopLeftX + m_viewport.Width >= _x &&
+		m_viewport.TopLeftY + m_viewport.Height >= _y;
+}

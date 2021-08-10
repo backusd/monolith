@@ -17,7 +17,6 @@ public:
 
 	static void Update(StepTimer const& timer) { m_simulation->Update(timer); }
 
-
 private:
 	// Disallow creation of a WindowManager object
 	SimulationManager() {}

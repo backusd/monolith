@@ -50,6 +50,7 @@ public:
 	void ElapsedTime(float time) { m_elapsedTime = time; }
 	//void ElapsedTimeUnit(TIME_UNIT timeUnit) {	m_elapsedTimeUnit = timeUnit; }
 
+
 private:
 	// Atom Generator
 	AtomGenerator m_atomGenerator;
