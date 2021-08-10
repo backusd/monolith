@@ -48,7 +48,7 @@ private:
 	bool SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, Atom* atom, float& distance);
 
 
-
+	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_backgroundColorBrush;
 
 	std::unique_ptr<MoveLookController> m_moveLookController;
 

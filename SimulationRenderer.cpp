@@ -31,6 +31,11 @@ SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& d
 
 	// Create Window size dependent resources
 	CreateWindowSizeDependentResources();
+
+	m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
+		D2D1::ColorF(D2D1::ColorF::CornflowerBlue, 1.0f), 
+		m_backgroundColorBrush.ReleaseAndGetAddressOf()
+	);
 }
 
 void SimulationRenderer::CreateDeviceDependentResources()
@@ -450,6 +455,20 @@ void SimulationRenderer::Update(StepTimer const& stepTimer)
 
 bool SimulationRenderer::Render3D()
 {
+	// Draw Background ========================================================================
+	D2D1_RECT_F rect = {};
+	rect.left = m_deviceResources->PixelsToDIPS(m_viewport.TopLeftX);
+	rect.top = m_deviceResources->PixelsToDIPS(m_viewport.TopLeftY);
+	rect.right = m_deviceResources->PixelsToDIPS(m_viewport.TopLeftX + m_viewport.Width);
+	rect.bottom = m_deviceResources->PixelsToDIPS(m_viewport.TopLeftY + m_viewport.Height);
+
+	ID2D1DeviceContext* context2 = m_deviceResources->D2DDeviceContext();
+	context2->BeginDraw();
+	context2->FillRectangle(rect, m_backgroundColorBrush.Get());
+	context2->EndDraw();
+
+	// Set up pipeline ========================================================================
+
  	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
 
 	// Compute the view/projection matrix
@@ -474,24 +493,6 @@ bool SimulationRenderer::Render3D()
 
 	// Set the current element to invalid so that the first atom will set the material properties
 	Element currentElement = Element::INVALID;
-
-	/*
-	for (Atom* atom : atoms)
-	{
-		if (atom->ElementType() != currentElement)
-		{
-			currentElement = atom->ElementType();
-
-			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[currentElement], 0, 0);
-
-			ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
-		}
-
-		atom->Render(viewProjectionMatrix);
-	}
-	*/
-
 	MaterialProperties* hoverAtomMaterialPropertiesOLD;
 	MaterialProperties* hoverAtomMaterialPropertiesNEW;
 
