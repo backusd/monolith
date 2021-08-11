@@ -4,7 +4,9 @@
 MoveLookController::MoveLookController(DirectX::XMFLOAT3 boxDimensions) :
     m_elapsedTime(0.0),
     m_moveStartTime(0.0),
-    m_movementMaxTime(1.0)
+    m_movementMaxTime(1.0),
+    m_timeAtLastMoveUpdate(0.0),
+    m_totalRotationAngle(0.0f)
 {
     ResetState();
 
@@ -23,6 +25,8 @@ void MoveLookController::ResetState()
     m_shift = false;
     m_movingToNewLocation = false;
     m_updatedViewMatrixHasBeenRead = false;
+    m_rotatingLeftRight = false;
+    m_rotatingUpDown = false;
 }
 
 DirectX::XMMATRIX MoveLookController::ViewMatrix()
@@ -99,43 +103,73 @@ void MoveLookController::Update(StepTimer const& timer, D2D1_RECT_F renderPaneRe
         if (m_updatedViewMatrixHasBeenRead)
         {
             m_movingToNewLocation = false;
+            m_rotatingLeftRight = false;
+            m_rotatingUpDown = false;
         }
         else
         {
             // If the move start time is less than 0, it needs to be set
             if (m_moveStartTime < 0.0)
-                m_moveStartTime = timer.GetTotalSeconds(); 
-
-            // Compute the ratio of elapsed time / allowed time to complete
-            double timeRatio = (timer.GetTotalSeconds() - m_moveStartTime) / m_movementMaxTime;
-
-            // if the current time is passed the max time, just assign final postion
-            // Need to also set the updated view matrix has been read flag because SceneRenderer
-            // will read the view matrix on the next Update call. Once that is done, we can set
-            // movingToNewLocation to false (above)
-            if (timeRatio >= 1.0)
             {
-                m_updatedViewMatrixHasBeenRead = true;
-                m_eyeVec = DirectX::XMLoadFloat3(&m_eyeTarget);
-                m_upVec = DirectX::XMLoadFloat3(&m_upTarget);
+                m_moveStartTime = timer.GetTotalSeconds();
+                m_timeAtLastMoveUpdate = m_moveStartTime;
+            }
+
+            // If rotating left/right, just compute the necessary angle and call RotateLeftRight / RotateUpDown
+            if (m_rotatingLeftRight || m_rotatingUpDown)
+            {
+                double currentTime = timer.GetTotalSeconds();
+                double timeDelta;
+                if (m_moveStartTime + m_movementMaxTime < currentTime)
+                {
+                    m_updatedViewMatrixHasBeenRead = true;
+                    timeDelta = m_moveStartTime + m_movementMaxTime - m_timeAtLastMoveUpdate;
+                }
+                else
+                    timeDelta = currentTime - m_timeAtLastMoveUpdate;
+
+                float theta = m_totalRotationAngle * static_cast<float>(timeDelta / m_movementMaxTime);
+                
+                if (m_rotatingLeftRight)
+                    RotateLeftRight(theta);
+                else
+                    RotateUpDown(theta);
+
+                m_timeAtLastMoveUpdate = currentTime;
             }
             else
             {
-                // Compute the intermediate position
-                XMFLOAT3 eyeCurrent;                
-                eyeCurrent.x = m_eyeInitial.x + static_cast<float>((static_cast<double>(m_eyeTarget.x) - m_eyeInitial.x) * timeRatio);
-                eyeCurrent.y = m_eyeInitial.y + static_cast<float>((static_cast<double>(m_eyeTarget.y) - m_eyeInitial.y) * timeRatio);
-                eyeCurrent.z = m_eyeInitial.z + static_cast<float>((static_cast<double>(m_eyeTarget.z) - m_eyeInitial.z) * timeRatio);
+                // Compute the ratio of elapsed time / allowed time to complete
+                double timeRatio = (timer.GetTotalSeconds() - m_moveStartTime) / m_movementMaxTime;
 
-                m_eyeVec = DirectX::XMLoadFloat3(&eyeCurrent);
+                // if the current time is passed the max time, just assign final postion
+                // Need to also set the updated view matrix has been read flag because SceneRenderer
+                // will read the view matrix on the next Update call. Once that is done, we can set
+                // movingToNewLocation to false (above)
+                if (timeRatio >= 1.0)
+                {
+                    m_updatedViewMatrixHasBeenRead = true;
+                    m_eyeVec = DirectX::XMLoadFloat3(&m_eyeTarget);
+                    m_upVec = DirectX::XMLoadFloat3(&m_upTarget);
+                }
+                else
+                {
+                    // Compute the intermediate position
+                    XMFLOAT3 eyeCurrent;
+                    eyeCurrent.x = m_eyeInitial.x + static_cast<float>((static_cast<double>(m_eyeTarget.x) - m_eyeInitial.x) * timeRatio);
+                    eyeCurrent.y = m_eyeInitial.y + static_cast<float>((static_cast<double>(m_eyeTarget.y) - m_eyeInitial.y) * timeRatio);
+                    eyeCurrent.z = m_eyeInitial.z + static_cast<float>((static_cast<double>(m_eyeTarget.z) - m_eyeInitial.z) * timeRatio);
 
-                // Compute the intermediate position
-                XMFLOAT3 upCurrent;
-                upCurrent.x = m_upInitial.x + static_cast<float>((static_cast<double>(m_upTarget.x) - m_upInitial.x) * timeRatio);
-                upCurrent.y = m_upInitial.y + static_cast<float>((static_cast<double>(m_upTarget.y) - m_upInitial.y) * timeRatio);
-                upCurrent.z = m_upInitial.z + static_cast<float>((static_cast<double>(m_upTarget.z) - m_upInitial.z) * timeRatio);
+                    m_eyeVec = DirectX::XMLoadFloat3(&eyeCurrent);
 
-                m_upVec = DirectX::XMLoadFloat3(&upCurrent);
+                    // Compute the intermediate position
+                    XMFLOAT3 upCurrent;
+                    upCurrent.x = m_upInitial.x + static_cast<float>((static_cast<double>(m_upTarget.x) - m_upInitial.x) * timeRatio);
+                    upCurrent.y = m_upInitial.y + static_cast<float>((static_cast<double>(m_upTarget.y) - m_upInitial.y) * timeRatio);
+                    upCurrent.z = m_upInitial.z + static_cast<float>((static_cast<double>(m_upTarget.z) - m_upInitial.z) * timeRatio);
+
+                    m_upVec = DirectX::XMLoadFloat3(&upCurrent);
+                }
             }
         }
     }
@@ -277,6 +311,50 @@ void MoveLookController::CenterOnFace()
     m_upTarget.x *= (xInit < 0.0f) ? -1.0f : 1.0f;
     m_upTarget.y *= (yInit < 0.0f) ? -1.0f : 1.0f;
     m_upTarget.z *= (zInit < 0.0f) ? -1.0f : 1.0f;
+}
+void MoveLookController::RotateLeft90()
+{
+    // Only allow a single left/right movement at a time
+    if (!m_movingToNewLocation)
+    {
+        // Set automated move flags and initial data - 0.5 seconds for the move
+        InitializeAutomatedMove(0.5);
+        m_rotatingLeftRight = true;
+        m_totalRotationAngle = -1.0f * DirectX::XM_PIDIV2;
+    }
+}
+void MoveLookController::RotateRight90()
+{
+    // Only allow a single left/right movement at a time
+    if (!m_movingToNewLocation)
+    {
+        // Set automated move flags and initial data - 0.5 seconds for the move
+        InitializeAutomatedMove(0.5);
+        m_rotatingLeftRight = true;
+        m_totalRotationAngle = DirectX::XM_PIDIV2;
+    }
+}
+void MoveLookController::RotateUp90()
+{
+    // Only allow a single up/down movement at a time
+    if (!m_movingToNewLocation)
+    {
+        // Set automated move flags and initial data - 0.5 seconds for the move
+        InitializeAutomatedMove(0.5);
+        m_rotatingUpDown = true;
+        m_totalRotationAngle = DirectX::XM_PIDIV2;
+    }
+}
+void MoveLookController::RotateDown90()
+{
+    // Only allow a single up/down movement at a time
+    if (!m_movingToNewLocation)
+    {
+        // Set automated move flags and initial data - 0.5 seconds for the move
+        InitializeAutomatedMove(0.5);
+        m_rotatingUpDown = true;
+        m_totalRotationAngle = -1.0f * DirectX::XM_PIDIV2;
+    }
 }
 
 void MoveLookController::InitializeAutomatedMove(double maxMoveTime)

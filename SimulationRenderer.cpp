@@ -795,6 +795,10 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnChar(char key)
 	{
 	case 'p': SimulationManager::SwitchPlayPause(); break;
 	case 'c': m_moveLookController->CenterOnFace(); break;
+	case 'w': m_moveLookController->RotateUp90(); break;
+	case 'a': m_moveLookController->RotateLeft90(); break;
+	case 's': m_moveLookController->RotateDown90(); break;
+	case 'd': m_moveLookController->RotateRight90(); break;
 	}
 
 	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;

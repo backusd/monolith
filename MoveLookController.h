@@ -19,7 +19,12 @@ public:
 	void Update(StepTimer const& timer, D2D1_RECT_F renderPaneRect);
 	
 	bool IsMoving();
+
 	void CenterOnFace();
+	void RotateLeft90();
+	void RotateRight90();
+	void RotateUp90();
+	void RotateDown90();
 
 	void OnLButtonDown(float mouseX, float mouseY);
 	void OnLButtonUp(float mouseX, float mouseY);
@@ -57,6 +62,10 @@ private:
 	double m_moveStartTime;
 	double m_updatedViewMatrixHasBeenRead;
 	double m_movementMaxTime;
+	double m_timeAtLastMoveUpdate;
+	float  m_totalRotationAngle;
+	bool m_rotatingLeftRight;
+	bool m_rotatingUpDown;
 
 	// Pointer Variables
 	bool  m_mouseDown;
