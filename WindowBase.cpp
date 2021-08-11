@@ -12,9 +12,8 @@ WindowBase::WindowBase(int width, int height, const char* name) :
 
 LRESULT WindowBase::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
-	//static WindowsMessageMap mm;
-	//OutputDebugString(mm(msg, wParam, lParam).c_str());
-	
+	static WindowsMessageMap mm;
+	OutputDebugString(mm(msg, wParam, lParam).c_str());	
 
 	switch (msg)
 	{
@@ -23,15 +22,16 @@ LRESULT WindowBase::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:		return OnDestroy(hWnd, msg, wParam, lParam);
 	case WM_LBUTTONDOWN:	return OnLButtonDown(hWnd, msg, wParam, lParam);
 	case WM_LBUTTONUP:		return OnLButtonUp(hWnd, msg, wParam, lParam);
+	case WM_LBUTTONDBLCLK:	return OnLButtonDoubleClick(hWnd, msg, wParam, lParam);
 	case WM_MBUTTONDOWN:	return OnMButtonDown(hWnd, msg, wParam, lParam);
 	case WM_MBUTTONUP:		return OnMButtonUp(hWnd, msg, wParam, lParam);
 	case WM_RBUTTONDOWN:	return OnRButtonDown(hWnd, msg, wParam, lParam);
 	case WM_RBUTTONUP:		return OnRButtonUp(hWnd, msg, wParam, lParam);
-	case WM_LBUTTONDBLCLK:	return OnLButtonDoubleClick(hWnd, msg, wParam, lParam);
 	case WM_PAINT:			return OnPaint(hWnd, msg, wParam, lParam);
 	case WM_SIZE:			return OnResize(hWnd, msg, wParam, lParam);
 	case WM_MOUSEMOVE:		return OnMouseMove(hWnd, msg, wParam, lParam);
 	case WM_MOUSELEAVE:		return OnMouseLeave(hWnd, msg, wParam, lParam);
+	case WM_MOUSEWHEEL:		return OnMouseWheel(hWnd, msg, wParam, lParam);
 	case WM_GETMINMAXINFO:	return OnGetMinMaxInfo(hWnd, msg, wParam, lParam);
 	case WM_CHAR:			return OnChar(hWnd, msg, wParam, lParam);
 	case WM_KEYUP:			return OnKeyUp(hWnd, msg, wParam, lParam);
@@ -73,6 +73,10 @@ LRESULT WindowBase::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
+LRESULT WindowBase::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
 LRESULT WindowBase::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -86,10 +90,6 @@ LRESULT WindowBase::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 LRESULT WindowBase::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
-{
-	return DefWindowProc(hWnd, msg, wParam, lParam);
-}
-LRESULT WindowBase::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -108,8 +108,11 @@ LRESULT WindowBase::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-
 LRESULT WindowBase::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+LRESULT WindowBase::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

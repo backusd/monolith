@@ -2,7 +2,9 @@
 
 
 MoveLookController::MoveLookController(DirectX::XMFLOAT3 boxDimensions) :
-    m_elapsedTime(0.0)
+    m_elapsedTime(0.0),
+    m_moveStartTime(0.0),
+    m_movementMaxTime(1.0)
 {
     ResetState();
 
@@ -19,6 +21,8 @@ void MoveLookController::ResetState()
     m_up = false;
     m_down = false;
     m_shift = false;
+    m_movingToNewLocation = false;
+    m_updatedViewMatrixHasBeenRead = false;
 }
 
 DirectX::XMMATRIX MoveLookController::ViewMatrix()
@@ -30,6 +34,9 @@ void MoveLookController::Update(StepTimer const& timer, D2D1_RECT_F renderPaneRe
 {
     if (m_mouseDown)
     {
+        // Cancel out any existing automated movement
+        m_movingToNewLocation = false;
+        
         // Compute the eye distance to center
         float radius = 0.0f;
         DirectX::XMStoreFloat(&radius, DirectX::XMVector3Length(m_eyeVec));
@@ -56,6 +63,10 @@ void MoveLookController::Update(StepTimer const& timer, D2D1_RECT_F renderPaneRe
     }
     else if (m_up || m_down || m_left || m_right)
     {
+        // Cancel out any existing automated movement
+        m_movingToNewLocation = false;
+
+
         // When a button is pressed, we must begin tracking the time before we can make an update
         if (m_elapsedTime < 0.01f)
         {
@@ -81,6 +92,43 @@ void MoveLookController::Update(StepTimer const& timer, D2D1_RECT_F renderPaneRe
 
         if (m_left || m_right)
             RotateLeftRight(theta);
+    }
+    else if (m_movingToNewLocation)
+    {
+        // if the view matrix has officially been read by SceneRenderer, no need to perform any update here
+        if (m_updatedViewMatrixHasBeenRead)
+        {
+            m_movingToNewLocation = false;
+        }
+        else
+        {
+            // If the move start time is less than 0, it needs to be set
+            if (m_moveStartTime < 0.0)
+                m_moveStartTime = timer.GetTotalSeconds(); 
+
+            // Compute the ratio of elapsed time / allowed time to complete
+            double timeRatio = (timer.GetTotalSeconds() - m_moveStartTime) / m_movementMaxTime;
+
+            // if the current time is passed the max time, just assign final postion
+            // Need to also set the updated view matrix has been read flag because SceneRenderer
+            // will read the view matrix on the next Update call. Once that is done, we can set
+            // movingToNewLocation to false (above)
+            if (timeRatio >= 1.0)
+            {
+                m_updatedViewMatrixHasBeenRead = true;
+                m_eyeVec = DirectX::XMLoadFloat3(&m_eyeTarget);
+            }
+            else
+            {
+                // Compute the intermediate position
+                XMFLOAT3 eyeCurrent;                
+                eyeCurrent.x = m_eyeInitial.x + static_cast<float>((static_cast<double>(m_eyeTarget.x) - m_eyeInitial.x) * timeRatio);
+                eyeCurrent.y = m_eyeInitial.y + static_cast<float>((static_cast<double>(m_eyeTarget.y) - m_eyeInitial.y) * timeRatio);
+                eyeCurrent.z = m_eyeInitial.z + static_cast<float>((static_cast<double>(m_eyeTarget.z) - m_eyeInitial.z) * timeRatio);
+
+                m_eyeVec = DirectX::XMLoadFloat3(&eyeCurrent);
+            }
+        }
     }
 }
 
@@ -123,7 +171,7 @@ void MoveLookController::RotateUpDown(float theta)
 
 bool MoveLookController::IsMoving()
 {
-    return m_up || m_down || m_left || m_right || m_mouseDown;
+    return m_up || m_down || m_left || m_right || m_mouseDown || m_movingToNewLocation;
 }
 
 void MoveLookController::OnLButtonDown(float mouseX, float mouseY)
@@ -142,15 +190,61 @@ void MoveLookController::OnLButtonUp(float mouseX, float mouseY)
     m_mousePositionY = m_mousePositionYNew = mouseY;
 }
 
+void MoveLookController::OnLButtonDoubleClick()
+{
+    // Set m_movingToNewLocation = true so the SceneRenderer knows to update the view matrix
+    m_movingToNewLocation = true;
+
+    // Set the move completed flag to false
+    m_updatedViewMatrixHasBeenRead = false;
+
+    // Reset the start time to -1 to signal it needs to be set in the next Update
+    m_moveStartTime = -1.0;
+
+    // Set the movement max time to 0.5 seconds, so the zoom completes in that time
+    m_movementMaxTime = 0.5;
+
+    // Set eye target location to half the distance to the center
+    DirectX::XMStoreFloat3(&m_eyeInitial, m_eyeVec);
+    m_eyeTarget.x = m_eyeInitial.x / 2.0f;
+    m_eyeTarget.y = m_eyeInitial.y / 2.0f;
+    m_eyeTarget.z = m_eyeInitial.z / 2.0f;
+}
+
 void MoveLookController::OnMouseMove(float mouseX, float mouseY)
 {
     m_mousePositionXNew = mouseX;
     m_mousePositionYNew = mouseY;
 }
-
 void MoveLookController::OnMouseLeave()
 {
 
+}
+void MoveLookController::OnMouseWheel(int wheelDelta)
+{
+    // Only update if not already moving
+    if (!m_movingToNewLocation)
+    {
+        // Set m_movingToNewLocation = true so the SceneRenderer knows to update the view matrix
+        m_movingToNewLocation = true;
+
+        // Set the move completed flag to false
+        m_updatedViewMatrixHasBeenRead = false;
+
+        // Reset the start time to -1 to signal it needs to be set in the next Update
+        m_moveStartTime = -1.0;
+
+        // Set the movement max time to 0.1 seconds, so the zoom completes in that time
+        m_movementMaxTime = 0.1;
+
+        // Set eye target location to be 10% closer than the current location for every wheel delta of -120
+        // (or further if wheel delta is positive)
+        float factor = 1.0f + (0.1f * (wheelDelta / 120.f));
+        DirectX::XMStoreFloat3(&m_eyeInitial, m_eyeVec);
+        m_eyeTarget.x = m_eyeInitial.x * factor;
+        m_eyeTarget.y = m_eyeInitial.y * factor;
+        m_eyeTarget.z = m_eyeInitial.z * factor;
+    }
 }
 
 void MoveLookController::OnKeyDown(unsigned char keycode)

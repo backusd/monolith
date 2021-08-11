@@ -597,6 +597,19 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnLButtonUp(std::shared_ptr
 	return result;
 }
 
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState)
+{
+	// Set a MoveAction within the move look controller
+	m_moveLookController->OnLButtonDoubleClick();
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
+	result->MessageHandled(true);
+	result->CaptureMouse(true);
+
+	return result;
+}
+
 std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 {
 	// There are no subcontrols or layouts, so we can just create the result directly
@@ -627,6 +640,19 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseLeave()
 	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
 	result->MessageHandled(false);
 	result->CaptureMouse(false);
+
+	return result;
+}
+
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseWheel(int wheelDelta)
+{
+	// Set a MoveAction within the move look controller
+	m_moveLookController->OnMouseWheel(wheelDelta);
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
+	result->MessageHandled(true);
+	result->CaptureMouse(true);
 
 	return result;
 }

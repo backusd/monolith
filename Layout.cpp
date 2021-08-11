@@ -287,6 +287,20 @@ std::shared_ptr<OnMessageResult> Layout::OnLButtonUp(const std::shared_ptr<Mouse
 
 	return std::make_shared<OnMessageResult>();
 }
+std::shared_ptr<OnMessageResult> Layout::OnLButtonDoubleClick(const std::shared_ptr<MouseState>& mouseState)
+{
+	// Pass OnLButtonDoubleClick message to the control that has captured the mouse if it exists
+	if (m_mouseCapturedControl != nullptr)
+	{
+		return m_mouseCapturedControl->OnLButtonDoubleClick(mouseState);
+	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		return m_mouseCapturedLayout->OnLButtonDoubleClick(mouseState);
+	}
+
+	return std::make_shared<OnMessageResult>();
+}
 
 std::shared_ptr<OnMessageResult> Layout::OnMouseMove(const std::shared_ptr<MouseState>& mouseState)
 {
@@ -475,6 +489,20 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseLeave()
 	{
 		result->Redraw(redraw || result->Redraw());
 		return result;
+	}
+
+	return std::make_shared<OnMessageResult>();
+}
+std::shared_ptr<OnMessageResult> Layout::OnMouseWheel(int wheelDelta)
+{
+	// Pass OnMouseWheel message to the control that has captured the mouse if it exists
+	if (m_mouseCapturedControl != nullptr)
+	{
+		return m_mouseCapturedControl->OnMouseWheel(wheelDelta);
+	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		return m_mouseCapturedLayout->OnMouseWheel(wheelDelta);
 	}
 
 	return std::make_shared<OnMessageResult>();

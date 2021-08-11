@@ -35,11 +35,15 @@ public:
 	virtual void OnLayoutResize() {}
 	virtual void OnMarginChanged() {}
 	virtual bool MouseIsOver(int x, int y) { return false; }	// true if mouse is deemed over the control
-	virtual std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState) { return std::make_shared<OnMessageResult>(); }
-	virtual std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState)   { return std::make_shared<OnMessageResult>(); }
-	virtual std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState)   { return std::make_shared<OnMessageResult>(); }
-	virtual std::shared_ptr<OnMessageResult> OnMouseLeave() { return std::make_shared<OnMessageResult>(); }
+	virtual std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState)		  { return std::make_shared<OnMessageResult>(); }
+	virtual std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState)		  { return std::make_shared<OnMessageResult>(); }
+	virtual std::shared_ptr<OnMessageResult> OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState) { return std::make_shared<OnMessageResult>(); }
 	
+	virtual std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState)		  { return std::make_shared<OnMessageResult>(); }
+	virtual std::shared_ptr<OnMessageResult> OnMouseLeave()												  { return std::make_shared<OnMessageResult>(); }
+	virtual std::shared_ptr<OnMessageResult> OnMouseWheel(int wheelDelta)								  { return std::make_shared<OnMessageResult>(); }
+
+
 	virtual std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode)   { return std::make_shared<OnMessageResult>(); }
 

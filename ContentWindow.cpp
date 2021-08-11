@@ -164,6 +164,20 @@ LRESULT ContentWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
+LRESULT ContentWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	const POINTS pt = MAKEPOINTS(lParam);
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
+	m_mouseState->LButtonDown(true);
+
+	// Pass the coordinates of the mouse click to the main layout
+	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonDoubleClick(m_mouseState);
+	if (result != nullptr && result->Redraw())
+		InvalidateRect(hWnd, NULL, FALSE);
+
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
 LRESULT ContentWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
@@ -200,15 +214,7 @@ LRESULT ContentWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-LRESULT ContentWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
-{
-	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
-	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
-	m_mouseState->LButtonDown(true);
 
-	return DefWindowProc(hWnd, msg, wParam, lParam);
-}
 
 LRESULT ContentWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
@@ -302,6 +308,22 @@ LRESULT ContentWindow::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
 
+
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+LRESULT ContentWindow::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	const POINTS pts = MAKEPOINTS(lParam);
+	int wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+	// if the wheel Delta is 1/-1, it is from the mouse pad, so just elevate it to 120
+	if (wheelDelta == 1 || wheelDelta == -1)
+		wheelDelta *= 120;
+
+	// Pass the wheel delta to main layout / controls
+	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseWheel(wheelDelta);
+	if (result->Redraw())
+		InvalidateRect(hWnd, NULL, FALSE);
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
