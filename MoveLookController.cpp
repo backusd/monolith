@@ -243,6 +243,8 @@ void MoveLookController::OnLButtonDoubleClick()
     m_eyeTarget.x = m_eyeInitial.x / 2.0f;
     m_eyeTarget.y = m_eyeInitial.y / 2.0f;
     m_eyeTarget.z = m_eyeInitial.z / 2.0f;
+
+    m_upTarget = m_upInitial;
 }
 
 void MoveLookController::OnMouseMove(float mouseX, float mouseY)
@@ -268,6 +270,8 @@ void MoveLookController::OnMouseWheel(int wheelDelta)
         m_eyeTarget.x = m_eyeInitial.x * factor;
         m_eyeTarget.y = m_eyeInitial.y * factor;
         m_eyeTarget.z = m_eyeInitial.z * factor;
+
+        m_upTarget = m_upInitial;
     }
 }
 
