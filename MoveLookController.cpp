@@ -70,7 +70,7 @@ void MoveLookController::Update(StepTimer const& timer, D2D1_RECT_F renderPaneRe
 
         // Compute the rotation
         float radiansPerSecond = 0.5;
-        float theta = timeDelta * radiansPerSecond;
+        float theta = static_cast<float>(timeDelta * radiansPerSecond);
 
         // If rotating up or right, make the angle negative so the rest of the math is the same
         if (m_up || m_right)

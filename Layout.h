@@ -27,8 +27,8 @@ public:
 	void SetRowDefinitions(RowColDefinitions rowDefs)    { m_rowDefinitions = rowDefs; UpdateLayout(); }
 	void SetColumnDefinitions(RowColDefinitions colDefs) { m_columnDefinitions = colDefs; UpdateLayout(); }
 	
-	int RowCount()		{ return m_rows.size(); }
-	int ColumnCount()	{ return m_columns.size(); }
+	int RowCount()		{ return static_cast<int>(m_rows.size()); }
+	int ColumnCount()	{ return static_cast<int>(m_columns.size()); }
 
 	float Left()	{ return m_columns[0].Left(); }
 	float Right()	{ return m_columns[m_columns.size() - 1].Left() + m_columns[m_columns.size() - 1].Width(); }

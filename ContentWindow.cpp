@@ -135,8 +135,8 @@ LRESULT ContentWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	const POINTS pt = MAKEPOINTS(lParam);
 
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 	m_mouseState->LButtonDown(true);
 
 	// Pass the coordinates of the mouse click to the main layout
@@ -153,8 +153,8 @@ LRESULT ContentWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 	const POINTS pt = MAKEPOINTS(lParam);
 
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 	m_mouseState->LButtonDown(false);
 
 	// Pass the coordinates of the mouse click to the main layout
@@ -167,8 +167,8 @@ LRESULT ContentWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 LRESULT ContentWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 	m_mouseState->MButtonDown(true);
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -176,8 +176,8 @@ LRESULT ContentWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 LRESULT ContentWindow::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 	m_mouseState->MButtonDown(false);
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -185,8 +185,8 @@ LRESULT ContentWindow::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 LRESULT ContentWindow::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 	m_mouseState->RButtonDown(true);
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -194,8 +194,8 @@ LRESULT ContentWindow::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 LRESULT ContentWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 	m_mouseState->RButtonDown(false);
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -203,8 +203,8 @@ LRESULT ContentWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 LRESULT ContentWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 	m_mouseState->LButtonDown(true);
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -281,8 +281,8 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 	// Store the mouse location in DIPS
 	const POINTS pt = MAKEPOINTS(lParam);
-	m_mouseState->X(m_deviceResources->PixelsToDIPS(pt.x));
-	m_mouseState->Y(m_deviceResources->PixelsToDIPS(pt.y));
+	m_mouseState->X(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.x)));
+	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 
 	// Pass the coordinates of the mouse to the main layout
 	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseMove(m_mouseState);
@@ -328,8 +328,8 @@ LRESULT ContentWindow::OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 {
 	// Minimums should be set in DIPS to be uniform across devices
 	LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
-	lpMMI->ptMinTrackSize.x = m_deviceResources->DIPSToPixels(500);
-	lpMMI->ptMinTrackSize.y = m_deviceResources->DIPSToPixels(300);
+	lpMMI->ptMinTrackSize.x = static_cast<LONG>(m_deviceResources->DIPSToPixels(500));
+	lpMMI->ptMinTrackSize.y = static_cast<LONG>(m_deviceResources->DIPSToPixels(300));
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

@@ -45,7 +45,7 @@ public:
 	float Mass() { return static_cast<float>(m_element + m_neutronCount); }
 	int ProtonsCount() { return m_element; }
 	int NeutronsCount() { return m_neutronCount; }
-	int ElectronsCount() { return m_electrons.size(); }
+	int ElectronsCount() { return static_cast<int>(m_electrons.size()); }
 	float Radius() { return m_radius; }
 	int Charge() { return ProtonsCount() - ElectronsCount(); }
 

@@ -40,15 +40,19 @@ void SphereMesh::CreateAndLoadVertexAndIndexBuffers()
 	for (unsigned int a = 0; a <= slices; a++)
 	{
 		float angle1 = static_cast<float>(a) / static_cast<float>(slices) * DirectX::XM_PI;
-		float z = cos(angle1);
-		float r = sin(angle1);
+		float z = static_cast<float>(cos(angle1));
+		float r = static_cast<float>(sin(angle1));
 		for (unsigned int b = 0; b <= segments; b++)
 		{
 			float angle2 = static_cast<float>(b) / static_cast<float>(segments) * DirectX::XM_2PI;
 
 			// We are working with the unit sphere so the position and normal
 			// vectors are the same
-			positionNormal = XMFLOAT3(r * cos(angle2), r * sin(angle2), z);
+			positionNormal = XMFLOAT3(
+				static_cast<float>(r * cos(angle2)),
+				static_cast<float>(r * sin(angle2)), 
+				z
+			);
 			sphereVertices[p].position = positionNormal;
 			sphereVertices[p].normal = positionNormal;
 

@@ -128,7 +128,7 @@ void Simulation::Update(StepTimer const& timer)
 		// if the elapsed time is -1, then the simulation was just unpaused
 		// and we need to refresh the time
 		if (m_elapsedTime == -1.0f)
-			m_elapsedTime = timer.GetTotalSeconds();
+			m_elapsedTime = static_cast<float>(timer.GetTotalSeconds());
 
 		double currentTime = timer.GetTotalSeconds();
 		double timeDelta = currentTime - m_elapsedTime;
@@ -198,7 +198,7 @@ void Simulation::Update(StepTimer const& timer)
 			}
 		}
 
-		m_elapsedTime = currentTime;
+		m_elapsedTime = static_cast<float>(currentTime);
 
 	}
 }

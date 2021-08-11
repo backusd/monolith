@@ -213,8 +213,8 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	// Get height, width, and dpi for the window
 	RECT rect;
 	GetClientRect(m_hWnd, &rect);
-	float height = rect.bottom;
-	float width = rect.right;
+	float height = static_cast<float>(rect.bottom);
+	float width = static_cast<float>(rect.right);
 
 	float dpi = static_cast<float>(GetDpiForWindow(m_hWnd));
 	m_dpiScale = dpi / 96.0f;
@@ -259,8 +259,8 @@ void DeviceResources::CreateWindowSizeDependentResources()
 		DXGI_SCALING scaling = DXGI_SCALING_NONE;
 
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
-		swapChainDesc.Width = width;									// Match the size of the window
-		swapChainDesc.Height = height;
+		swapChainDesc.Width = static_cast<UINT>(width);					// Match the size of the window
+		swapChainDesc.Height = static_cast<UINT>(height);
 		swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;				// This is the most common swap chain format
 		swapChainDesc.Stereo = false;
 		swapChainDesc.SampleDesc.Count = 1;								// Don't use multi-sampling
@@ -330,8 +330,8 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	// Create a depth stencil view for use with 3D rendering if needed
 	CD3D11_TEXTURE2D_DESC1 depthStencilDesc(
 		DXGI_FORMAT_D24_UNORM_S8_UINT,
-		width,
-		height,
+		static_cast<UINT>(width),
+		static_cast<UINT>(height),
 		1, // This depth stencil view has only one texture
 		1, // Use a single mipmap level
 		D3D11_BIND_DEPTH_STENCIL

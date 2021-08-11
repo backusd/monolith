@@ -15,9 +15,9 @@ void Oxygen::Update(double timeDelta, const std::vector<Atom*>& atoms, XMFLOAT3 
 	// In the mean time, all of the units are set up correctly, so just ignore the units for now
 
 	// Move the position
-	m_position.x += (timeDelta * m_velocity.x);
-	m_position.y += (timeDelta * m_velocity.y);
-	m_position.z += (timeDelta * m_velocity.z);
+	m_position.x += static_cast<float>(timeDelta * m_velocity.x);
+	m_position.y += static_cast<float>(timeDelta * m_velocity.y);
+	m_position.z += static_cast<float>(timeDelta * m_velocity.z);
 
 	// Bounce off the simulation wall - We can't just flip th velocity because when an atom is small enough and the velocity
 	// large enough, it is possible for the center of the atom to find itself outside the box
