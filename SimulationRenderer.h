@@ -31,6 +31,10 @@ public:
 	std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnMouseLeave() override;
 
+	std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) override;
+	std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode) override;
+
+
 	bool MouseIsOver(int x, int y) override;
 
 

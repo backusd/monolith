@@ -40,6 +40,7 @@
 
 
 #include <Windows.h>
+#include <WinUser.h>
 
 
 #include <d2d1.h>

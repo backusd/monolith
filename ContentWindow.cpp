@@ -342,3 +342,21 @@ LRESULT ContentWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
+
+LRESULT ContentWindow::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	std::shared_ptr<OnMessageResult> result = m_layout->OnKeyUp(static_cast<unsigned char>(wParam));
+	if (result->Redraw())
+		InvalidateRect(hWnd, NULL, FALSE);
+
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+LRESULT ContentWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	std::shared_ptr<OnMessageResult> result = m_layout->OnKeyDown(static_cast<unsigned char>(wParam));
+	if (result->Redraw())
+		InvalidateRect(hWnd, NULL, FALSE);
+
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}

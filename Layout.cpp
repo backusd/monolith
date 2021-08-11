@@ -480,6 +480,91 @@ std::shared_ptr<OnMessageResult> Layout::OnMouseLeave()
 	return std::make_shared<OnMessageResult>();
 }
 
+std::shared_ptr<OnMessageResult> Layout::OnKeyDown(unsigned char keycode)
+{
+	std::shared_ptr<OnMessageResult> result = nullptr;
+
+	bool redraw = false;
+
+	// If there is already a control within this layout that has been captured, immediately pass the message
+	if (m_mouseCapturedControl != nullptr)
+	{
+		result = m_mouseCapturedControl->OnKeyDown(keycode);
+
+		// If the control no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedControl = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		result = m_mouseCapturedLayout->OnKeyDown(keycode);
+
+		// If the layout no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedLayout = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+
+	// Don't iterate over each control - only pass message to captured control / layout
+
+	return std::make_shared<OnMessageResult>();
+}
+std::shared_ptr<OnMessageResult> Layout::OnKeyUp(unsigned char keycode)
+{
+	std::shared_ptr<OnMessageResult> result = nullptr;
+
+	bool redraw = false;
+
+	// If there is already a control within this layout that has been captured, immediately pass the message
+	if (m_mouseCapturedControl != nullptr)
+	{
+		result = m_mouseCapturedControl->OnKeyUp(keycode);
+
+		// If the control no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedControl = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		result = m_mouseCapturedLayout->OnKeyUp(keycode);
+
+		// If the layout no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedLayout = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+
+	// Don't iterate over each control - only pass message to captured control / layout
+
+	return std::make_shared<OnMessageResult>();
+}
+
 void Layout::ClearContents()
 {
 	// Call ClearContents for each control

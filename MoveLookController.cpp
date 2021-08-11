@@ -18,6 +18,7 @@ void MoveLookController::ResetState()
     m_right = false;
     m_up = false;
     m_down = false;
+    m_shift = false;
 }
 
 DirectX::XMMATRIX MoveLookController::ViewMatrix()
@@ -150,4 +151,32 @@ void MoveLookController::OnMouseMove(float mouseX, float mouseY)
 void MoveLookController::OnMouseLeave()
 {
 
+}
+
+void MoveLookController::OnKeyDown(unsigned char keycode)
+{
+    switch (keycode)
+    {
+    case VK_UP:    m_up = true; break;
+    case VK_DOWN:  m_down = true; break;
+    case VK_LEFT:  m_left = true; break;
+    case VK_RIGHT: m_right = true; break;
+    case VK_SHIFT: m_shift = true; break;
+    }
+}
+
+void MoveLookController::OnKeyUp(unsigned char keycode)
+{
+    switch (keycode)
+    {
+    case VK_UP:    m_up = false; break;
+    case VK_DOWN:  m_down = false; break;
+    case VK_LEFT:  m_left = false; break;
+    case VK_RIGHT: m_right = false; break;
+    case VK_SHIFT: m_shift = false; break;
+    }
+
+    // If no longer moving or rotating, reset the time to 0
+    if (!(m_up || m_down || m_left || m_right))
+        m_elapsedTime = 0.0f;
 }

@@ -34,6 +34,8 @@ LRESULT WindowBase::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSELEAVE:		return OnMouseLeave(hWnd, msg, wParam, lParam);
 	case WM_GETMINMAXINFO:	return OnGetMinMaxInfo(hWnd, msg, wParam, lParam);
 	case WM_CHAR:			return OnChar(hWnd, msg, wParam, lParam);
+	case WM_KEYUP:			return OnKeyUp(hWnd, msg, wParam, lParam);
+	case WM_KEYDOWN:		return OnKeyDown(hWnd, msg, wParam, lParam);
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -121,3 +123,14 @@ LRESULT WindowBase::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) no
 {
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
+
+LRESULT WindowBase::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+LRESULT WindowBase::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+{
+	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+

@@ -40,6 +40,9 @@ public:
 	virtual std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState)   { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnMouseLeave() { return std::make_shared<OnMessageResult>(); }
 	
+	virtual std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) { return std::make_shared<OnMessageResult>(); }
+	virtual std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode)   { return std::make_shared<OnMessageResult>(); }
+
 	// Should ONLY be overridden by 3D rendering controls
 	virtual void Update(StepTimer const& stepTimer) {}
 

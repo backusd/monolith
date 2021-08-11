@@ -24,6 +24,9 @@ public:
 	void OnMouseMove(float mouseX, float mouseY);
 	void OnMouseLeave();
 
+	void OnKeyDown(unsigned char keycode);
+	void OnKeyUp(unsigned char keycode);
+
 	bool LButtonIsDown() { return m_mouseDown; }
 
 private:
@@ -50,6 +53,7 @@ private:
 	bool  m_right;
 	bool  m_up;
 	bool  m_down;
+	bool  m_shift;
 
 	// Keep track of total time to be able to compute the time delta
 	double m_elapsedTime;

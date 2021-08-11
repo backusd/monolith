@@ -32,6 +32,7 @@ SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& d
 	// Create Window size dependent resources
 	CreateWindowSizeDependentResources();
 
+	// Create background brush
 	m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
 		D2D1::ColorF(D2D1::ColorF::CornflowerBlue, 1.0f), 
 		m_backgroundColorBrush.ReleaseAndGetAddressOf()
@@ -577,7 +578,6 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnLButtonDown(std::shared_p
 	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
 	result->MessageHandled(true);
 	result->CaptureMouse(true);
-	//result->Redraw(true);
 
 	return result;
 }
@@ -593,7 +593,6 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnLButtonUp(std::shared_ptr
 	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
 	result->MessageHandled(true);
 	result->CaptureMouse(false);
-	//result->Redraw(true);
 
 	return result;
 }
@@ -628,7 +627,6 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseLeave()
 	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();
 	result->MessageHandled(false);
 	result->CaptureMouse(false);
-	//result->Redraw(true);
 
 	return result;
 }
@@ -744,4 +742,24 @@ bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDire
 	distance = minRoot;
 
 	return true;
+}
+
+
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyDown(unsigned char keycode)
+{
+	m_moveLookController->OnKeyDown(keycode);
+
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
+	result->CaptureMouse(true);
+	result->MessageHandled(true);
+	return result;
+}
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyUp(unsigned char keycode)
+{
+	m_moveLookController->OnKeyUp(keycode);
+
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
+	result->CaptureMouse(true);
+	result->MessageHandled(true);
+	return result;
 }
