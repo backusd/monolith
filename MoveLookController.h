@@ -17,7 +17,9 @@ public:
 	DirectX::XMMATRIX ViewMatrix();
 
 	void Update(StepTimer const& timer, D2D1_RECT_F renderPaneRect);
+	
 	bool IsMoving();
+	void CenterOnFace();
 
 	void OnLButtonDown(float mouseX, float mouseY);
 	void OnLButtonUp(float mouseX, float mouseY);
@@ -38,6 +40,8 @@ private:
 	void RotateLeftRight(float theta);
 	void RotateUpDown(float theta);
 
+	void InitializeAutomatedMove(double maxMoveTime);
+
 
 	// Eye/at/up vectors
 	DirectX::XMVECTOR m_eyeVec;
@@ -48,6 +52,8 @@ private:
 	// Update() will move the camera for us
 	DirectX::XMFLOAT3 m_eyeTarget;
 	DirectX::XMFLOAT3 m_eyeInitial;
+	DirectX::XMFLOAT3 m_upTarget;
+	DirectX::XMFLOAT3 m_upInitial;
 	double m_moveStartTime;
 	double m_updatedViewMatrixHasBeenRead;
 	double m_movementMaxTime;

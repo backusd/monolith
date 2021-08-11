@@ -794,6 +794,7 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnChar(char key)
 	switch (key)
 	{
 	case 'p': SimulationManager::SwitchPlayPause(); break;
+	case 'c': m_moveLookController->CenterOnFace(); break;
 	}
 
 	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
