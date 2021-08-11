@@ -36,6 +36,7 @@ public:
 
 	std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) override;
 	std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode) override;
+	std::shared_ptr<OnMessageResult> OnChar(char key) override;
 
 
 	bool MouseIsOver(int x, int y) override;

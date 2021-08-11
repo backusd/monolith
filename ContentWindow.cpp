@@ -358,9 +358,14 @@ LRESULT ContentWindow::OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARA
 
 LRESULT ContentWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
-	static std::string title;
-	title.push_back((char)wParam);
-	SetWindowText(hWnd, title.c_str());
+	//static std::string title;
+	//title.push_back((char)wParam);
+	//SetWindowText(hWnd, title.c_str());
+
+	// Pass the char to main layout / controls
+	std::shared_ptr<OnMessageResult> result = m_layout->OnChar((char)wParam);
+	if (result->Redraw())
+		InvalidateRect(hWnd, NULL, FALSE);
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

@@ -31,6 +31,7 @@ public:
 	void ResetSimulation(); // Reset the simulation state to where it was before ever pressing Play
 
 	void Update(StepTimer const& timer);
+	void SwitchPlayPause() { m_paused = !m_paused; if (m_paused) m_elapsedTime = -1.0f; }
 
 	// GET
 	std::vector<Atom*> Atoms() { return m_atoms; }

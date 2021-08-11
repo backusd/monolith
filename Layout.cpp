@@ -592,7 +592,48 @@ std::shared_ptr<OnMessageResult> Layout::OnKeyUp(unsigned char keycode)
 
 	return std::make_shared<OnMessageResult>();
 }
+std::shared_ptr<OnMessageResult> Layout::OnChar(char key)
+{
+	std::shared_ptr<OnMessageResult> result = nullptr;
 
+	bool redraw = false;
+
+	// If there is already a control within this layout that has been captured, immediately pass the message
+	if (m_mouseCapturedControl != nullptr)
+	{
+		result = m_mouseCapturedControl->OnChar(key);
+
+		// If the control no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedControl = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+	else if (m_mouseCapturedLayout != nullptr)
+	{
+		result = m_mouseCapturedLayout->OnChar(key);
+
+		// If the layout no longer wants to be captured, release it
+		if (!result->CaptureMouse())
+			m_mouseCapturedLayout = nullptr;
+
+		if (result->Redraw())
+			redraw = true;
+
+		// If the message has been handled, return the result
+		if (result->MessageHandled())
+			return result;
+	}
+
+	// Don't iterate over each control - only pass message to captured control / layout
+
+	return std::make_shared<OnMessageResult>();
+}
 void Layout::ClearContents()
 {
 	// Call ClearContents for each control
@@ -663,7 +704,7 @@ bool Layout::Render2DControls()
 	}
 
 
-	PaintBorders();
+	//PaintBorders();
 
 
 	// Pass the Render call along to each sub layout as a 2D control can live in a sub-layout

@@ -622,8 +622,8 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseMove(std::shared_ptr
 
 	m_moveLookController->OnMouseMove(_x, _y);
 
-	// if the LButton is not down, perform picking
-	if (!m_moveLookController->LButtonIsDown())
+	// if the LButton is not down and the simulation is paused -> perform picking
+	if (!m_moveLookController->LButtonIsDown() && SimulationManager::SimulationIsPaused())
 		PerformPicking(_x, _y);
 
 	result->MessageHandled(true);
@@ -783,6 +783,18 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyDown(unsigned char key
 std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyUp(unsigned char keycode)
 {
 	m_moveLookController->OnKeyUp(keycode);
+
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
+	result->CaptureMouse(true);
+	result->MessageHandled(true);
+	return result;
+}
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnChar(char key)
+{
+	switch (key)
+	{
+	case 'p': SimulationManager::SwitchPlayPause(); break;
+	}
 
 	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
 	result->CaptureMouse(true);

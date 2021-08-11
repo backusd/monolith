@@ -46,6 +46,7 @@ public:
 
 	virtual std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode)   { return std::make_shared<OnMessageResult>(); }
+	virtual std::shared_ptr<OnMessageResult> OnChar(char key)			  { return std::make_shared<OnMessageResult>(); }
 
 	// Should ONLY be overridden by 3D rendering controls
 	virtual void Update(StepTimer const& stepTimer) {}

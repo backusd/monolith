@@ -69,6 +69,7 @@ public:
 
 	std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode);
 	std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode);
+	std::shared_ptr<OnMessageResult> OnChar(char keycode);
 
 
 	void Update(StepTimer const& stepTimer);

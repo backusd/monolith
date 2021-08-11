@@ -12,8 +12,8 @@ WindowBase::WindowBase(int width, int height, const char* name) :
 
 LRESULT WindowBase::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
-	static WindowsMessageMap mm;
-	OutputDebugString(mm(msg, wParam, lParam).c_str());	
+	//static WindowsMessageMap mm;
+	//OutputDebugString(mm(msg, wParam, lParam).c_str());	
 
 	switch (msg)
 	{

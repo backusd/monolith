@@ -16,7 +16,7 @@ namespace LayoutConfiguration
 		mainLayoutRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 		RowColDefinitions mainLayoutColumns;
 		mainLayoutColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
-		mainLayoutColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 200.0f);
+		mainLayoutColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 300.0f);
 
 		std::shared_ptr<Layout> mainLayout = window->GetLayout();
 		mainLayout->SetRowDefinitions(mainLayoutRows);

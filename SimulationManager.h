@@ -17,6 +17,10 @@ public:
 
 	static void Update(StepTimer const& timer) { m_simulation->Update(timer); }
 
+	static bool SimulationIsPaused() { return m_simulation->IsPaused(); }
+
+	static void SwitchPlayPause() { m_simulation->SwitchPlayPause(); }
+
 private:
 	// Disallow creation of a WindowManager object
 	SimulationManager() {}
