@@ -140,9 +140,12 @@ LRESULT ContentWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	m_mouseState->LButtonDown(true);
 
 	// Pass the coordinates of the mouse click to the main layout
+	m_layout->OnLButtonDown(m_mouseState);
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonDown(m_mouseState);
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
+	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -158,10 +161,12 @@ LRESULT ContentWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	m_mouseState->LButtonDown(false);
 
 	// Pass the coordinates of the mouse click to the main layout
+	m_layout->OnLButtonUp(m_mouseState);
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonUp(m_mouseState);
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
-
+	*/
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 LRESULT ContentWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -172,10 +177,12 @@ LRESULT ContentWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 	m_mouseState->LButtonDown(true);
 
 	// Pass the coordinates of the mouse click to the main layout
+	m_layout->OnLButtonDoubleClick(m_mouseState);
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonDoubleClick(m_mouseState);
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
-
+	*/
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 LRESULT ContentWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -291,10 +298,12 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	m_mouseState->Y(static_cast<int>(m_deviceResources->PixelsToDIPS(pt.y)));
 
 	// Pass the coordinates of the mouse to the main layout
+	m_layout->OnMouseMove(m_mouseState);
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseMove(m_mouseState);
 	if (result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
-
+	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -304,10 +313,12 @@ LRESULT ContentWindow::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	m_mouseState->DisableMouseTracking();
 
 	// Pass the OnMouseLeave event to the layout
+	m_layout->OnMouseLeave();
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseLeave();
 	if (result != nullptr && result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
-
+	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -321,9 +332,12 @@ LRESULT ContentWindow::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 		wheelDelta *= 120;
 
 	// Pass the wheel delta to main layout / controls
+	m_layout->OnMouseWheel(wheelDelta);
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseWheel(wheelDelta);
 	if (result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
+	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -363,27 +377,35 @@ LRESULT ContentWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	//SetWindowText(hWnd, title.c_str());
 
 	// Pass the char to main layout / controls
+	m_layout->OnChar((char)wParam);
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnChar((char)wParam);
 	if (result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
+	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-
 LRESULT ContentWindow::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+	m_layout->OnKeyUp(static_cast<unsigned char>(wParam));
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnKeyUp(static_cast<unsigned char>(wParam));
 	if (result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
+	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-
 LRESULT ContentWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+	m_layout->OnKeyDown(static_cast<unsigned char>(wParam));
+	/*
 	std::shared_ptr<OnMessageResult> result = m_layout->OnKeyDown(static_cast<unsigned char>(wParam));
 	if (result->Redraw())
 		InvalidateRect(hWnd, NULL, FALSE);
+	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
+

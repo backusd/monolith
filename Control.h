@@ -35,6 +35,19 @@ public:
 	virtual void OnLayoutResize() {}
 	virtual void OnMarginChanged() {}
 	virtual bool MouseIsOver(int x, int y) { return false; }	// true if mouse is deemed over the control
+
+	virtual OnMessageResult OnLButtonDown(std::shared_ptr<MouseState> mouseState) { return OnMessageResult::NONE; }
+	virtual OnMessageResult OnLButtonUp(std::shared_ptr<MouseState> mouseState) { return OnMessageResult::NONE; }
+	virtual OnMessageResult OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState) { return OnMessageResult::NONE; }
+
+	virtual OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) { return OnMessageResult::NONE; }
+	virtual OnMessageResult OnMouseLeave() { return OnMessageResult::NONE; }
+	virtual OnMessageResult OnMouseWheel(int wheelDelta) { return OnMessageResult::NONE; }
+
+	virtual OnMessageResult OnKeyDown(unsigned char keycode) { return OnMessageResult::NONE; }
+	virtual OnMessageResult OnKeyUp(unsigned char keycode) { return OnMessageResult::NONE; }
+	virtual OnMessageResult OnChar(char key) { return OnMessageResult::NONE; }
+	/*
 	virtual std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState)		  { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState)		  { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState) { return std::make_shared<OnMessageResult>(); }
@@ -43,10 +56,10 @@ public:
 	virtual std::shared_ptr<OnMessageResult> OnMouseLeave()												  { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnMouseWheel(int wheelDelta)								  { return std::make_shared<OnMessageResult>(); }
 
-
 	virtual std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode)   { return std::make_shared<OnMessageResult>(); }
 	virtual std::shared_ptr<OnMessageResult> OnChar(char key)			  { return std::make_shared<OnMessageResult>(); }
+	*/
 
 	// Should ONLY be overridden by 3D rendering controls
 	virtual void Update(StepTimer const& stepTimer) {}

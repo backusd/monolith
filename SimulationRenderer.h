@@ -26,6 +26,18 @@ public:
 	void OnLayoutResize() override { CreateWindowSizeDependentResources(); }
 	void OnMarginChanged() override { CreateWindowSizeDependentResources(); }
 
+	OnMessageResult OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState) override;
+
+	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnMouseLeave() override;
+	OnMessageResult OnMouseWheel(int wheelDelta) override;
+
+	OnMessageResult OnKeyDown(unsigned char keycode) override;
+	OnMessageResult OnKeyUp(unsigned char keycode) override;
+	OnMessageResult OnChar(char key) override;
+	/*
 	std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState) override;
@@ -37,7 +49,7 @@ public:
 	std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) override;
 	std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode) override;
 	std::shared_ptr<OnMessageResult> OnChar(char key) override;
-
+	*/
 
 	bool MouseIsOver(int x, int y) override;
 

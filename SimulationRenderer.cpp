@@ -564,9 +564,101 @@ bool SimulationRenderer::Render3D()
 	return true;
 }
 
+OnMessageResult SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
+{
+	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
+	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
+
+	m_moveLookController->OnLButtonDown(_x, _y);
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult SimulationRenderer::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
+{
+	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
+	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
+
+	m_moveLookController->OnLButtonUp(_x, _y);
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult SimulationRenderer::OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState)
+{
+	// Set a MoveAction within the move look controller
+	m_moveLookController->OnLButtonDoubleClick();
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult SimulationRenderer::OnMouseMove(std::shared_ptr<MouseState> mouseState)
+{
+	// If the mouse is no longer over the simulation contol, just return none
+	if (!m_moveLookController->LButtonIsDown() && !MouseIsOver(mouseState->X(), mouseState->Y()))
+		return OnMessageResult::NONE;
+
+	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
+	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
+
+	m_moveLookController->OnMouseMove(_x, _y);
+
+	// if the LButton is not down and the simulation is paused -> perform picking
+	if (!m_moveLookController->LButtonIsDown() && SimulationManager::SimulationIsPaused())
+		PerformPicking(_x, _y);
+
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult SimulationRenderer::OnMouseLeave()
+{
+	m_moveLookController->OnMouseLeave();
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	return OnMessageResult::NONE;
+}
+
+OnMessageResult SimulationRenderer::OnMouseWheel(int wheelDelta)
+{
+	// Set a MoveAction within the move look controller
+	m_moveLookController->OnMouseWheel(wheelDelta);
+
+	// There are no subcontrols or layouts, so we can just create the result directly
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult SimulationRenderer::OnKeyDown(unsigned char keycode)
+{
+	m_moveLookController->OnKeyDown(keycode);
+
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+OnMessageResult SimulationRenderer::OnKeyUp(unsigned char keycode)
+{
+	m_moveLookController->OnKeyUp(keycode);
+
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+OnMessageResult SimulationRenderer::OnChar(char key)
+{
+	switch (key)
+	{
+	case 'p': SimulationManager::SwitchPlayPause(); break;
+	case 'c': m_moveLookController->CenterOnFace(); break;
+	case 'w': m_moveLookController->RotateUp90(); break;
+	case 'a': m_moveLookController->RotateLeft90(); break;
+	case 's': m_moveLookController->RotateDown90(); break;
+	case 'd': m_moveLookController->RotateRight90(); break;
+	}
+
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
 
 
-
+/*
 std::shared_ptr<OnMessageResult> SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
 {
 	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
@@ -656,6 +748,44 @@ std::shared_ptr<OnMessageResult> SimulationRenderer::OnMouseWheel(int wheelDelta
 
 	return result;
 }
+
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyDown(unsigned char keycode)
+{
+	m_moveLookController->OnKeyDown(keycode);
+
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
+	result->CaptureMouse(true);
+	result->MessageHandled(true);
+	return result;
+}
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyUp(unsigned char keycode)
+{
+	m_moveLookController->OnKeyUp(keycode);
+
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
+	result->CaptureMouse(true);
+	result->MessageHandled(true);
+	return result;
+}
+std::shared_ptr<OnMessageResult> SimulationRenderer::OnChar(char key)
+{
+	switch (key)
+	{
+	case 'p': SimulationManager::SwitchPlayPause(); break;
+	case 'c': m_moveLookController->CenterOnFace(); break;
+	case 'w': m_moveLookController->RotateUp90(); break;
+	case 'a': m_moveLookController->RotateLeft90(); break;
+	case 's': m_moveLookController->RotateDown90(); break;
+	case 'd': m_moveLookController->RotateRight90(); break;
+	}
+
+	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
+	result->CaptureMouse(true);
+	result->MessageHandled(true);
+	return result;
+}
+
+*/
 
 bool SimulationRenderer::MouseIsOver(int x, int y)
 {
@@ -771,38 +901,3 @@ bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDire
 }
 
 
-std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyDown(unsigned char keycode)
-{
-	m_moveLookController->OnKeyDown(keycode);
-
-	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
-	result->CaptureMouse(true);
-	result->MessageHandled(true);
-	return result;
-}
-std::shared_ptr<OnMessageResult> SimulationRenderer::OnKeyUp(unsigned char keycode)
-{
-	m_moveLookController->OnKeyUp(keycode);
-
-	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
-	result->CaptureMouse(true);
-	result->MessageHandled(true);
-	return result;
-}
-std::shared_ptr<OnMessageResult> SimulationRenderer::OnChar(char key)
-{
-	switch (key)
-	{
-	case 'p': SimulationManager::SwitchPlayPause(); break;
-	case 'c': m_moveLookController->CenterOnFace(); break;
-	case 'w': m_moveLookController->RotateUp90(); break;
-	case 'a': m_moveLookController->RotateLeft90(); break;
-	case 's': m_moveLookController->RotateDown90(); break;
-	case 'd': m_moveLookController->RotateRight90(); break;
-	}
-
-	std::shared_ptr<OnMessageResult> result = std::make_shared<OnMessageResult>();;
-	result->CaptureMouse(true);
-	result->MessageHandled(true);
-	return result;
-}

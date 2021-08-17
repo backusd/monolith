@@ -66,6 +66,95 @@ bool Button::MouseIsOver(int x, int y)
 			y <= m_buttonLayout->Bottom();
 }
 
+OnMessageResult Button::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
+{
+	// Regardless of whether or not there is a captured control, the behavior remains the same: Pass the message
+	// to the button layout and if the message was handled, don't do anything. Otherwise, react to the message.
+	//
+	// Message has not been handled so pass it to the button layout
+	OnMessageResult result = m_buttonLayout->OnLButtonDown(mouseState);
+
+	// If the message was handled by a sublayout/control, make sure buttonMouseState is NONE and return
+	// The same behavior is required when the mouse is not over the button
+	bool messagedHandled = result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+	if (messagedHandled || !MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		// Set MouseOverDown state to None because mouse is actually over child control which gets priority
+		m_mouseOverDownState = MouseOverDown::NONE;
+		return result;
+	}
+
+	// Messaged not handled, so let this button handle it
+	m_mouseOverDownState = MouseOverDown::MOUSE_DOWN;
+
+	// Capture the mouse and signal that the message was handled
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult Button::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
+{
+	// Regardless of whether or not there is a captured control, the behavior remains the same: Pass the message
+	// to the button layout and if the message was handled, don't do anything. Otherwise, react to the message.
+	//
+	// Message has not been handled so pass it to the button layout
+	OnMessageResult result = m_buttonLayout->OnLButtonUp(mouseState);
+
+	// If the message was handled by a sublayout/control, make sure buttonMouseState is NONE and return
+	// The same behavior is required when the mouse is not over the button
+	bool messagedHandled = result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+	if (messagedHandled || !MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		// Set MouseOverDown state to None because mouse is actually over child control which gets priority
+		m_mouseOverDownState = MouseOverDown::NONE;
+		return result;
+	}
+
+	// Messaged not handled, so let this button handle it
+	m_mouseOverDownState = MouseOverDown::MOUSE_OVER;
+
+	// Call the click method
+	ClickMethod();
+
+	// Capture the mouse and signal that the message was handled
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult Button::OnMouseMove(std::shared_ptr<MouseState> mouseState)
+{
+	// Regardless of whether or not there is a captured control, the behavior remains the same: Pass the message
+	// to the button layout and if the message was handled, don't do anything. Otherwise, react to the message.
+	//
+	// Message has not been handled so pass it to the button layout
+	OnMessageResult result = m_buttonLayout->OnMouseMove(mouseState);
+
+	// If the message was handled by a sublayout/control, make sure buttonMouseState is NONE and return
+	// The same behavior is required when the mouse is not over the button
+	bool messagedHandled = result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+	if (messagedHandled || !MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		// Set MouseOverDown state to None because mouse is actually over child control which gets priority
+		m_mouseOverDownState = MouseOverDown::NONE;
+		return result;
+	}
+
+	// Messaged not handled, so let this button handle it
+	m_mouseOverDownState = mouseState->LButtonDown() ? MouseOverDown::MOUSE_DOWN : MouseOverDown::MOUSE_OVER;
+
+	// Capture the mouse and signal that the message was handled
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+OnMessageResult Button::OnMouseLeave()
+{
+	// Pass message to layout/subcontrols first
+	OnMessageResult result = m_buttonLayout->OnMouseLeave();
+
+	// Update the mouse state to NONE 
+	m_mouseOverDownState = MouseOverDown::NONE;
+	return result;
+}
+
+/*
 std::shared_ptr<OnMessageResult> Button::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
 {
 	// Regardless of whether or not there is a captured control, the behavior remains the same: Pass the message
@@ -168,16 +257,6 @@ std::shared_ptr<OnMessageResult> Button::OnMouseMove(std::shared_ptr<MouseState>
 	return result;
 }
 
-void Button::UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result)
-{
-	// If the buttonMouseState needs updating, update and set the redraw flag
-	if (m_mouseOverDownState != newState)
-	{
-		m_mouseOverDownState = newState;
-		result->Redraw(true);
-	}
-}
-
 std::shared_ptr<OnMessageResult> Button::OnMouseLeave()
 {
 	// Pass message to layout/subcontrols first
@@ -188,3 +267,15 @@ std::shared_ptr<OnMessageResult> Button::OnMouseLeave()
 
 	return result;
 }
+
+void Button::UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result)
+{
+	// If the buttonMouseState needs updating, update and set the redraw flag
+	if (m_mouseOverDownState != newState)
+	{
+		m_mouseOverDownState = newState;
+		result->Redraw(true);
+	}
+}
+
+*/

@@ -34,10 +34,17 @@ public:
 	void OnMarginChanged() override { Resize(); }
 	bool MouseIsOver(int x, int y) override;
 	
+
+	OnMessageResult OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnMouseLeave() override;
+	/*
 	std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnMouseLeave() override;
+	*/
 	
 
 	std::shared_ptr<Layout> GetMainLayout() { return m_mainLayout; }

@@ -59,6 +59,18 @@ public:
 	
 	bool MouseIsOver(int x, int y) { return x >= Left() && x <= Right() && y >= Top() && y <= Bottom(); }
 
+	OnMessageResult OnLButtonDown(const std::shared_ptr<MouseState>& mouseState);
+	OnMessageResult OnLButtonUp(const std::shared_ptr<MouseState>& mouseState);
+	OnMessageResult OnLButtonDoubleClick(const std::shared_ptr<MouseState>& mouseState);
+
+	OnMessageResult OnMouseMove(const std::shared_ptr<MouseState>& mouseState);
+	OnMessageResult OnMouseLeave();
+	OnMessageResult OnMouseWheel(int wheelDelta);
+
+	OnMessageResult OnKeyDown(unsigned char keycode);
+	OnMessageResult OnKeyUp(unsigned char keycode);
+	OnMessageResult OnChar(char keycode);
+	/*
 	std::shared_ptr<OnMessageResult> OnLButtonDown(const std::shared_ptr<MouseState>& mouseState);
 	std::shared_ptr<OnMessageResult> OnLButtonUp(const std::shared_ptr<MouseState>& mouseState);
 	std::shared_ptr<OnMessageResult> OnLButtonDoubleClick(const std::shared_ptr<MouseState>& mouseState);
@@ -70,7 +82,7 @@ public:
 	std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode);
 	std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode);
 	std::shared_ptr<OnMessageResult> OnChar(char keycode);
-
+	*/
 
 	void Update(StepTimer const& stepTimer);
 	bool Render3DControls();

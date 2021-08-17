@@ -88,6 +88,84 @@ bool DropDown::MouseIsOverDropDownLayout(int x, int y)
 }
 
 
+OnMessageResult DropDown::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
+{
+	// If the drop down is open and mouse is over, send message to drop down layout.
+	// Otherwise, just send message to main layout
+	if (m_dropDownIsOpen && m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		return m_dropDownLayout->OnLButtonDown(mouseState);
+	}
+
+	return m_mainLayout->OnLButtonDown(mouseState);
+}
+
+OnMessageResult DropDown::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
+{
+	// If the drop down is open and mouse is over, send message to drop down layout.
+	// Otherwise, just send message to main layout
+	if (m_dropDownIsOpen && m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		return m_dropDownLayout->OnLButtonUp(mouseState);
+	}
+
+	OnMessageResult result = m_mainLayout->OnLButtonUp(mouseState);
+
+	// If the click was handled, then expand/collapse the drop down
+	if (result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
+		m_dropDownIsOpen = !m_dropDownIsOpen;
+	
+	return result;
+}
+
+OnMessageResult DropDown::OnMouseMove(std::shared_ptr<MouseState> mouseState)
+{
+	// If the drop down is not open, just send the message to the main layout. Otherwise,
+	// send to both layouts
+	OnMessageResult result1 = m_mainLayout->OnMouseMove(mouseState);
+	OnMessageResult result2 = OnMessageResult::NONE;
+
+	if (m_dropDownIsOpen)
+	{
+		result2 = m_dropDownLayout->OnMouseMove(mouseState);
+
+		// If the message was not handled and is not over either layouts, collapse the dropdown
+		bool messagedHandled = result2 == OnMessageResult::MESSAGE_HANDLED || result2 == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+		if (!messagedHandled &&
+			!m_mainLayout->MouseIsOver(mouseState->X(), mouseState->Y()) &&
+			!m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
+		{
+			m_dropDownIsOpen = false;
+		}
+	}
+
+	// Combine results
+	bool capture = result1 == OnMessageResult::CAPTURE_MOUSE || result1 == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED || result2 == OnMessageResult::CAPTURE_MOUSE || result2 == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+	bool handled = result1 == OnMessageResult::MESSAGE_HANDLED || result1 == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED || result2 == OnMessageResult::MESSAGE_HANDLED || result2 == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+
+	if (capture && handled)
+		return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+
+	if (capture)
+		return OnMessageResult::CAPTURE_MOUSE;
+
+	if (handled)
+		return OnMessageResult::MESSAGE_HANDLED;
+
+	return OnMessageResult::NONE;
+}
+
+OnMessageResult DropDown::OnMouseLeave()
+{
+	// Pass to each layout
+	OnMessageResult result = m_mainLayout->OnMouseLeave();
+	result = m_dropDownLayout->OnMouseLeave();
+
+	m_dropDownIsOpen = false;
+
+	return result;
+}
+/*
 std::shared_ptr<OnMessageResult> DropDown::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
 {
 	// If the drop down is open and mouse is over, send message to drop down layout.
@@ -163,3 +241,5 @@ std::shared_ptr<OnMessageResult> DropDown::OnMouseLeave()
 
 	return result;
 }
+
+*/

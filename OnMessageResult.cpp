@@ -1,6 +1,6 @@
 #include "OnMessageResult.h"
 
-
+/*
 OnMessageResult::OnMessageResult() :
 	m_messageHandled(false),
 	m_redraw(false),
@@ -29,3 +29,4 @@ OnMessageResult& OnMessageResult::operator=(const OnMessageResult& rhs)
 
 	return *this;
 }
+*/

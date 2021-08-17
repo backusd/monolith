@@ -29,10 +29,17 @@ public:
 	void OnLayoutResize() override { Resize(); }
 	void OnMarginChanged() override { Resize(); }
 	bool MouseIsOver(int x, int y) override;
+
+	OnMessageResult OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnMouseLeave() override;
+	/*
 	std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
 	std::shared_ptr<OnMessageResult> OnMouseLeave() override;
+	*/
 
 	void SetColorTheme(std::string name) { m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
 
@@ -40,7 +47,7 @@ public:
 
 private:
 	void Resize();
-	void UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result);
+	// void UpdateButtonMouseState(MouseOverDown newState, std::shared_ptr<OnMessageResult> result);
 
 	std::shared_ptr<Layout> m_buttonLayout;
 
