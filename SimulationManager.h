@@ -21,6 +21,8 @@ public:
 
 	static void SwitchPlayPause() { m_simulation->SwitchPlayPause(); }
 
+	static void DestroySimulation() { m_simulation = nullptr; }
+
 private:
 	// Disallow creation of a WindowManager object
 	SimulationManager() {}

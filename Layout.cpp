@@ -524,6 +524,8 @@ void Layout::ClearContents()
 
 	// Clear all sublayouts
 	m_subLayouts.clear();
+
+	m_deviceResources = nullptr;
 }
 
 

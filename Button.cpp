@@ -22,6 +22,13 @@ Button::Button(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_buttonLayout = std::make_shared<Layout>( m_deviceResources, GetParentRect() );
 }
 
+void Button::ClearContents()
+{
+	m_buttonLayout->ClearContents();
+	m_deviceResources = nullptr;
+	m_colorTheme = nullptr;
+}
+
 
 bool Button::Render2D()
 {

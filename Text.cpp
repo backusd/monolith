@@ -13,6 +13,12 @@ Text::Text(const std::shared_ptr<DeviceResources>& deviceResources,
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 }
 
+void Text::ClearContents()
+{
+	m_deviceResources = nullptr;
+	m_textTheme = nullptr;
+}
+
 
 bool Text::Render2D()
 {

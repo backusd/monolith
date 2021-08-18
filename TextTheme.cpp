@@ -34,6 +34,8 @@ void TextTheme::Destroy()
 	m_color = nullptr;
 	m_fontCollection = nullptr;
 	m_textFormat = nullptr;
+
+	m_deviceResources = nullptr;
 }
 
 void TextTheme::SetColor(D2D1_COLOR_F color)

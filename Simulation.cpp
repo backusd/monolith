@@ -62,6 +62,14 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	m_paused = false;
 }
 
+Simulation::~Simulation()
+{
+	for(Atom * atom : m_atoms)
+	{
+		delete atom;
+	}
+}
+
 void Simulation::AddNewAtom(Atom* atom)
 {
 	// We need to make sure that the atoms are sorted by element type

@@ -30,7 +30,7 @@ public:
 	void Margin(float left, float top, float right, float bottom);
 
 	// Virtual functions
-	virtual void ClearContents() {}
+	virtual void ClearContents() { m_deviceResources = nullptr; }
 	// virtual void OnPaint() = 0;
 	virtual void OnLayoutResize() {}
 	virtual void OnMarginChanged() {}

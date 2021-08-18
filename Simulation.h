@@ -13,6 +13,7 @@ class Simulation
 {
 public:
 	Simulation(const std::shared_ptr<DeviceResources>& deviceResources);
+	~Simulation();
 
 	void AddNewAtom(Atom* atom);
 	void RemoveAtom();

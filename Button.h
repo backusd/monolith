@@ -19,7 +19,7 @@ public:
 		   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
 
 	// To clear the button's contents, just pass along to the button's layout
-	void ClearContents() override { m_buttonLayout->ClearContents(); }
+	void ClearContents() override;
 
 
 	bool Render2D() override;

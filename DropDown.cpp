@@ -38,6 +38,10 @@ void DropDown::ClearContents()
 {
 	m_mainLayout->ClearContents();
 	m_dropDownLayout->ClearContents();
+
+	m_deviceResources = nullptr;
+	m_mainLayout = nullptr;
+	m_dropDownLayout = nullptr;
 }
 
 bool DropDown::Render2D()

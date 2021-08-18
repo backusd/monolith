@@ -11,7 +11,7 @@ class WindowBase : public WindowBaseTemplate<WindowBase>
 {
 public:
 	WindowBase(int width, int height, const char* name);
-	// virtual ~WindowBase() {}
+	virtual ~WindowBase() {}
 
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
 

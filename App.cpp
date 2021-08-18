@@ -9,12 +9,12 @@ App::App()
 		std::shared_ptr<ContentWindow> main = std::make_shared<ContentWindow>(2000, 1200, "Main Window");
 		LayoutConfiguration::ConfigureMainWindow(main);
 
-		// Only the main window should create the simulation
+		// The main window must create/reconstruct the simulation because it will need access to device resources
 		main->InitializeSimulation();
 
 		WindowManager::AddWindow(main);
 
-		ThemeManager::Initialize(main->GetDeviceResources());
+		// ThemeManager::Initialize(main->GetDeviceResources());
 	}
 	catch (const MonolithException& e)
 	{
@@ -38,7 +38,7 @@ int App::Run()
 		if (const auto ecode = WindowManager::ProcessMessages())
 		{
 			// Release Theme resources
-			ThemeManager::Destroy();
+			// ThemeManager::Destroy();
 
 			// if return optional has value, means we're quitting so return exit code
 			return *ecode;

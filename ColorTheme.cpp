@@ -52,4 +52,6 @@ void ColorTheme::Destroy()
 	m_color = nullptr;
 	m_colorPointerOver = nullptr;
 	m_colorPointerDown = nullptr;
+
+	m_deviceResources = nullptr;
 }

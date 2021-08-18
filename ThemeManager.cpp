@@ -15,6 +15,7 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 		std::shared_ptr<ColorTheme> defaultColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_BUTTON_COLOR, deviceResources);
 		defaultColorTheme->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
 
+		
 		// Menu Button Color
 		std::shared_ptr<ColorTheme> menuButtonColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_MENU_BAR_BUTTON_COLOR, deviceResources);
 		menuButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
@@ -45,6 +46,7 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 		menuButtonTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 		menuButtonTextTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 		menuButtonTextTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+		
 
 		m_initialized = true;
 	}
@@ -69,4 +71,6 @@ void ThemeManager::Destroy()
 	{
 		value->Destroy();
 	}
+	
+	m_themesMap.clear();
 }

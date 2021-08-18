@@ -33,10 +33,13 @@ ContentWindow::ContentWindow(int width, int height, const char* name) :
 
 ContentWindow::~ContentWindow()
 {
-	// Each control bound to the layout has a reference to it, so it cannot simply
-	// be set to nullptr and destructed.
+	// Each control bound to the layout has a pointer back to the layout, so it cannot simply
+	// be set to nullptr because it won't be destructed.
 	m_layout->ClearContents();
 	m_layout = nullptr;
+
+	// Must manually destroy the simulation 
+	SimulationManager::DestroySimulation();
 
 	m_deviceResources = nullptr;
 }

@@ -18,6 +18,11 @@ public:
 	SimulationRenderer(const std::shared_ptr<DeviceResources>& deviceResources,
 					   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
 
+	~SimulationRenderer() override
+	{
+		int iii = 0;
+	}
+
 	void Update(StepTimer const& stepTimer) override;
 
 	// Don't override Render2D() because there is no 2D rendering needed here
