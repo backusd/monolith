@@ -57,7 +57,7 @@ private:
 	void CreateBox();
 
 	void PerformPicking(float mouseX, float mouseY);
-	bool SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, Atom* atom, float& distance);
+	bool SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance);
 
 
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_backgroundColorBrush;
@@ -67,7 +67,7 @@ private:
 	CD3D11_VIEWPORT m_viewport;
 
 	// Picking parameters
-	Atom* m_atomHoveredOver;
+	std::shared_ptr<Atom> m_atomHoveredOver;
 
 	DirectX::XMFLOAT4X4 m_projection;
 	DirectX::XMFLOAT4X4 m_view;

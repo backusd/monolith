@@ -8,7 +8,7 @@ Beryllium::Beryllium(const std::shared_ptr<DeviceResources>& deviceResources,
 {
 }
 
-void Beryllium::Update(double timeDelta, const std::vector<Atom*>& atoms, XMFLOAT3 boxDimensions)
+void Beryllium::Update(double timeDelta, const std::vector<std::shared_ptr<Atom>>& atoms, XMFLOAT3 boxDimensions)
 {
 	// I will really want to create new data types: scientific_double and scientific_int
 	// This will allow me to get rid of TIME_UNIT, LENGTH_UNIT, and such

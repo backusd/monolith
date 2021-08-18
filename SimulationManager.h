@@ -13,7 +13,7 @@ public:
 		m_simulation = std::make_unique<Simulation>(deviceResources);
 	}
 
-	static std::vector<Atom*> Atoms() { return m_simulation->Atoms(); }
+	static std::vector<std::shared_ptr<Atom>> Atoms() { return m_simulation->Atoms(); }
 
 	static void Update(StepTimer const& timer) { m_simulation->Update(timer); }
 

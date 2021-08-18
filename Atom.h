@@ -34,7 +34,7 @@ public:
 	virtual ~Atom() {}
 
 	// Update
-	virtual void Update(double timeDelta, const std::vector<Atom*>& atoms, DirectX::XMFLOAT3 boxDimensions) = 0;
+	virtual void Update(double timeDelta, const std::vector<std::shared_ptr<Atom>>& atoms, DirectX::XMFLOAT3 boxDimensions) = 0;
 
 	// Render
 	void Render(DirectX::XMMATRIX viewProjectionMatrix);

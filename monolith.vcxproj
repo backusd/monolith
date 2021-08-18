@@ -167,7 +167,6 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Atom.cpp" />
-    <ClCompile Include="AtomGenerator.cpp" />
     <ClCompile Include="Beryllium.cpp" />
     <ClCompile Include="Boron.cpp" />
     <ClCompile Include="Button.cpp" />
@@ -212,7 +211,6 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Atom.h" />
-    <ClInclude Include="AtomGenerator.h" />
     <ClInclude Include="Beryllium.h" />
     <ClInclude Include="Boron.h" />
     <ClInclude Include="Button.h" />

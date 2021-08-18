@@ -490,14 +490,14 @@ bool SimulationRenderer::Render3D()
 	context->RSSetViewports(1, &m_viewport);
 
 	// Draw Atoms =============================================================================
-	std::vector<Atom*> atoms = SimulationManager::Atoms();
+	std::vector<std::shared_ptr<Atom>> atoms = SimulationManager::Atoms();
 
 	// Set the current element to invalid so that the first atom will set the material properties
 	Element currentElement = Element::INVALID;
 	MaterialProperties* hoverAtomMaterialPropertiesOLD;
 	MaterialProperties* hoverAtomMaterialPropertiesNEW;
 
-	for (Atom* atom : atoms)
+	for (std::shared_ptr<Atom> atom : atoms)
 	{
 		// If the atom is the atom that is hovered over, then we need to adjust its color directly
 		if (atom == m_atomHoveredOver)
@@ -675,7 +675,7 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 	*  To not affect performance, this method should only be called
 	*  when the simulation is paused
 	*/
-	std::vector<Atom*> atoms = SimulationManager::Atoms();
+	std::vector<std::shared_ptr<Atom>> atoms = SimulationManager::Atoms();
 
 	XMFLOAT3 clickpointNear = XMFLOAT3(mouseX, mouseY, 0.0f);
 	XMFLOAT3 clickpointFar = XMFLOAT3(mouseX, mouseY, 1.0f);
@@ -689,7 +689,7 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 	float distance = FLT_MAX;
 	m_atomHoveredOver = nullptr;
 
-	for (Atom* atom : atoms)
+	for (std::shared_ptr<Atom> atom : atoms)
 	{
 		origin = XMVector3Unproject(
 			clickpointNearVector,
@@ -729,7 +729,7 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 	}
 }
 
-bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, Atom* atom, float& distance)
+bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance)
 {
 	XMFLOAT3 origin, direction;
 	XMStoreFloat3(&origin, rayOrigin);

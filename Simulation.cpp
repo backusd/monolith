@@ -9,7 +9,7 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	m_boxVisible(true),
 	m_elapsedTime(0.0f),
 	m_paused(true),
-	m_atomGenerator(AtomGenerator(deviceResources))
+	m_deviceResources(deviceResources)
 {
 
 	// TEMPORARY SETUP ===================================
@@ -17,60 +17,52 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 
 	XMFLOAT3 initPos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 initVelocity = XMFLOAT3(-1.0f, 0.0f, 0.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::HYDROGEN, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Hydrogen>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.0f, 0.75f, 0.0f);
 	initVelocity = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::HELIUM, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Helium>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.5f, 0.0f, 0.0f);
 	initVelocity = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::HYDROGEN, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Hydrogen>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.5f, 0.5f, 0.0f);
 	initVelocity = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::LITHIUM, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Lithium>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.5f, 0.5f, 0.5f);
 	initVelocity = XMFLOAT3(-1.0f, 1.0f, 1.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::BERYLLIUM, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Beryllium>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.0f, 0.0f, 0.5f);
 	initVelocity = XMFLOAT3(0.0f, 1.0f, 1.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::BORON, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Boron>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.5f, 0.0f, 0.5f);
 	initVelocity = XMFLOAT3(1.0f, 1.0f, 0.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::CARBON, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Carbon>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.5f, 0.5f, 0.8f);
 	initVelocity = XMFLOAT3(1.0f, 0.5f, 1.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::NITROGEN, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Nitrogen>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.7f, 0.3f, 0.1f);
 	initVelocity = XMFLOAT3(0.0f, 0.5f, 1.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::OXYGEN, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Oxygen>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(0.2f, 0.6f, 0.7f);
 	initVelocity = XMFLOAT3(0.0f, 0.5f, 1.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::FLOURINE, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Flourine>(initPos, initVelocity));
 
 	initPos = XMFLOAT3(-0.7f, 0.2f, 0.7f);
 	initVelocity = XMFLOAT3(-1.0f, 0.5f, 1.0f);
-	AddNewAtom(m_atomGenerator.CreateAtom(Element::NEON, initPos, initVelocity));
+	AddNewAtom(CreateAtom<Neon>(initPos, initVelocity));
 
 	m_paused = false;
 }
 
-Simulation::~Simulation()
-{
-	for(Atom * atom : m_atoms)
-	{
-		delete atom;
-	}
-}
-
-void Simulation::AddNewAtom(Atom* atom)
+void Simulation::AddNewAtom(std::shared_ptr<Atom> atom)
 {
 	// We need to make sure that the atoms are sorted by element type
 	// So insert the new atom in the first spot after all of the elements with smaller
@@ -147,7 +139,7 @@ void Simulation::Update(StepTimer const& timer)
 		// gets passed to the update call for each atom and is later updated
 		// once all atoms have been updated
 
-		for (Atom* atom : m_atoms)
+		for (std::shared_ptr<Atom> atom : m_atoms)
 			atom->Update(timeDelta, m_atoms, m_boxDimensions);
 
 		// The update procedure currently only updates position and takes account of the simulation wall
