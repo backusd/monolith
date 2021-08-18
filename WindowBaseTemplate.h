@@ -8,7 +8,7 @@ class WindowBaseTemplate
 {
 public:
 	WindowBaseTemplate(int width, int height, const char* name);
-	~WindowBaseTemplate();
+	virtual ~WindowBaseTemplate();
 
 	virtual LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 	{

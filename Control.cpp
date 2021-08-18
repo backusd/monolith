@@ -30,11 +30,6 @@ Control::Control(const std::shared_ptr<DeviceResources>& deviceResources,
 {
 }
 
-Control::~Control()
-{
-}
-
-
 void Control::Margin(float all)
 {
 	m_marginLeft = all;

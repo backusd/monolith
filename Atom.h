@@ -30,6 +30,9 @@ public:
 		int neutronCount, int electronCount,
 		float radius);
 
+	// Virtual destructor
+	virtual ~Atom() {}
+
 	// Update
 	virtual void Update(double timeDelta, const std::vector<Atom*>& atoms, DirectX::XMFLOAT3 boxDimensions) = 0;
 

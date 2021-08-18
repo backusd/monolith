@@ -43,6 +43,14 @@
 #include <WinUser.h>
 
 
+/* If you end up needed to include <wrl.h>, use the following:
+
+#pragma warning(disable:4265)
+#include <wrl.h>
+#pragma warning(default:4265)
+
+*/
+
 #include <d2d1.h>
 #pragma comment(lib, "d2d1")
 #include <d2d1_3.h>

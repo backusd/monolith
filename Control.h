@@ -17,7 +17,7 @@ public:
 	Control(const std::shared_ptr<DeviceResources>& deviceResources, 
 		    const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
 
-	~Control();
+	virtual ~Control() {}
 
 	void Row(int row) { m_row = row; }
 	void Column(int col) { m_column = col; }

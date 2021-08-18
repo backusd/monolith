@@ -13,6 +13,7 @@ class Theme
 {
 public:
 	Theme(std::string themeName, const std::shared_ptr<DeviceResources>& deviceResources);
+	virtual ~Theme() {};
 
 	std::string Name() { return m_themeName; }
 
