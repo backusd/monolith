@@ -5,7 +5,7 @@ using DirectX::XMFLOAT3;
 
 
 Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) :
-	m_boxDimensions({ 2.0f, 2.0f, 2.0f }),		// These are the overall dimensions - so the x range is [-5, 5]
+	m_boxDimensions({ 2.0f, 2.0f, 2.0f }),
 	m_boxVisible(true),
 	m_elapsedTime(0.0f),
 	m_paused(true),

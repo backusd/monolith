@@ -99,6 +99,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_boxVertexBuffer;
 	MaterialProperties							m_boxMaterialProperties;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_boxMaterialPropertiesConstantBuffer;
-	DirectX::XMFLOAT3							m_boxDimensions;
 
 };

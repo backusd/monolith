@@ -23,8 +23,10 @@ public:
 
 	static void DestroySimulation() { m_simulation = nullptr; }
 
+	static DirectX::XMFLOAT3 BoxDimensions() { return m_simulation->BoxDimensions(); }
+
 private:
-	// Disallow creation of a WindowManager object
+	// Disallow creation of a SimulationManager object
 	SimulationManager() {}
 
 	static std::unique_ptr<Simulation> m_simulation;

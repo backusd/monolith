@@ -96,9 +96,9 @@ void SimulationRenderer::CreateWindowSizeDependentResources()
 void SimulationRenderer::CreateStaticResources()
 {
 	// box dimensions
-	m_boxDimensions = XMFLOAT3(2.0f, 2.0f, 2.0f);
+	DirectX::XMFLOAT3 boxDimensions = SimulationManager::BoxDimensions();
 
-	m_moveLookController = std::make_unique<MoveLookController>(m_boxDimensions);
+	m_moveLookController = std::make_unique<MoveLookController>(boxDimensions);
 
 	// Sphere Material
 
@@ -209,7 +209,7 @@ void SimulationRenderer::CreateStaticResources()
 
 	// The initial eye position - you will want to modify MoveLookController so the Eye
 	// position can be retrieved to also update the light position
-	m_lightProperties.EyePosition = XMFLOAT4(0.0f, 0.0f, 2 * m_boxDimensions.z, 0.0f);
+	m_lightProperties.EyePosition = XMFLOAT4(0.0f, 0.0f, 2 * boxDimensions.z, 0.0f);
 
 	// Add the lights
 	static const XMVECTORF32 LightColors[MAX_LIGHTS] = {
@@ -245,7 +245,7 @@ void SimulationRenderer::CreateStaticResources()
 
 		// Make the light slightly offset from the initial eye position
 		//XMFLOAT4 LightPosition = XMFLOAT4(std::sin(totalTime + offset * i) * radius, 9.0f, std::cos(totalTime + offset * i) * radius, 1.0f);
-		XMFLOAT4 LightPosition = XMFLOAT4(m_boxDimensions.x / 4, m_boxDimensions.y / 4, 2 * m_boxDimensions.z, 1.0f);
+		XMFLOAT4 LightPosition = XMFLOAT4(boxDimensions.x / 4, boxDimensions.y / 4, 2 * boxDimensions.z, 1.0f);
 		light.Position = LightPosition;
 		XMVECTOR LightDirection = DirectX::XMVectorSet(-LightPosition.x, -LightPosition.y, -LightPosition.z, 0.0f);
 		XMStoreFloat4(&light.Direction, DirectX::XMVector3Normalize(LightDirection));
@@ -365,10 +365,12 @@ void SimulationRenderer::CreateBuffers()
 
 void SimulationRenderer::CreateBox()
 {
+	DirectX::XMFLOAT3 boxDimensions = SimulationManager::BoxDimensions();
+
 	// Draw the simulation box
-	float x = m_boxDimensions.x / 2.0f;
-	float y = m_boxDimensions.y / 2.0f;
-	float z = m_boxDimensions.z / 2.0f;
+	float x = boxDimensions.x / 2.0f;
+	float y = boxDimensions.y / 2.0f;
+	float z = boxDimensions.z / 2.0f;
 
 	std::vector<VertexPositionNormal> v(8); // box vertices
 	v[0].position = XMFLOAT3(x, y, z);

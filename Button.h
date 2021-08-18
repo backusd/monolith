@@ -36,7 +36,7 @@ public:
 	OnMessageResult OnMouseLeave() override;
 
 
-	void SetColorTheme(std::string name) { m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
+	void SetColorTheme(std::string name) {  m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
 
 	std::shared_ptr<Layout> GetLayout() { return m_buttonLayout; }
 

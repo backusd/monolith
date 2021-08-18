@@ -26,9 +26,6 @@ ContentWindow::ContentWindow(int width, int height, const char* name) :
 
 	// Create the mouse state object
 	m_mouseState = std::make_shared<MouseState>();
-
-	// Try to intialize the theme manager - will only actually initialize if it was the first window
-	ThemeManager::Initialize(m_deviceResources);
 }
 
 ContentWindow::~ContentWindow()
@@ -42,11 +39,6 @@ ContentWindow::~ContentWindow()
 	SimulationManager::DestroySimulation();
 
 	m_deviceResources = nullptr;
-}
-
-void ContentWindow::InitializeSimulation()
-{
-	SimulationManager::CreateSimulation(m_deviceResources);
 }
 
 void ContentWindow::Update()

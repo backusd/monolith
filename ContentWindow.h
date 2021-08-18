@@ -24,7 +24,8 @@ public:
 	float Height();
 	float Width();
 
-	void InitializeSimulation();
+	void InitializeSimulation() { SimulationManager::CreateSimulation(m_deviceResources); }
+	void InitializeThemes() { ThemeManager::Initialize(m_deviceResources); }
 
 	std::shared_ptr<Layout> GetLayout() { return m_layout; }
 	std::shared_ptr<DeviceResources> GetDeviceResources() { return m_deviceResources; }

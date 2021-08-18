@@ -7,14 +7,19 @@ App::App()
 		// All other hard coded pixel values will be in DIPS. However, because we don't have access to the D2DFactory
 		// at the time of window creation (that could probably be changed), these values are physical pixels for the window size
 		std::shared_ptr<ContentWindow> main = std::make_shared<ContentWindow>(2000, 1200, "Main Window");
-		LayoutConfiguration::ConfigureMainWindow(main);
 
 		// The main window must create/reconstruct the simulation because it will need access to device resources
+		// Also, the simulation MUST be initialized before the controls can be added because the controls
+		// might try to get data from the SimulationManager
 		main->InitializeSimulation();
 
-		WindowManager::AddWindow(main);
+		// Initialize the themes before the controls are created and try to use them
+		main->InitializeThemes();
 
-		// ThemeManager::Initialize(main->GetDeviceResources());
+		// Add all controls
+		LayoutConfiguration::ConfigureMainWindow(main);
+
+		WindowManager::AddWindow(main);		
 	}
 	catch (const MonolithException& e)
 	{
