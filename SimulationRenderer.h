@@ -37,19 +37,6 @@ public:
 	OnMessageResult OnKeyDown(unsigned char keycode) override;
 	OnMessageResult OnKeyUp(unsigned char keycode) override;
 	OnMessageResult OnChar(char key) override;
-	/*
-	std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
-	std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
-	std::shared_ptr<OnMessageResult> OnLButtonDoubleClick(std::shared_ptr<MouseState> mouseState) override;
-	
-	std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
-	std::shared_ptr<OnMessageResult> OnMouseLeave() override;
-	std::shared_ptr<OnMessageResult> OnMouseWheel(int wheelDelta) override;
-
-	std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode) override;
-	std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode) override;
-	std::shared_ptr<OnMessageResult> OnChar(char key) override;
-	*/
 
 	bool MouseIsOver(int x, int y) override;
 

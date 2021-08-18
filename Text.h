@@ -23,15 +23,6 @@ public:
 	void SetTextTheme(std::string name) { m_textTheme = std::static_pointer_cast<TextTheme>(ThemeManager::GetTheme(name)); }
 	void SetText(std::wstring text) { m_text = text; }
 
-
-	// Use default behavior defined by Control for these methods
-	// 
-	// void ClearContents() override;
-	// bool MouseIsOver(int x, int y) override;
-	// std::shared_ptr<OnMessageResult> OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
-	// std::shared_ptr<OnMessageResult> OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
-	// std::shared_ptr<OnMessageResult> OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
-	// std::shared_ptr<OnMessageResult> OnMouseLeave() override;
 private:
 	std::shared_ptr<TextTheme>	m_textTheme;
 	DWRITE_TEXT_METRICS			m_textMetrics;

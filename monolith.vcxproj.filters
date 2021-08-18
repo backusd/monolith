@@ -120,9 +120,6 @@
     <ClCompile Include="MouseState.cpp">
       <Filter>Source Files\UI\Other</Filter>
     </ClCompile>
-    <ClCompile Include="OnMessageResult.cpp">
-      <Filter>Source Files\UI\Other</Filter>
-    </ClCompile>
     <ClCompile Include="WindowsMessageMap.cpp">
       <Filter>Source Files\Window</Filter>
     </ClCompile>

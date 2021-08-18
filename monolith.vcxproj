@@ -187,7 +187,6 @@
     <ClCompile Include="MoveLookController.cpp" />
     <ClCompile Include="Neon.cpp" />
     <ClCompile Include="Nitrogen.cpp" />
-    <ClCompile Include="OnMessageResult.cpp" />
     <ClCompile Include="Oxygen.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="RowCol.cpp" />

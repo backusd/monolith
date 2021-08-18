@@ -70,19 +70,6 @@ public:
 	OnMessageResult OnKeyDown(unsigned char keycode);
 	OnMessageResult OnKeyUp(unsigned char keycode);
 	OnMessageResult OnChar(char keycode);
-	/*
-	std::shared_ptr<OnMessageResult> OnLButtonDown(const std::shared_ptr<MouseState>& mouseState);
-	std::shared_ptr<OnMessageResult> OnLButtonUp(const std::shared_ptr<MouseState>& mouseState);
-	std::shared_ptr<OnMessageResult> OnLButtonDoubleClick(const std::shared_ptr<MouseState>& mouseState);
-	
-	std::shared_ptr<OnMessageResult> OnMouseMove(const std::shared_ptr<MouseState>& mouseState);
-	std::shared_ptr<OnMessageResult> OnMouseLeave();
-	std::shared_ptr<OnMessageResult> OnMouseWheel(int wheelDelta);
-
-	std::shared_ptr<OnMessageResult> OnKeyDown(unsigned char keycode);
-	std::shared_ptr<OnMessageResult> OnKeyUp(unsigned char keycode);
-	std::shared_ptr<OnMessageResult> OnChar(char keycode);
-	*/
 
 	void Update(StepTimer const& stepTimer);
 	bool Render3DControls();

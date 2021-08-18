@@ -223,46 +223,6 @@ LRESULT ContentWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 }
 
 
-LRESULT ContentWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
-{
-	/*
-	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
-
-	D3D11_VIEWPORT viewport = m_deviceResources->GetScreenViewport();
-	context->RSSetViewports(1, &viewport);
-
-	ID3D11RenderTargetView* const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
-	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
-
-	FLOAT background[4] = { 45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f };
-	context->ClearRenderTargetView(m_deviceResources->GetBackBufferRenderTargetView(), background);
-	context->ClearDepthStencilView(m_deviceResources->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-
-	ID2D1DeviceContext* context2 = m_deviceResources->D2DDeviceContext();
-	context2->SaveDrawingState(m_stateBlock.Get());
-	context2->BeginDraw();
-	context2->SetTransform(m_deviceResources->OrientationTransform2D());
-
-
-	m_layout->OnPaint();
-
-
-	HRESULT hr = context2->EndDraw();
-	if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
-	{
-		DiscardGraphicsResources();
-	}
-
-	context2->RestoreDrawingState(m_stateBlock.Get());
-
-	m_deviceResources->Present();
-	*/
-
-	// Return the default window procedure otherwise an endless stream of WM_PAINT
-	// messages will be generated because it thinks the window was not painted
-	return DefWindowProc(hWnd, msg, wParam, lParam);
-}
 LRESULT ContentWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	// Resize the device resources
@@ -299,11 +259,6 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 	// Pass the coordinates of the mouse to the main layout
 	m_layout->OnMouseMove(m_mouseState);
-	/*
-	std::shared_ptr<OnMessageResult> result = m_layout->OnMouseMove(m_mouseState);
-	if (result->Redraw())
-		InvalidateRect(hWnd, NULL, FALSE);
-	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
