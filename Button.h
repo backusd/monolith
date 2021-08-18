@@ -18,8 +18,8 @@ public:
 	Button(const std::shared_ptr<DeviceResources>& deviceResources, 
 		   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
 
-	// To clear the button's contents, just pass along to the button's layout
-	void ClearContents() override;
+	// To release the button's layout, just pass along to the button's layout
+	void ReleaseLayout() override;
 
 
 	bool Render2D() override;

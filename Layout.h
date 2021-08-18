@@ -20,9 +20,8 @@ public:
 		   float top, float left, float height, float width);
 	Layout(const std::shared_ptr<DeviceResources>& deviceResources, 
 		   D2D1_RECT_F rect);
-	~Layout();
 
-	void ClearContents();
+	void ReleaseLayout();
 
 	void SetRowDefinitions(RowColDefinitions rowDefs)    { m_rowDefinitions = rowDefs; UpdateLayout(); }
 	void SetColumnDefinitions(RowColDefinitions colDefs) { m_columnDefinitions = colDefs; UpdateLayout(); }

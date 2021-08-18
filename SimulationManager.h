@@ -21,8 +21,6 @@ public:
 
 	static void SwitchPlayPause() { m_simulation->SwitchPlayPause(); }
 
-	static void DestroySimulation() { m_simulation = nullptr; }
-
 	static DirectX::XMFLOAT3 BoxDimensions() { return m_simulation->BoxDimensions(); }
 
 private:

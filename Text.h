@@ -13,10 +13,8 @@ public:
 	Text(const std::shared_ptr<DeviceResources>& deviceResources, 
 		 const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan);
 
-	void ClearContents() override;
 
 	bool Render2D() override;
-	//void OnPaint() override;
 
 
 	void OnLayoutResize() override {  }

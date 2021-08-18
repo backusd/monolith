@@ -45,13 +45,3 @@ void ColorTheme::SetColorPointerDown(D2D1_COLOR_F color)
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
 	context->CreateSolidColorBrush(color, m_colorPointerDown.ReleaseAndGetAddressOf());
 }
-
-
-void ColorTheme::Destroy()
-{
-	m_color = nullptr;
-	m_colorPointerOver = nullptr;
-	m_colorPointerDown = nullptr;
-
-	m_deviceResources = nullptr;
-}

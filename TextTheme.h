@@ -11,7 +11,6 @@ class TextTheme : public Theme
 {
 public:
 	TextTheme(std::string themeName, const std::shared_ptr<DeviceResources>& deviceResources);
-	void Destroy();
 
 	// Color
 	ID2D1SolidColorBrush* GetColorBrush() const { return m_color.Get(); }

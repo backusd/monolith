@@ -29,15 +29,6 @@ TextTheme::TextTheme(std::string themeName, const std::shared_ptr<DeviceResource
 	UpdateTextFormat();
 }
 
-void TextTheme::Destroy()
-{
-	m_color = nullptr;
-	m_fontCollection = nullptr;
-	m_textFormat = nullptr;
-
-	m_deviceResources = nullptr;
-}
-
 void TextTheme::SetColor(D2D1_COLOR_F color)
 {
 	m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(color, m_color.ReleaseAndGetAddressOf());

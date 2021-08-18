@@ -64,13 +64,3 @@ void ThemeManager::AddTheme(std::shared_ptr<Theme> theme)
 {
 	m_themesMap.insert(std::pair(theme->Name(), theme));
 }
-
-void ThemeManager::Destroy()
-{
-	for (const auto& [key, value] : m_themesMap)
-	{
-		value->Destroy();
-	}
-	
-	m_themesMap.clear();
-}

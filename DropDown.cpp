@@ -34,14 +34,12 @@ void DropDown::SetDropDownSize(float height, float width)
 	Resize();
 }
 
-void DropDown::ClearContents()
+void DropDown::ReleaseLayout()
 {
-	m_mainLayout->ClearContents();
-	m_dropDownLayout->ClearContents();
+	m_mainLayout->ReleaseLayout();
+	m_dropDownLayout->ReleaseLayout();
 
-	m_deviceResources = nullptr;
-	m_mainLayout = nullptr;
-	m_dropDownLayout = nullptr;
+	m_parentLayout = nullptr;
 }
 
 bool DropDown::Render2D()

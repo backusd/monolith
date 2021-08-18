@@ -16,8 +16,6 @@ public:
 	void SetColorPointerOver(D2D1_COLOR_F color);
 	void SetColorPointerDown(D2D1_COLOR_F color);
 
-	void Destroy() override;
-
 private:
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_color;
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_colorPointerOver;

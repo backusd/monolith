@@ -17,8 +17,6 @@ public:
 
 	std::string Name() { return m_themeName; }
 
-	virtual void Destroy() = 0;
-
 protected:
 	std::string m_themeName;
 	std::shared_ptr<DeviceResources> m_deviceResources;

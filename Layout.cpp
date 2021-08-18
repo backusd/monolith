@@ -26,10 +26,6 @@ Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources,
 	SetRowDefinitions(defaultDefinition);
 	SetColumnDefinitions(defaultDefinition);
 }
-Layout::~Layout()
-{
-	m_controls.clear();
-}
 
 void Layout::OnResize(D2D1_RECT_F rect)
 {
@@ -509,23 +505,21 @@ OnMessageResult Layout::OnChar(char key)
 }
 
 
-void Layout::ClearContents()
+void Layout::ReleaseLayout()
 {
 	// Call ClearContents for each control
 	for (auto control : m_controls)
-		control->ClearContents();
+		control->ReleaseLayout();
 
 	// Call ClearContents for each sublayout
 	for (auto sub : m_subLayouts)
-		sub._Myfirst._Val->ClearContents();
+		sub._Myfirst._Val->ReleaseLayout();
 
 	// Clear all controls
 	m_controls.clear();
 
 	// Clear all sublayouts
 	m_subLayouts.clear();
-
-	m_deviceResources = nullptr;
 }
 
 

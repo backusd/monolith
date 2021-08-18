@@ -19,8 +19,6 @@ public:
 	static std::shared_ptr<Theme> GetTheme(std::string name);
 	static void AddTheme(std::shared_ptr<Theme> theme);
 
-	static void Destroy();
-
 	template<typename T>
 	static std::shared_ptr<T> CreateTheme(std::string name, const std::shared_ptr<DeviceResources>& deviceResources);
 

@@ -29,9 +29,12 @@ public:
 	void Margin(float leftRight, float topBottom);
 	void Margin(float left, float top, float right, float bottom);
 
+	
+
 	// Virtual functions
-	virtual void ClearContents() { m_deviceResources = nullptr; }
-	// virtual void OnPaint() = 0;
+
+	virtual void ReleaseLayout() { m_deviceResources = nullptr; m_parentLayout = nullptr; }
+
 	virtual void OnLayoutResize() {}
 	virtual void OnMarginChanged() {}
 	virtual bool MouseIsOver(int x, int y) { return false; }	// true if mouse is deemed over the control

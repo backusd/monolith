@@ -25,7 +25,7 @@ public:
 		     const std::shared_ptr<Layout>& parentLayout, 
 		     int row, int column, int rowSpan, int columnSpan);
 
-	void ClearContents() override;
+	void ReleaseLayout() override;
 
 	bool Render2D() override;
 	//void OnPaint() override;
