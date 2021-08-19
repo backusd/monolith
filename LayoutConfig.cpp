@@ -26,6 +26,7 @@ namespace LayoutConfiguration
 
 
 		CreateMenuBar(mainLayout);
+		CreateQuickBar(mainLayout);
 		
 
 
@@ -235,5 +236,47 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> atomSummaryText = atomSummaryButton->GetLayout()->CreateControl<Text>(0, 1);
 		atomSummaryText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
 		atomSummaryText->SetText(L"Atom Summary");
+	}
+
+	void CreateQuickBar(const std::shared_ptr<Layout>& mainLayout)
+	{
+		// Define columns for the quick buttons
+		RowColDefinitions columnDefs;
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 25.0f); // New Simulation
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 25.0f); // Open Simulation
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 25.0f); // Save Simulation
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 25.0f); // Play / Pause
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+
+		std::shared_ptr<Layout> layout = mainLayout->CreateSubLayout(1, 0);
+		layout->SetColumnDefinitions(columnDefs);
+
+		// New Simulation
+		std::shared_ptr<Button> newSimulationButton = layout->CreateControl<Button>(0, 0);
+		newSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		std::shared_ptr<Text> newSimulationText = newSimulationButton->GetLayout()->CreateControl<Text>();
+		newSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
+		newSimulationText->SetText(L"\xE710");
+
+		// Open Simulation
+		std::shared_ptr<Button> openSimulationButton = layout->CreateControl<Button>(0, 1);
+		openSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		std::shared_ptr<Text> openSimulationText = openSimulationButton->GetLayout()->CreateControl<Text>();
+		openSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
+		openSimulationText->SetText(L"\xE8E5");
+
+		// Save Simulation
+		std::shared_ptr<Button> saveSimulationButton = layout->CreateControl<Button>(0, 2);
+		saveSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		std::shared_ptr<Text> saveSimulationText = saveSimulationButton->GetLayout()->CreateControl<Text>();
+		saveSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
+		saveSimulationText->SetText(L"\xE74E");
+
+		// Play / Pause Simulation
+		std::shared_ptr<Button> playSimulationButton = layout->CreateControl<Button>(0, 3);
+		playSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		std::shared_ptr<Text> playSimulationText = playSimulationButton->GetLayout()->CreateControl<Text>();
+		playSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
+		playSimulationText->SetText(L"\xE769");
 	}
 }

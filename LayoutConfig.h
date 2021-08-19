@@ -20,5 +20,5 @@ namespace LayoutConfiguration
 	void CreateSimulationDropDown(const std::shared_ptr<Layout>& menuBarLayout);
 	void CreateViewDropDown(const std::shared_ptr<Layout>& menuBarLayout);
 
-
+	void CreateQuickBar(const std::shared_ptr<Layout>& mainLayout);
 }

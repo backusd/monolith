@@ -174,27 +174,7 @@ std::shared_ptr<Layout> Layout::CreateSubLayout(int rowIndex, int columnIndex)
 	return layout;
 }
 
-void Layout::OnPaint()
-{
-	/*
-	// Paint controls first
-	for (std::shared_ptr<Control> control : m_controls)
-	{
-		control->OnPaint();
-	}
-
-
-	PaintBorders();
-
-
-	// Paint the sub layouts
-	for (auto sub : m_subLayouts) 
-	{
-		sub._Myfirst._Val->OnPaint();
-	}
-	*/
-}
-
+/*
 void Layout::PaintBorders()
 {
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> blackBrush;
@@ -242,6 +222,7 @@ void Layout::PaintBorders()
 		context->DrawLine(p1, p2, blackBrush.Get());
 	}
 }
+*/
 
 D2D1_RECT_F Layout::GetRect(int rowIndex, int columnIndex, int rowSpan = 1, int columnSpan = 1)
 {
@@ -586,4 +567,15 @@ bool Layout::Render2DControls()
 	}
 
 	return needsPresent;
+}
+
+bool Layout::Render2DCapturedControl()
+{
+	if (m_mouseCapturedControl != nullptr)
+		return m_mouseCapturedControl->Render2D();
+
+	if (m_mouseCapturedLayout != nullptr)
+		return m_mouseCapturedLayout->Render2DCapturedControl();
+
+	return false;
 }

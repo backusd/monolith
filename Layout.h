@@ -53,8 +53,7 @@ public:
 
 	D2D1_RECT_F GetRect(int rowIndex, int columnIndex, int rowSpan, int columnSpan);
 
-	void OnPaint();
-	void PaintBorders();
+	// void PaintBorders();
 	
 	bool MouseIsOver(int x, int y) { return x >= Left() && x <= Right() && y >= Top() && y <= Bottom(); }
 
@@ -73,6 +72,7 @@ public:
 	void Update(StepTimer const& stepTimer);
 	bool Render3DControls();
 	bool Render2DControls();
+	bool Render2DCapturedControl();
 
 private:
 	void UpdateLayout();

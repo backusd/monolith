@@ -22,6 +22,11 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 		menuButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
 		menuButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
 
+		// Quick Bar Button Color
+		std::shared_ptr<ColorTheme> quickBarButtonColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_QUICK_BAR_BUTTON_COLOR, deviceResources);
+		quickBarButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
+		quickBarButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+		quickBarButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
 
 		// Default drop down color
 		std::shared_ptr<ColorTheme> defaultDropDownColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_DROP_DOWN_COLOR, deviceResources);
@@ -74,6 +79,19 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 		menuDropDownGlyphTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 		menuDropDownGlyphTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 		menuDropDownGlyphTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+		// Quick Bar Glyph
+		std::shared_ptr<TextTheme> quickBarGlyphTheme = ThemeManager::CreateTheme<TextTheme>(THEME_QUICK_BAR_GLYPH, deviceResources);
+		quickBarGlyphTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+		quickBarGlyphTheme->SetFontFamily(FONT_FAMILY::SEGOE_MDL2_ASSETS);
+		quickBarGlyphTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+		quickBarGlyphTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+		quickBarGlyphTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+		quickBarGlyphTheme->SetFontSize(13.0f);
+		quickBarGlyphTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+		quickBarGlyphTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+		quickBarGlyphTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+		quickBarGlyphTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 		
 
 		m_initialized = true;

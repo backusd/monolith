@@ -91,6 +91,9 @@ bool ContentWindow::Render()
 
 	m_layout->Render2DControls();
 
+	// re-render the captured control to make sure it is on top of the UI
+	m_layout->Render2DCapturedControl();
+
 
 	HRESULT hr = context2->EndDraw();
 	if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
