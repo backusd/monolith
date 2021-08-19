@@ -6,6 +6,9 @@
 #define THEME_MENU_BAR_BUTTON_COLOR "menu-bar-color"
 
 #define THEME_DEFAULT_DROP_DOWN_COLOR "default-drop-down-color"
+#define THEME_MENU_DROP_DOWN_COLOR "menu-drop-down-color"
 
 #define THEME_DEFAULT_TEXT "default-text"
 #define THEME_MENU_BAR_TEXT "menu-bar-text"
+#define THEME_MENU_DROP_DOWN_TEXT "menu-drop-down-text"
+#define THEME_MENU_DROP_DOWN_GLYPH "menu-drop-down-glyph"

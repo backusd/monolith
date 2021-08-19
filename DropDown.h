@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Control.h"
 #include "Button.h"
+#include "ThemeManager.h"
 
 #include <string>
 #include <vector>
@@ -40,6 +41,7 @@ public:
 	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
 	OnMessageResult OnMouseLeave() override;
 	
+	void SetColorTheme(std::string name) { m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
 
 	std::shared_ptr<Layout> GetMainLayout() { return m_mainLayout; }
 	std::shared_ptr<Layout> GetDropDownLayout() { return m_dropDownLayout; }
@@ -52,6 +54,8 @@ private:
 
 	std::shared_ptr<Layout> m_mainLayout;
 	std::shared_ptr<Layout> m_dropDownLayout;
+
+	std::shared_ptr<ColorTheme> m_colorTheme;
 
 	bool m_dropDownIsOpen;
 

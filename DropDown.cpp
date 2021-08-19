@@ -7,9 +7,12 @@ DropDown::DropDown(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_mainLayout(nullptr),
 	m_dropDownLayout(nullptr),
 	m_dropDownIsOpen(false),
+	m_colorTheme(nullptr),
 	m_dropDownHeight(100.0f),
 	m_dropDownWidth(100.0f)
 {
+	SetColorTheme(THEME_DEFAULT_DROP_DOWN_COLOR);
+
 	// Create a sub layout not as a child of the parent that will house the main button
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1
 	// we can automatically assign the layout to be the same as the (0,0) rectangle of the parent layout
@@ -46,8 +49,22 @@ bool DropDown::Render2D()
 {
 	m_mainLayout->Render2DControls();
 
+	// Draw the background of the drop down region and then draw the drop down controls over it
 	if (m_dropDownIsOpen)
+	{
+		ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+		context->SetTransform(m_deviceResources->OrientationTransform2D());
+		D2D1_RECT_F rect = m_dropDownLayout->GetRect(
+			0,
+			0,
+			m_dropDownLayout->RowCount(),
+			m_dropDownLayout->ColumnCount()
+		);
+		context->FillRectangle(rect, m_colorTheme->GetBrush(MouseOverDown::NONE));
+
+
 		m_dropDownLayout->Render2DControls();
+	}
 
 	return true;
 }

@@ -38,6 +38,11 @@ ContentWindow::~ContentWindow()
 
 void ContentWindow::Update()
 {
+
+	std::ostringstream oss;
+	oss << "Time: " << m_timer.GetTotalSeconds();
+	SetWindowText(m_hWnd, oss.str().c_str());
+
 	m_timer.Tick([&]() 
 		{
 			// Pass the Update call along to the layout, which will pass it along to each child control
@@ -48,8 +53,7 @@ void ContentWindow::Update()
 			// must come from the main window, so that multiple controls don't try updating the simulation
 			SimulationManager::Update(m_timer);		
 		}
-	);
-	
+	);	
 }
 
 bool ContentWindow::Render()
@@ -221,9 +225,6 @@ LRESULT ContentWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	// Update the Layout
 	m_layout->OnResize(0.0f, 0.0f, m_deviceResources->PixelsToDIPS(Height()), m_deviceResources->PixelsToDIPS(Width()));
 
-	// Invalidate window so it redraws the whole client area
-	InvalidateRect(hWnd, NULL, FALSE);
-
 	return 0;
 }
 
@@ -232,7 +233,7 @@ LRESULT ContentWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	const POINTS pts = MAKEPOINTS(lParam);
 	std::ostringstream oss;
 	oss << "Pixels: (" << pts.x << ", " << pts.y << ") - DIPS: (" << m_deviceResources->PixelsToDIPS(pts.x) << ", " << m_deviceResources->PixelsToDIPS(pts.y) << ") - Main";
-	SetWindowText(hWnd, oss.str().c_str());
+	//SetWindowText(hWnd, oss.str().c_str());
 
 	// ====================================
 

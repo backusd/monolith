@@ -35,6 +35,7 @@ std::optional<int> WindowManager::ProcessMessages()
 
 		// TranslateMessage will post auxilliary WM_CHAR messages from key msgs
 		TranslateMessage(&msg);
+
 		LRESULT result = DispatchMessage(&msg);
 
 		// Check for windows that need to be destroyed

@@ -14,4 +14,11 @@ namespace LayoutConfiguration
 {
 	// Configure the layout for the main application window
 	void ConfigureMainWindow(const std::shared_ptr<ContentWindow>& window);
+
+	void CreateMenuBar(const std::shared_ptr<Layout>& mainLayout);
+	void CreateFileDropDown(const std::shared_ptr<Layout>& menuBarLayout);
+	void CreateSimulationDropDown(const std::shared_ptr<Layout>& menuBarLayout);
+	void CreateViewDropDown(const std::shared_ptr<Layout>& menuBarLayout);
+
+
 }
