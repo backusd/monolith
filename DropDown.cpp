@@ -121,14 +121,14 @@ OnMessageResult DropDown::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
 
 OnMessageResult DropDown::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 {
+	OnMessageResult result;
+
 	// If the drop down is open and mouse is over, send message to drop down layout.
 	// Otherwise, just send message to main layout
 	if (m_dropDownIsOpen && m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
-	{
-		return m_dropDownLayout->OnLButtonUp(mouseState);
-	}
-
-	OnMessageResult result = m_mainLayout->OnLButtonUp(mouseState);
+		result = m_dropDownLayout->OnLButtonUp(mouseState);
+	else
+		result = m_mainLayout->OnLButtonUp(mouseState);
 
 	// If the click was handled, then expand/collapse the drop down
 	if (result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)

@@ -4,6 +4,7 @@
 #include "ContentWindow.h"
 #include "Control.h"
 #include "Button.h"
+#include "ButtonClickMethods.h"
 #include "ColorTheme.h"
 #include "DropDown.h"
 #include "ThemeDefines.h"

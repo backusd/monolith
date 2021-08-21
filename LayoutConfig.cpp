@@ -84,6 +84,7 @@ namespace LayoutConfiguration
 		std::shared_ptr<Button> fileDropDownNewSimulationButton = fileDropDown->GetDropDownLayout()->CreateControl<Button>(0, 0);
 		fileDropDownNewSimulationButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
 		fileDropDownNewSimulationButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
+		fileDropDownNewSimulationButton->Click(NewSimulationButtonClick);
 
 		std::shared_ptr<Text> fileDropDownNewSimulationGlyph = fileDropDownNewSimulationButton->GetLayout()->CreateControl<Text>(0, 0);
 		fileDropDownNewSimulationGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);

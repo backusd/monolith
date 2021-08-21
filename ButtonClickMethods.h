@@ -3,4 +3,4 @@
 #include <functional>
 
 void DefaultClickMethod();
-void WriteDebugMessage();
+void NewSimulationButtonClick();

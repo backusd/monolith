@@ -5,7 +5,8 @@ void DefaultClickMethod()
 	//OutputDebugString("Suck weener sauce");
 }
 
-void WriteDebugMessage()
+void NewSimulationButtonClick()
 {
-	//OutputDebugString("Suck weener");
+	// Pass the call to window manager which will pass it to each window
+	OutputDebugString("Suck weener");
 }
