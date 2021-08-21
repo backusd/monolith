@@ -38,7 +38,7 @@ public:
 
 	// Render
 	void Render(DirectX::XMMATRIX viewProjectionMatrix);
-	DirectX::XMMATRIX ModelMatrix() { return m_sphereMesh->ModelMatrix(); }
+	DirectX::XMMATRIX ModelMatrix() { return m_mesh->ModelMatrix(); }
 	DirectX::XMMATRIX TranslationMatrix() { return DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z); }
 
 	// Get
@@ -54,9 +54,10 @@ public:
 
 	// Set
 	void Velocity(DirectX::XMFLOAT3 velocity) { m_velocity = velocity; }
+	void SetMesh(const std::shared_ptr<SphereMesh>& mesh) { m_mesh = mesh; }
 
 protected:
-	std::unique_ptr<SphereMesh> m_sphereMesh;
+	std::shared_ptr<SphereMesh> m_mesh;
 
 	DirectX::XMFLOAT3		m_position;
 	DirectX::XMFLOAT3		m_velocity;

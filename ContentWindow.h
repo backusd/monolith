@@ -5,6 +5,7 @@
 #include "Layout.h"
 #include "Theme.h"
 #include "ThemeManager.h"
+#include "MeshManager.h"
 #include "MouseState.h"
 #include "OnMessageResult.h"
 #include "StepTimer.h"
@@ -26,6 +27,7 @@ public:
 
 	void InitializeSimulation() { SimulationManager::CreateSimulation(m_deviceResources); }
 	void InitializeThemes() { ThemeManager::Initialize(m_deviceResources); }
+	void InitializeMeshes() { MeshManager::CreateSphereMesh(m_deviceResources); }
 
 	std::shared_ptr<Layout> GetLayout() { return m_layout; }
 	std::shared_ptr<DeviceResources> GetDeviceResources() { return m_deviceResources; }

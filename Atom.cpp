@@ -9,11 +9,9 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 	m_position(position),
 	m_velocity(velocity),
 	m_neutronCount(element),
-	m_radius(Constants::AtomicRadii[element])
+	m_radius(Constants::AtomicRadii[element]),
+	m_mesh(nullptr)
 {
-	// Create the sphere mesh
-	m_sphereMesh = std::unique_ptr<SphereMesh>(new SphereMesh(deviceResources));
-
 	// Populate the electrons
 	for (int iii = 0; iii < element; ++iii)
 		m_electrons.push_back(std::shared_ptr<Electron>(new Electron()));
@@ -26,9 +24,6 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 	m_neutronCount(neutronCount),
 	m_radius(Constants::AtomicRadii[element])
 {
-	// Create the sphere mesh
-	m_sphereMesh = std::unique_ptr<SphereMesh>(new SphereMesh(deviceResources));
-
 	// Populate the electrons
 	for (int iii = 0; iii < electronCount; ++iii)
 		m_electrons.push_back(std::shared_ptr<Electron>(new Electron()));
@@ -41,9 +36,6 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 	m_neutronCount(neutronCount),
 	m_radius(radius)
 {
-	// Create the sphere mesh
-	m_sphereMesh = std::unique_ptr<SphereMesh>(new SphereMesh(deviceResources));
-
 	// Populate the electrons
 	for (int iii = 0; iii < electronCount; ++iii)
 		m_electrons.push_back(std::shared_ptr<Electron>(new Electron()));
@@ -52,5 +44,5 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 
 void Atom::Render(XMMATRIX viewProjectionMatrix)
 {
-	m_sphereMesh->Render(m_position, m_radius, viewProjectionMatrix);
+	m_mesh->Render(m_position, m_radius, viewProjectionMatrix);
 }

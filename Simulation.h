@@ -3,6 +3,7 @@
 
 #include "Atom.h"
 #include "Elements.h"
+#include "MeshManager.h"
 #include "StepTimer.h"
 
 #include <cmath>
@@ -74,5 +75,7 @@ private:
 template<typename T>
 std::shared_ptr<T> Simulation::CreateAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
 {
-	return std::make_shared<T>(m_deviceResources, position, velocity);
+	std::shared_ptr<T> atom = std::make_shared<T>(m_deviceResources, position, velocity);
+	atom->SetMesh(MeshManager::GetSphereMesh());
+	return atom;
 }

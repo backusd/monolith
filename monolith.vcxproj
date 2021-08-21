@@ -185,6 +185,7 @@
     <ClCompile Include="Layout.cpp" />
     <ClCompile Include="LayoutConfig.cpp" />
     <ClCompile Include="Lithium.cpp" />
+    <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="MonolithException.cpp" />
     <ClCompile Include="MouseState.cpp" />
     <ClCompile Include="MoveLookController.cpp" />
@@ -234,6 +235,7 @@
     <ClInclude Include="Layout.h" />
     <ClInclude Include="LayoutConfig.h" />
     <ClInclude Include="Lithium.h" />
+    <ClInclude Include="MeshManager.h" />
     <ClInclude Include="MonolithException.h" />
     <ClInclude Include="MouseOverDown.h" />
     <ClInclude Include="MouseState.h" />

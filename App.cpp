@@ -8,6 +8,9 @@ App::App()
 		// at the time of window creation (that could probably be changed), these values are physical pixels for the window size
 		std::shared_ptr<ContentWindow> main = std::make_shared<ContentWindow>(2000, 1200, "Main Window");
 
+		// Must initialize the meshes first before the atoms in the simulation can be created
+		main->InitializeMeshes();
+
 		// The main window must create/reconstruct the simulation because it will need access to device resources
 		// Also, the simulation MUST be initialized before the controls can be added because the controls
 		// might try to get data from the SimulationManager
