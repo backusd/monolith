@@ -4,7 +4,7 @@
 #include "ThemeManager.h"
 #include "ColorTheme.h"
 #include "MouseOverDown.h"
-#include "ButtonClickMethods.h"
+#include "WindowManager.h"
 
 
 #include <string>
@@ -23,7 +23,6 @@ public:
 
 
 	bool Render2D() override;
-	// void OnPaint() override;
 
 
 	void OnLayoutResize() override { Resize(); }

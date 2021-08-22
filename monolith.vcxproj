@@ -170,7 +170,6 @@
     <ClCompile Include="Beryllium.cpp" />
     <ClCompile Include="Boron.cpp" />
     <ClCompile Include="Button.cpp" />
-    <ClCompile Include="ButtonClickMethods.cpp" />
     <ClCompile Include="Carbon.cpp" />
     <ClCompile Include="ColorTheme.cpp" />
     <ClCompile Include="Control.cpp" />
@@ -215,7 +214,6 @@
     <ClInclude Include="Beryllium.h" />
     <ClInclude Include="Boron.h" />
     <ClInclude Include="Button.h" />
-    <ClInclude Include="ButtonClickMethods.h" />
     <ClInclude Include="Carbon.h" />
     <ClInclude Include="ColorTheme.h" />
     <ClInclude Include="Constants.h" />

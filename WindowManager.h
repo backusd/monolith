@@ -3,6 +3,7 @@
 
 #include "WindowBase.h"
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -16,6 +17,11 @@ public:
 	static void UpdateRenderPresent();
 
 	static std::optional<int> ProcessMessages();
+
+
+	// Button click methods
+	static void DefaultClickMethod() {}
+	static void NewSimulationButtonClick();
 
 private:
 	// Disallow creation of a WindowManager object

@@ -358,3 +358,10 @@ LRESULT ContentWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
+
+
+// Button click methods
+void ContentWindow::NewSimulationButtonClick()
+{
+	OutputDebugString("Eat it\n");
+}

@@ -12,7 +12,7 @@ Button::Button(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_buttonLayout(nullptr),
 	m_colorTheme(nullptr),
 	m_mouseOverDownState(MouseOverDown::NONE),
-	ClickMethod(DefaultClickMethod)
+	ClickMethod(WindowManager::DefaultClickMethod)
 {
 	SetColorTheme(THEME_DEFAULT_BUTTON_COLOR);
 

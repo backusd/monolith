@@ -24,9 +24,6 @@
     <Filter Include="Header Files\UI\Other">
       <UniqueIdentifier>{289ab96a-f75b-406d-83a4-6769454f1da8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\UI\Click Methods">
-      <UniqueIdentifier>{98b3eaba-729d-4212-b6b9-23d1929d005a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Window">
       <UniqueIdentifier>{7eb8ce43-fa22-4dc9-83ff-dcb577ffdef3}</UniqueIdentifier>
     </Filter>
@@ -54,9 +51,6 @@
     </Filter>
     <Filter Include="Source Files\UI\Other">
       <UniqueIdentifier>{2c831836-8169-4323-bd84-b8c99036d9df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\UI\Click Methods">
-      <UniqueIdentifier>{3cde908f-40b7-449f-be9b-aeb8934e0a51}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\UI\Layout">
       <UniqueIdentifier>{2c4d5ace-1494-4dfa-a6ea-d813fa9847e7}</UniqueIdentifier>
@@ -134,9 +128,6 @@
     </ClCompile>
     <ClCompile Include="ContentWindow.cpp">
       <Filter>Source Files\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="ButtonClickMethods.cpp">
-      <Filter>Source Files\UI\Click Methods</Filter>
     </ClCompile>
     <ClCompile Include="Layout.cpp">
       <Filter>Source Files\UI\Layout</Filter>
@@ -259,9 +250,6 @@
     </ClInclude>
     <ClInclude Include="OnMessageResult.h">
       <Filter>Header Files\UI\Other</Filter>
-    </ClInclude>
-    <ClInclude Include="ButtonClickMethods.h">
-      <Filter>Header Files\UI\Click Methods</Filter>
     </ClInclude>
     <ClInclude Include="ContentWindow.h">
       <Filter>Header Files\Window</Filter>
