@@ -173,6 +173,40 @@ std::shared_ptr<Layout> Layout::CreateSubLayout(int rowIndex, int columnIndex)
 
 	return layout;
 }
+std::shared_ptr<Layout> Layout::GetSubLayout(int rowIndex, int columnIndex)
+{
+	// Get the size and location of the layout to retrieve
+	float top = m_rows[rowIndex].Top();
+	float left = m_columns[columnIndex].Left();
+	float height = m_rows[rowIndex].Height();
+	float width = m_columns[columnIndex].Width();
+
+	// search each layout for the one with the correct size/location
+	std::shared_ptr<Layout> layout = nullptr;
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		layout = subLayoutTuple._Myfirst._Val;
+
+		// Return the layout that matches the size/location
+		if (layout->m_top == top && layout->m_left == left && layout->m_height == height && layout->m_width == width)
+			return layout;
+	}
+
+	return nullptr;
+}
+
+void Layout::Clear()
+{
+	// Clear bound controls, sublayouts, and set rows/columns back to default
+	m_controls.clear();
+	m_subLayouts.clear();
+
+	RowColDefinitions defaultDefinition;
+	defaultDefinition.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+
+	SetRowDefinitions(defaultDefinition);
+	SetColumnDefinitions(defaultDefinition);
+}
 
 /*
 void Layout::PaintBorders()

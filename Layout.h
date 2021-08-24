@@ -37,6 +37,9 @@ public:
 	void OnResize(float top, float left, float height, float width);
 	void OnResize(D2D1_RECT_F rect);
 
+	void Clear();
+
+	std::shared_ptr<Layout> GetSubLayout(int rowIndex, int columnIndex);
 	std::shared_ptr<Layout> CreateSubLayout(int rowIndex, int columnIndex);
 
 	template<typename T>

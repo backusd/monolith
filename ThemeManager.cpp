@@ -93,9 +93,27 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 		quickBarGlyphTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 		quickBarGlyphTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 		
+		CreateNewSimulationThemes(deviceResources);
 
 		m_initialized = true;
 	}
+}
+
+void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResources>& deviceResources)
+{
+	// Menu Drop Down Text
+	std::shared_ptr<TextTheme> textTheme = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_TEXT, deviceResources);
+	textTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	textTheme->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	textTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	textTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	textTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	textTheme->SetFontSize(13.0f);
+	textTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	textTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	textTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	textTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
 }
 
 std::shared_ptr<Theme> ThemeManager::GetTheme(std::string name)

@@ -10,6 +10,7 @@
 #include "OnMessageResult.h"
 #include "StepTimer.h"
 #include "SimulationManager.h"
+#include "Text.h"
 
 #include <memory>
 #include <map>

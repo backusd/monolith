@@ -27,6 +27,7 @@ namespace LayoutConfiguration
 
 		CreateMenuBar(mainLayout);
 		CreateQuickBar(mainLayout);
+		CreateRightPane(mainLayout);
 		
 
 
@@ -279,5 +280,10 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> playSimulationText = playSimulationButton->GetLayout()->CreateControl<Text>();
 		playSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
 		playSimulationText->SetText(L"\xE769");
+	}
+
+	void CreateRightPane(const std::shared_ptr<Layout>& mainLayout)
+	{
+		std::shared_ptr<Layout> rightPaneLayout = mainLayout->CreateSubLayout(2, 1);
 	}
 }

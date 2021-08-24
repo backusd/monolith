@@ -363,5 +363,28 @@ LRESULT ContentWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 // Button click methods
 void ContentWindow::NewSimulationButtonClick()
 {
-	OutputDebugString("Eat it\n");
+	// Get the layout for the pane on the right
+	std::shared_ptr<Layout> layout = m_layout->GetSubLayout(2, 1);
+	if (layout == nullptr)
+		layout = m_layout->CreateSubLayout(2, 1);
+	else
+		layout->Clear();
+
+	// Create the rows and columns for the pane
+	RowColDefinitions columnDefs;
+	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Split the pane even vertically
+	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+
+	RowColDefinitions rowDefs;
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Simulation Name
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+
+	layout->SetColumnDefinitions(columnDefs);
+	layout->SetRowDefinitions(rowDefs);
+
+	// Text for Simulation Name
+	std::shared_ptr<Text> simulationNameText = layout->CreateControl<Text>(0, 0);
+	simulationNameText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	simulationNameText->SetText(L"Simulation Name:");
+	simulationNameText->Margin(5.0f, 0.0f);
 }

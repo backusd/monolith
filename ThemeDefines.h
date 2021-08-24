@@ -14,3 +14,7 @@
 #define THEME_MENU_DROP_DOWN_TEXT "menu-drop-down-text"
 #define THEME_MENU_DROP_DOWN_GLYPH "menu-drop-down-glyph"
 #define THEME_QUICK_BAR_GLYPH "quick-bar-glyph"
+
+
+// New simulation pane themes
+#define THEME_NEW_SIMULATION_TEXT "new-simulation-text"

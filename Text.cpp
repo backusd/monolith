@@ -17,6 +17,9 @@ bool Text::Render2D()
 {
 	D2D1_RECT_F rect = GetParentRect();
 
+	// Adjust the rect with the margins
+	rect = D2D1::RectF(rect.left + m_marginLeft, rect.top + m_marginTop, rect.right - m_marginRight, rect.bottom - m_marginBottom);
+
 	float maxWidth = rect.right - rect.left; // std::max(0, width of parent rect)
 	float maxHeight = rect.bottom - rect.top; // std::max(0, height of parent rect)
 
