@@ -59,7 +59,7 @@ namespace LayoutConfiguration
 	{
 		std::shared_ptr<DropDown> fileDropDown = menuBarLayout->CreateControl<DropDown>(0, 0);
 		fileDropDown->SetDropDownSize(100, 200);
-		fileDropDown->SetColorTheme(THEME_MENU_DROP_DOWN_COLOR);
+		fileDropDown->SetColorTheme(THEME_MENU_BAR_DROP_DOWN_COLOR);
 
 		// For the main button, we don't need to set the rows/columns - already 1 of each
 		std::shared_ptr<Button> fileDropDownMainButton = fileDropDown->GetMainLayout()->CreateControl<Button>();
@@ -88,11 +88,11 @@ namespace LayoutConfiguration
 		fileDropDownNewSimulationButton->Click(WindowManager::NewSimulationButtonClick);
 
 		std::shared_ptr<Text> fileDropDownNewSimulationGlyph = fileDropDownNewSimulationButton->GetLayout()->CreateControl<Text>(0, 0);
-		fileDropDownNewSimulationGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		fileDropDownNewSimulationGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		fileDropDownNewSimulationGlyph->SetText(L"\xE710");
 
 		std::shared_ptr<Text> fileDropDownNewSimulationText = fileDropDownNewSimulationButton->GetLayout()->CreateControl<Text>(0, 1);
-		fileDropDownNewSimulationText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		fileDropDownNewSimulationText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		fileDropDownNewSimulationText->SetText(L"New Simulation");
 
 		// Open Simulation
@@ -101,11 +101,11 @@ namespace LayoutConfiguration
 		fileDropDownOpenSimulationButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
 
 		std::shared_ptr<Text> fileDropDownOpenSimulationGlyph = fileDropDownOpenSimulationButton->GetLayout()->CreateControl<Text>(0, 0);
-		fileDropDownOpenSimulationGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		fileDropDownOpenSimulationGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		fileDropDownOpenSimulationGlyph->SetText(L"\xE8E5");
 
 		std::shared_ptr<Text> fileDropDownOpenSimulationText = fileDropDownOpenSimulationButton->GetLayout()->CreateControl<Text>(0, 1);
-		fileDropDownOpenSimulationText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		fileDropDownOpenSimulationText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		fileDropDownOpenSimulationText->SetText(L"Open Simulation");
 
 		// Save Simulation
@@ -114,11 +114,11 @@ namespace LayoutConfiguration
 		fileDropDownSaveSimulationButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
 
 		std::shared_ptr<Text> fileDropDownSaveSimulationGlyph = fileDropDownSaveSimulationButton->GetLayout()->CreateControl<Text>(0, 0);
-		fileDropDownSaveSimulationGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		fileDropDownSaveSimulationGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		fileDropDownSaveSimulationGlyph->SetText(L"\xE74E");
 
 		std::shared_ptr<Text> fileDropDownSaveSimulationText = fileDropDownSaveSimulationButton->GetLayout()->CreateControl<Text>(0, 1);
-		fileDropDownSaveSimulationText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		fileDropDownSaveSimulationText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		fileDropDownSaveSimulationText->SetText(L"Save Simulation");
 
 		// Save As
@@ -127,18 +127,18 @@ namespace LayoutConfiguration
 		fileDropDownSaveAsButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
 
 		std::shared_ptr<Text> fileDropDownSaveAsGlyph = fileDropDownSaveAsButton->GetLayout()->CreateControl<Text>(0, 0);
-		fileDropDownSaveAsGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		fileDropDownSaveAsGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		fileDropDownSaveAsGlyph->SetText(L"\xE792");
 
 		std::shared_ptr<Text> fileDropDownSaveAsText = fileDropDownSaveAsButton->GetLayout()->CreateControl<Text>(0, 1);
-		fileDropDownSaveAsText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		fileDropDownSaveAsText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		fileDropDownSaveAsText->SetText(L"Save As...");
 	}
 	void CreateSimulationDropDown(const std::shared_ptr<Layout>& menuBarLayout)
 	{
 		std::shared_ptr<DropDown> dropDown = menuBarLayout->CreateControl<DropDown>(0, 1);
 		dropDown->SetDropDownSize(75, 200);
-		dropDown->SetColorTheme(THEME_MENU_DROP_DOWN_COLOR);
+		dropDown->SetColorTheme(THEME_MENU_BAR_DROP_DOWN_COLOR);
 
 		// For the main button, we don't need to set the rows/columns - already 1 of each
 		std::shared_ptr<Button> dropDownMainButton = dropDown->GetMainLayout()->CreateControl<Button>();
@@ -166,11 +166,11 @@ namespace LayoutConfiguration
 		resetStateButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> resetStateGlyph = resetStateButton->GetLayout()->CreateControl<Text>(0, 0);
-		resetStateGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		resetStateGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		resetStateGlyph->SetText(L"\xE72C");
 
 		std::shared_ptr<Text> resetStateText = resetStateButton->GetLayout()->CreateControl<Text>(0, 1);
-		resetStateText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		resetStateText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		resetStateText->SetText(L"Reset State");
 
 
@@ -180,11 +180,11 @@ namespace LayoutConfiguration
 		addAtomButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> addAtomGlyph = addAtomButton->GetLayout()->CreateControl<Text>(0, 0);
-		addAtomGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		addAtomGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		addAtomGlyph->SetText(L"\xECC8");
 
 		std::shared_ptr<Text> addAtomText = addAtomButton->GetLayout()->CreateControl<Text>(0, 1);
-		addAtomText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		addAtomText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		addAtomText->SetText(L"Add Atom");
 
 
@@ -194,11 +194,11 @@ namespace LayoutConfiguration
 		editAtomButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> editAtomGlyph = editAtomButton->GetLayout()->CreateControl<Text>(0, 0);
-		editAtomGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		editAtomGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		editAtomGlyph->SetText(L"\xEB7E");
 
 		std::shared_ptr<Text> editAtomText = editAtomButton->GetLayout()->CreateControl<Text>(0, 1);
-		editAtomText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		editAtomText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		editAtomText->SetText(L"Edit Atom");
 
 	}
@@ -206,7 +206,7 @@ namespace LayoutConfiguration
 	{
 		std::shared_ptr<DropDown> dropDown = menuBarLayout->CreateControl<DropDown>(0, 2);
 		dropDown->SetDropDownSize(25, 200);
-		dropDown->SetColorTheme(THEME_MENU_DROP_DOWN_COLOR);
+		dropDown->SetColorTheme(THEME_MENU_BAR_DROP_DOWN_COLOR);
 
 		// For the main button, we don't need to set the rows/columns - already 1 of each
 		std::shared_ptr<Button> dropDownMainButton = dropDown->GetMainLayout()->CreateControl<Button>();
@@ -232,11 +232,11 @@ namespace LayoutConfiguration
 		atomSummaryButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> atomSummaryGlyph = atomSummaryButton->GetLayout()->CreateControl<Text>(0, 0);
-		atomSummaryGlyph->SetTextTheme(THEME_MENU_DROP_DOWN_GLYPH);
+		atomSummaryGlyph->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_GLYPH);
 		atomSummaryGlyph->SetText(L"\xE762");
 
 		std::shared_ptr<Text> atomSummaryText = atomSummaryButton->GetLayout()->CreateControl<Text>(0, 1);
-		atomSummaryText->SetTextTheme(THEME_MENU_DROP_DOWN_TEXT);
+		atomSummaryText->SetTextTheme(THEME_MENU_BAR_DROP_DOWN_TEXT);
 		atomSummaryText->SetText(L"Atom Summary");
 	}
 

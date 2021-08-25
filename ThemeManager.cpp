@@ -9,90 +9,9 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 	{
 		CreateDefaultThemes(deviceResources);
 
-		// Create all themes for the application
-		//
-		// Default Button Color - White
-		std::shared_ptr<ColorTheme> defaultColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_BUTTON_COLOR, deviceResources);
-		defaultColorTheme->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+		CreateMenuBarThemes(deviceResources);
+		CreateQuickBarThemes(deviceResources);
 
-		
-		// Menu Button Color
-		std::shared_ptr<ColorTheme> menuButtonColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_MENU_BAR_BUTTON_COLOR, deviceResources);
-		menuButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
-		menuButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
-		menuButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
-
-		// Quick Bar Button Color
-		std::shared_ptr<ColorTheme> quickBarButtonColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_QUICK_BAR_BUTTON_COLOR, deviceResources);
-		quickBarButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
-		quickBarButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
-		quickBarButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
-
-		// Default drop down color
-		std::shared_ptr<ColorTheme> defaultDropDownColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_DROP_DOWN_COLOR, deviceResources);
-		defaultDropDownColorTheme->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
-
-		// Menu drop down Color
-		std::shared_ptr<ColorTheme> menuDropDownColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_MENU_DROP_DOWN_COLOR, deviceResources);
-		menuDropDownColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
-
-
-
-		// Default Text
-		std::shared_ptr<TextTheme> defaultTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_TEXT, deviceResources);
-
-		// Menu Button Text
-		std::shared_ptr<TextTheme> menuButtonTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_MENU_BAR_TEXT, deviceResources);
-		menuButtonTextTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
-		menuButtonTextTheme->SetFontFamily(FONT_FAMILY::SEGOE_UI);
-		menuButtonTextTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
-		menuButtonTextTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
-		menuButtonTextTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
-		menuButtonTextTheme->SetFontSize(13.0f);
-		menuButtonTextTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
-		menuButtonTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-		menuButtonTextTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
-		menuButtonTextTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
-
-		// Menu Drop Down Text
-		std::shared_ptr<TextTheme> menuDropDownTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_MENU_DROP_DOWN_TEXT, deviceResources);
-		menuDropDownTextTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
-		menuDropDownTextTheme->SetFontFamily(FONT_FAMILY::SEGOE_UI);
-		menuDropDownTextTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
-		menuDropDownTextTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
-		menuDropDownTextTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
-		menuDropDownTextTheme->SetFontSize(13.0f);
-		menuDropDownTextTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
-		menuDropDownTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-		menuDropDownTextTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
-		menuDropDownTextTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
-
-		// Menu Drop Down Glyph
-		std::shared_ptr<TextTheme> menuDropDownGlyphTheme = ThemeManager::CreateTheme<TextTheme>(THEME_MENU_DROP_DOWN_GLYPH, deviceResources);
-		menuDropDownGlyphTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
-		menuDropDownGlyphTheme->SetFontFamily(FONT_FAMILY::SEGOE_MDL2_ASSETS);
-		menuDropDownGlyphTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
-		menuDropDownGlyphTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
-		menuDropDownGlyphTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
-		menuDropDownGlyphTheme->SetFontSize(13.0f);
-		menuDropDownGlyphTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
-		menuDropDownGlyphTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-		menuDropDownGlyphTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
-		menuDropDownGlyphTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
-
-		// Quick Bar Glyph
-		std::shared_ptr<TextTheme> quickBarGlyphTheme = ThemeManager::CreateTheme<TextTheme>(THEME_QUICK_BAR_GLYPH, deviceResources);
-		quickBarGlyphTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
-		quickBarGlyphTheme->SetFontFamily(FONT_FAMILY::SEGOE_MDL2_ASSETS);
-		quickBarGlyphTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
-		quickBarGlyphTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
-		quickBarGlyphTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
-		quickBarGlyphTheme->SetFontSize(13.0f);
-		quickBarGlyphTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
-		quickBarGlyphTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-		quickBarGlyphTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
-		quickBarGlyphTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
-		
 		CreateNewSimulationThemes(deviceResources);
 
 		m_initialized = true;
@@ -101,6 +20,17 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 
 void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& deviceResources)
 {
+	// Text Control - Use class defaults
+	std::shared_ptr<TextTheme> defaultTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_TEXT, deviceResources);
+
+	// Button Control - Background
+	std::shared_ptr<ColorTheme> buttonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_BUTTON_COLOR, deviceResources);
+	buttonColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	// Drop Down Control - Background
+	std::shared_ptr<ColorTheme> dropDownColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_DROP_DOWN_COLOR, deviceResources);
+	dropDownColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
 	// TextInput Control - Background Color
 	std::shared_ptr<ColorTheme> textInputBackgroundColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TEXT_INPUT_BACKGROUND_COLOR, deviceResources);
 	textInputBackgroundColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
@@ -138,9 +68,85 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 	textInputPlaceholderText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 }
 
+void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)
+{
+	// Text Control - Text for main drop down button
+	std::shared_ptr<TextTheme> menuButtonTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_MENU_BAR_TEXT, deviceResources);
+	menuButtonTextTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	menuButtonTextTheme->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	menuButtonTextTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	menuButtonTextTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	menuButtonTextTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	menuButtonTextTheme->SetFontSize(13.0f);
+	menuButtonTextTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	menuButtonTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	menuButtonTextTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	menuButtonTextTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// Text Control - Text for drop down item
+	std::shared_ptr<TextTheme> menuDropDownTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_MENU_BAR_DROP_DOWN_TEXT, deviceResources);
+	menuDropDownTextTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	menuDropDownTextTheme->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	menuDropDownTextTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	menuDropDownTextTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	menuDropDownTextTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	menuDropDownTextTheme->SetFontSize(13.0f);
+	menuDropDownTextTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	menuDropDownTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	menuDropDownTextTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	menuDropDownTextTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// Text Control - Text for drop down glyph
+	std::shared_ptr<TextTheme> menuDropDownGlyphTheme = ThemeManager::CreateTheme<TextTheme>(THEME_MENU_BAR_DROP_DOWN_GLYPH, deviceResources);
+	menuDropDownGlyphTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	menuDropDownGlyphTheme->SetFontFamily(FONT_FAMILY::SEGOE_MDL2_ASSETS);
+	menuDropDownGlyphTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	menuDropDownGlyphTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	menuDropDownGlyphTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	menuDropDownGlyphTheme->SetFontSize(13.0f);
+	menuDropDownGlyphTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	menuDropDownGlyphTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	menuDropDownGlyphTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	menuDropDownGlyphTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// Button Control - Background color
+	std::shared_ptr<ColorTheme> menuButtonColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_MENU_BAR_BUTTON_COLOR, deviceResources);
+	menuButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
+	menuButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+	menuButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	// Drop Down Control - Background color
+	std::shared_ptr<ColorTheme> menuDropDownColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_MENU_BAR_DROP_DOWN_COLOR, deviceResources);
+	menuDropDownColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
+
+}
+
+void ThemeManager::CreateQuickBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)
+{
+	// Text Control - Text for quick bar glyphs
+	std::shared_ptr<TextTheme> quickBarGlyphTheme = ThemeManager::CreateTheme<TextTheme>(THEME_QUICK_BAR_GLYPH, deviceResources);
+	quickBarGlyphTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	quickBarGlyphTheme->SetFontFamily(FONT_FAMILY::SEGOE_MDL2_ASSETS);
+	quickBarGlyphTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	quickBarGlyphTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	quickBarGlyphTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	quickBarGlyphTheme->SetFontSize(13.0f);
+	quickBarGlyphTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	quickBarGlyphTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	quickBarGlyphTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	quickBarGlyphTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// Button Control - Background color
+	std::shared_ptr<ColorTheme> quickBarButtonColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_QUICK_BAR_BUTTON_COLOR, deviceResources);
+	quickBarButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
+	quickBarButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+	quickBarButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+
+}
+
 void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResources>& deviceResources)
 {
-	// Menu Drop Down Text
 	std::shared_ptr<TextTheme> textTheme = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_TEXT, deviceResources);
 	textTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
 	textTheme->SetFontFamily(FONT_FAMILY::SEGOE_UI);
