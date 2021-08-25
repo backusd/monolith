@@ -11,6 +11,8 @@
 #define THEME_DEFAULT_TEXT_INPUT_BORDER_COLOR "default-text-input-border-color"
 #define THEME_DEFAULT_TEXT_INPUT_TEXT "default-text-input-text"
 #define THEME_DEFAULT_TEXT_INPUT_PLACEHOLDER_TEXT "default-text-input-placeholder-text"
+#define THEME_DEFAULT_COMBO_BOX_DOWN_ARROW_GLYPH "default-combo-box-down-arrow-glyph"
+#define THEME_DEFAULT_COMBO_BOX_TEXT "default-combo-box-text"
 
 // Menu Bar
 #define THEME_MENU_BAR_TEXT "menu-bar-text"

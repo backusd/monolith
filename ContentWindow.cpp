@@ -370,25 +370,48 @@ void ContentWindow::NewSimulationButtonClick()
 	else
 		layout->Clear();
 
-	// Create the rows and columns for the pane
-	RowColDefinitions columnDefs;
-	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);
-	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 
 	RowColDefinitions rowDefs;
-	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Simulation Name
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Simulation Name sublayout
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f); // Add Atom sublayout
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
-
-	layout->SetColumnDefinitions(columnDefs);
 	layout->SetRowDefinitions(rowDefs);
 
+	// ============================================================================================================
+	// Sub Layout for simulation name controls
+	std::shared_ptr<Layout> simulationNameSubLayout = layout->CreateSubLayout(0, 0);
+
+	RowColDefinitions simulationNameColumns;
+	simulationNameColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);
+	simulationNameColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+	simulationNameSubLayout->SetColumnDefinitions(simulationNameColumns);
+
 	// Text for Simulation Name
-	std::shared_ptr<Text> simulationNameText = layout->CreateControl<Text>(0, 0);
+	std::shared_ptr<Text> simulationNameText = simulationNameSubLayout->CreateControl<Text>(0, 0);
 	simulationNameText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	simulationNameText->SetText(L"Simulation Name:");
 	simulationNameText->Margin(5.0f, 0.0f);
 
 	// Text Input for Simulation Name
-	std::shared_ptr<TextInput> simulationNameTextInput = layout->CreateControl<TextInput>(0, 1);
+	std::shared_ptr<TextInput> simulationNameTextInput = simulationNameSubLayout->CreateControl<TextInput>(0, 1);
 	simulationNameTextInput->Margin(0.0f, 0.0f, 5.0f, 0.0f);
+	// ============================================================================================================
+	// ============================================================================================================
+	// Sub Layout for simulation name controls
+	std::shared_ptr<Layout> addAtomSubLayout = layout->CreateSubLayout(1, 0);
+
+	RowColDefinitions addAtomColumns;
+	addAtomColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);
+	addAtomColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+	addAtomSubLayout->SetColumnDefinitions(addAtomColumns);
+
+	// Text for Simulation Name
+	std::shared_ptr<Text> addAtomText = addAtomSubLayout->CreateControl<Text>(0, 0);
+	addAtomText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	addAtomText->SetText(L"Add Atom:");
+	addAtomText->Margin(5.0f, 0.0f);
+
+	std::shared_ptr<ComboBox> atomComboBox = addAtomSubLayout->CreateControl<ComboBox>(0, 1);
+
+	
 }

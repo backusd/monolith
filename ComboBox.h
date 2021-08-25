@@ -2,29 +2,20 @@
 #include "pch.h"
 #include "Control.h"
 #include "Button.h"
+#include "Text.h"
 #include "ThemeManager.h"
 
+
 #include <string>
-#include <vector>
-
-/*
-Drop down will contain the following:
-    - A main button that will reside within the parent layout
-	- A layout to house a list of controls that will be rendered vertically
-		* This layout will define the height/width of each child control, so when we add a new control
-			we need to create a new row and specify the height we want
-
-	What we really need is for the DropDown control to have two layouts: one for the main button and the other
-	for the drop down menu. We can then use the main layout to generate the main button
-*/
+#include <vector> 
 
 
-class DropDown : public Control
+class ComboBox : public Control
 {
 public:
-	DropDown(const std::shared_ptr<DeviceResources>& deviceResources,
-		     const std::shared_ptr<Layout>& parentLayout, 
-		     int row, int column, int rowSpan, int columnSpan);
+	ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
+				const std::shared_ptr<Layout>& parentLayout,
+				int row, int column, int rowSpan, int columnSpan);
 
 	void ReleaseLayout() override;
 
@@ -33,13 +24,16 @@ public:
 	void OnLayoutResize() override { Resize(); }
 	void OnMarginChanged() override { Resize(); }
 	bool MouseIsOver(int x, int y) override;
-	
+
+	// Right now, combobox items are just Text controls, could expand this in the future
+	void AddComboBoxItem(std::wstring text);
+
 
 	OnMessageResult OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
 	OnMessageResult OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
 	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
 	OnMessageResult OnMouseLeave() override;
-	
+
 	void SetColorTheme(std::string name) { m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
 
 	std::shared_ptr<Layout> GetMainLayout() { return m_mainLayout; }
@@ -55,6 +49,8 @@ private:
 	std::shared_ptr<Layout> m_dropDownLayout;
 
 	std::shared_ptr<ColorTheme> m_colorTheme;
+
+	std::shared_ptr<Text> m_mainText;
 
 	bool m_dropDownIsOpen;
 

@@ -210,6 +210,9 @@
     <ClCompile Include="TextInput.cpp">
       <Filter>Source Files\UI\Controls</Filter>
     </ClCompile>
+    <ClCompile Include="ComboBox.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -369,6 +372,9 @@
       <Filter>Header Files\Simulation</Filter>
     </ClInclude>
     <ClInclude Include="TextInput.h">
+      <Filter>Header Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ComboBox.h">
       <Filter>Header Files\UI\Controls</Filter>
     </ClInclude>
   </ItemGroup>

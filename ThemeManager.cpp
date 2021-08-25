@@ -39,7 +39,7 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 
 	// TextInput Control - Border Color
 	std::shared_ptr<ColorTheme> textInputBorderColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TEXT_INPUT_BORDER_COLOR, deviceResources);
-	textInputBorderColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::Black));
+	textInputBorderColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
 
 	// TextInputControl - Text
 	std::shared_ptr<TextTheme> textInputText = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_TEXT_INPUT_TEXT, deviceResources);
@@ -66,6 +66,32 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 	textInputPlaceholderText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	textInputPlaceholderText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	textInputPlaceholderText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// ComboBox Control - Down Arrow Glyph
+	std::shared_ptr<TextTheme> comboBoxDownArrowGlyph = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_COMBO_BOX_DOWN_ARROW_GLYPH, deviceResources);
+	comboBoxDownArrowGlyph->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	comboBoxDownArrowGlyph->SetFontFamily(FONT_FAMILY::SEGOE_MDL2_ASSETS);
+	comboBoxDownArrowGlyph->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	comboBoxDownArrowGlyph->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	comboBoxDownArrowGlyph->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	comboBoxDownArrowGlyph->SetFontSize(13.0f);
+	comboBoxDownArrowGlyph->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	comboBoxDownArrowGlyph->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	comboBoxDownArrowGlyph->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	comboBoxDownArrowGlyph->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// ComboBox Control - Default Text
+	std::shared_ptr<TextTheme> comboBoxText = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_COMBO_BOX_TEXT, deviceResources);
+	comboBoxText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	comboBoxText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	comboBoxText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	comboBoxText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	comboBoxText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	comboBoxText->SetFontSize(13.0f);
+	comboBoxText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	comboBoxText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	comboBoxText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	comboBoxText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 }
 
 void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)

@@ -12,6 +12,7 @@
 #include "SimulationManager.h"
 #include "Text.h"
 #include "TextInput.h"
+#include "ComboBox.h"
 
 #include <memory>
 #include <map>
