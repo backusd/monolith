@@ -46,3 +46,8 @@ bool Text::Render2D()
 
 	return true;
 }
+
+void Text::AddChar(char key)
+{
+	m_text.push_back(key);
+}

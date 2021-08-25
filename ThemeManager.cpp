@@ -7,7 +7,7 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 {
 	if (!m_initialized)
 	{
-		ID2D1DeviceContext6* context = deviceResources->D2DDeviceContext();
+		CreateDefaultThemes(deviceResources);
 
 		// Create all themes for the application
 		//
@@ -97,6 +97,45 @@ void ThemeManager::Initialize(const std::shared_ptr<DeviceResources>& deviceReso
 
 		m_initialized = true;
 	}
+}
+
+void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& deviceResources)
+{
+	// TextInput Control - Background Color
+	std::shared_ptr<ColorTheme> textInputBackgroundColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TEXT_INPUT_BACKGROUND_COLOR, deviceResources);
+	textInputBackgroundColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	textInputBackgroundColor->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+	textInputBackgroundColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::DarkGray));
+
+	// TextInput Control - Border Color
+	std::shared_ptr<ColorTheme> textInputBorderColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TEXT_INPUT_BORDER_COLOR, deviceResources);
+	textInputBorderColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::Black));
+
+	// TextInputControl - Text
+	std::shared_ptr<TextTheme> textInputText = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_TEXT_INPUT_TEXT, deviceResources);
+	textInputText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	textInputText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	textInputText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	textInputText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	textInputText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	textInputText->SetFontSize(13.0f);
+	textInputText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	textInputText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	textInputText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	textInputText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// TextInputControl - Placeholder Text
+	std::shared_ptr<TextTheme> textInputPlaceholderText = ThemeManager::CreateTheme<TextTheme>(THEME_DEFAULT_TEXT_INPUT_PLACEHOLDER_TEXT, deviceResources);
+	textInputPlaceholderText->SetColor(D2D1::ColorF(D2D1::ColorF::LightCyan));
+	textInputPlaceholderText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	textInputPlaceholderText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	textInputPlaceholderText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	textInputPlaceholderText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	textInputPlaceholderText->SetFontSize(13.0f);
+	textInputPlaceholderText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	textInputPlaceholderText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	textInputPlaceholderText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	textInputPlaceholderText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 }
 
 void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResources>& deviceResources)

@@ -372,7 +372,7 @@ void ContentWindow::NewSimulationButtonClick()
 
 	// Create the rows and columns for the pane
 	RowColDefinitions columnDefs;
-	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Split the pane even vertically
+	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);
 	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 
 	RowColDefinitions rowDefs;
@@ -387,4 +387,8 @@ void ContentWindow::NewSimulationButtonClick()
 	simulationNameText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	simulationNameText->SetText(L"Simulation Name:");
 	simulationNameText->Margin(5.0f, 0.0f);
+
+	// Text Input for Simulation Name
+	std::shared_ptr<TextInput> simulationNameTextInput = layout->CreateControl<TextInput>(0, 1);
+	simulationNameTextInput->Margin(0.0f, 0.0f, 5.0f, 0.0f);
 }

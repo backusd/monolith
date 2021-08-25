@@ -199,6 +199,7 @@
     <ClCompile Include="SimulationRenderer.cpp" />
     <ClCompile Include="SphereMesh.cpp" />
     <ClCompile Include="Text.cpp" />
+    <ClCompile Include="TextInput.cpp" />
     <ClCompile Include="TextTheme.cpp" />
     <ClCompile Include="Theme.cpp" />
     <ClCompile Include="ThemeManager.cpp" />
@@ -252,6 +253,7 @@
     <ClInclude Include="SphereMesh.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Text.h" />
+    <ClInclude Include="TextInput.h" />
     <ClInclude Include="TextTheme.h" />
     <ClInclude Include="Theme.h" />
     <ClInclude Include="ThemeDefines.h" />

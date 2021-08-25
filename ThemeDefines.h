@@ -18,3 +18,9 @@
 
 // New simulation pane themes
 #define THEME_NEW_SIMULATION_TEXT "new-simulation-text"
+
+// Defaults
+#define THEME_DEFAULT_TEXT_INPUT_BACKGROUND_COLOR "default-text-input-background-color"
+#define THEME_DEFAULT_TEXT_INPUT_BORDER_COLOR "default-text-input-border-color"
+#define THEME_DEFAULT_TEXT_INPUT_TEXT "default-text-input-text"
+#define THEME_DEFAULT_TEXT_INPUT_PLACEHOLDER_TEXT "default-text-input-placeholder-text"

@@ -272,17 +272,74 @@ D2D1_RECT_F Layout::GetRect(int rowIndex, int columnIndex, int rowSpan = 1, int 
 
 OnMessageResult Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseState)
 {
+	// We want the user to be able to "click out of" a control that has captured the mouse. For example,
+	// the TextInput control should be able to capture all events until the user clicks on something else
+	// That means the OnLButtonDown message needs to get passed to the appropriate control if the captured
+	// control does not want to handle the message
+
+	OnMessageResult result = OnMessageResult::NONE;
+
+	// If both are null, just return none
+	if (m_mouseCapturedControl == nullptr && m_mouseCapturedLayout == nullptr)
+		return result;
+
 	// Pass OnLButtonDown message to the control that has captured the mouse if it exists
 	if (m_mouseCapturedControl != nullptr)
-	{
-		return m_mouseCapturedControl->OnLButtonDown(mouseState);
-	}
+		result = m_mouseCapturedControl->OnLButtonDown(mouseState);
 	else if (m_mouseCapturedLayout != nullptr)
+		result = m_mouseCapturedLayout->OnLButtonDown(mouseState);
+	
+	if (result != OnMessageResult::NONE)
+		return result;
+
+	// If the result is still NONE, then the captured control did not want to handle it and we need
+	// to pass the message to all other controls
+
+	// First, attempt to pass the message along to one of the controls bound to the layout
+	for (std::shared_ptr<Control> control : m_controls)
 	{
-		return m_mouseCapturedLayout->OnLButtonDown(mouseState);
+		// Pass message only if mouse is over the control
+		if (control->MouseIsOver(mouseState->X(), mouseState->Y()))
+		{
+			result = control->OnLButtonDown(mouseState);
+
+			// Capture the mouse if necessary
+			if (result == OnMessageResult::CAPTURE_MOUSE || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
+			{
+				m_mouseCapturedControl = control;
+				m_mouseCapturedLayout = nullptr;
+			}
+
+			// return if handled
+			if (result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
+				return result;
+		}
 	}
 
-	return OnMessageResult::NONE;
+	// Next, attempt to pass the event to one of the sub-layouts
+	std::shared_ptr<Layout> layout;
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		layout = subLayoutTuple._Myfirst._Val;
+
+		// Two child layouts cannot overlap, so if mouse is over one of them, can pass the message
+		// and immediately return the result
+		if (layout->MouseIsOver(mouseState->X(), mouseState->Y()))
+		{
+			result = layout->OnLButtonDown(mouseState);
+
+			// Capture the mouse if necessary
+			if (result == OnMessageResult::CAPTURE_MOUSE || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
+			{
+				m_mouseCapturedControl = nullptr;
+				m_mouseCapturedLayout = layout;
+			}
+
+			return result;
+		}
+	}
+
+	return result;
 }
 OnMessageResult Layout::OnLButtonUp(const std::shared_ptr<MouseState>& mouseState)
 {

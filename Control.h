@@ -29,6 +29,11 @@ public:
 	void Margin(float leftRight, float topBottom);
 	void Margin(float left, float top, float right, float bottom);
 
+	float MarginLeft() { return m_marginLeft; }
+	float MarginTop() { return m_marginTop; }
+	float MarginRight() { return m_marginRight; }
+	float MarginBottom() { return m_marginBottom; }
+
 	
 
 	// Virtual functions

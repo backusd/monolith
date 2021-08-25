@@ -25,7 +25,10 @@ public:
 private:
 	ThemeManager() {}
 
+	static void CreateDefaultThemes(const std::shared_ptr<DeviceResources>& deviceResources);
 	static void CreateNewSimulationThemes(const std::shared_ptr<DeviceResources>& deviceResources);
+
+
 
 	static std::map<std::string, std::shared_ptr<Theme>> m_themesMap;
 	static bool m_initialized;

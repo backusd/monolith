@@ -11,6 +11,7 @@
 #include "StepTimer.h"
 #include "SimulationManager.h"
 #include "Text.h"
+#include "TextInput.h"
 
 #include <memory>
 #include <map>
@@ -82,6 +83,4 @@ private:
 
 
 	StepTimer m_timer;
-
-	//HCURSOR m_cursor;
 };

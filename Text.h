@@ -23,6 +23,11 @@ public:
 	void SetTextTheme(std::string name) { m_textTheme = std::static_pointer_cast<TextTheme>(ThemeManager::GetTheme(name)); }
 	void SetText(std::wstring text) { m_text = text; }
 
+	void AddChar(char key);
+	void Pop() { if (m_text.size() > 0) m_text.pop_back(); }
+
+	float Width() { return m_textMetrics.widthIncludingTrailingWhitespace; }
+
 private:
 	std::shared_ptr<TextTheme>	m_textTheme;
 	DWRITE_TEXT_METRICS			m_textMetrics;
