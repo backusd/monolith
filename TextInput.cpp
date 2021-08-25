@@ -153,17 +153,15 @@ OnMessageResult TextInput::OnKeyUp(unsigned char keycode)
 }
 OnMessageResult TextInput::OnChar(char key)
 {
-	// if the enter key was pressed, then stop actively inputing text
-	if (key == '\r')
+	// Handle backspace character
+	switch (key)
 	{
+	case '\r':
+		// Enter key was pressed - stop actively inputing text
 		m_activelyEnteringText = false;
 		m_mouseOverDownState = MouseOverDown::NONE;
 		return OnMessageResult::MESSAGE_HANDLED;
-	}
-
-	// If the key was backspace, ignore it - otherwise add it to the text
-	switch (key)
-	{
+		
 	case '\b':	m_text->Pop(); break;
 	default:	m_text->AddChar(key); break;
 	}	
