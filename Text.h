@@ -16,6 +16,8 @@ public:
 
 	bool Render2D() override;
 
+	std::wstring GetText() { return m_text; }
+
 
 	void OnLayoutResize() override { TextChanged(); }
 	void OnMarginChanged() override { TextChanged(); }

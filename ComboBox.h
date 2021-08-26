@@ -41,7 +41,6 @@ public:
 	std::shared_ptr<Layout> GetMainLayout() { return m_mainLayout; }
 	std::shared_ptr<Layout> GetDropDownLayout() { return m_dropDownLayout; }
 	
-	void SetDropDownWidth(float width);
 	void SetDropDownItemHeight(float height);
 
 private:

@@ -27,6 +27,11 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 	std::shared_ptr<ColorTheme> buttonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_BUTTON_COLOR, deviceResources);
 	buttonColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
 
+	// Button Control - Border
+	std::shared_ptr<BorderTheme> buttonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_BUTTON_BORDER, deviceResources);
+	buttonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+	buttonBorder->SetStrokeWidth(1.0f);
+
 	// Drop Down Control - Background
 	std::shared_ptr<ColorTheme> dropDownColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_DROP_DOWN_COLOR, deviceResources);
 	dropDownColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
@@ -103,11 +108,21 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 	std::shared_ptr<ColorTheme> comboBoxBorderColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_COMBO_BOX_BORDER_COLOR, deviceResources);
 	comboBoxBorderColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
 
-	// ComboBox Control - Drop down button color
+	// ComboBox Control - main button color
 	std::shared_ptr<ColorTheme> comboBoxButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR, deviceResources);
 	comboBoxButtonColor->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
 	comboBoxButtonColor->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
 	comboBoxButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	// ComboBox Control - Drop down item button color
+	std::shared_ptr<ColorTheme> comboBoxItemButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_COLOR, deviceResources);
+	comboBoxItemButtonColor->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
+	comboBoxItemButtonColor->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+	comboBoxItemButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	// ComboBox Control - Drop down item button border
+	std::shared_ptr<BorderTheme> comboBoxItemButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_BORDER, deviceResources);
+	comboBoxItemButtonBorder->SetStrokeWidth(0.0f);
 }
 
 void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)
@@ -156,6 +171,10 @@ void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& d
 	menuButtonColorTheme->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
 	menuButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
 	menuButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	// Button Control - Border
+	std::shared_ptr<BorderTheme> menuButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_MENU_BAR_BUTTON_BORDER, deviceResources);
+	menuButtonBorder->SetStrokeWidth(0.0f);
 
 	// Drop Down Control - Background color
 	std::shared_ptr<ColorTheme> menuDropDownColorTheme = ThemeManager::CreateTheme<ColorTheme>(THEME_MENU_BAR_DROP_DOWN_COLOR, deviceResources);

@@ -64,6 +64,7 @@ namespace LayoutConfiguration
 		// For the main button, we don't need to set the rows/columns - already 1 of each
 		std::shared_ptr<Button> fileDropDownMainButton = fileDropDown->GetMainLayout()->CreateControl<Button>();
 		fileDropDownMainButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		fileDropDownMainButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		std::shared_ptr<Text>   fileDropDownMainButtonText = fileDropDownMainButton->GetLayout()->CreateControl<Text>();
 		fileDropDownMainButtonText->SetTextTheme(THEME_MENU_BAR_TEXT);
 		fileDropDownMainButtonText->SetText(L"File");
@@ -84,6 +85,7 @@ namespace LayoutConfiguration
 		// New Simulation
 		std::shared_ptr<Button> fileDropDownNewSimulationButton = fileDropDown->GetDropDownLayout()->CreateControl<Button>(0, 0);
 		fileDropDownNewSimulationButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		fileDropDownNewSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		fileDropDownNewSimulationButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
 		fileDropDownNewSimulationButton->Click(WindowManager::NewSimulationButtonClick);
 
@@ -98,6 +100,7 @@ namespace LayoutConfiguration
 		// Open Simulation
 		std::shared_ptr<Button> fileDropDownOpenSimulationButton = fileDropDown->GetDropDownLayout()->CreateControl<Button>(1, 0);
 		fileDropDownOpenSimulationButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		fileDropDownOpenSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		fileDropDownOpenSimulationButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
 
 		std::shared_ptr<Text> fileDropDownOpenSimulationGlyph = fileDropDownOpenSimulationButton->GetLayout()->CreateControl<Text>(0, 0);
@@ -111,6 +114,7 @@ namespace LayoutConfiguration
 		// Save Simulation
 		std::shared_ptr<Button> fileDropDownSaveSimulationButton = fileDropDown->GetDropDownLayout()->CreateControl<Button>(2, 0);
 		fileDropDownSaveSimulationButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		fileDropDownSaveSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		fileDropDownSaveSimulationButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
 
 		std::shared_ptr<Text> fileDropDownSaveSimulationGlyph = fileDropDownSaveSimulationButton->GetLayout()->CreateControl<Text>(0, 0);
@@ -124,6 +128,7 @@ namespace LayoutConfiguration
 		// Save As
 		std::shared_ptr<Button> fileDropDownSaveAsButton = fileDropDown->GetDropDownLayout()->CreateControl<Button>(3, 0);
 		fileDropDownSaveAsButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		fileDropDownSaveAsButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		fileDropDownSaveAsButton->GetLayout()->SetColumnDefinitions(fileDropDownButtonColumns);
 
 		std::shared_ptr<Text> fileDropDownSaveAsGlyph = fileDropDownSaveAsButton->GetLayout()->CreateControl<Text>(0, 0);
@@ -143,6 +148,7 @@ namespace LayoutConfiguration
 		// For the main button, we don't need to set the rows/columns - already 1 of each
 		std::shared_ptr<Button> dropDownMainButton = dropDown->GetMainLayout()->CreateControl<Button>();
 		dropDownMainButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		dropDownMainButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		std::shared_ptr<Text> dropDownMainButtonText = dropDownMainButton->GetLayout()->CreateControl<Text>();
 		dropDownMainButtonText->SetTextTheme(THEME_MENU_BAR_TEXT);
 		dropDownMainButtonText->SetText(L"Simulation");
@@ -163,6 +169,7 @@ namespace LayoutConfiguration
 		// Reset State
 		std::shared_ptr<Button> resetStateButton = dropDown->GetDropDownLayout()->CreateControl<Button>(0, 0);
 		resetStateButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		resetStateButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		resetStateButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> resetStateGlyph = resetStateButton->GetLayout()->CreateControl<Text>(0, 0);
@@ -177,6 +184,7 @@ namespace LayoutConfiguration
 		// Add Atom
 		std::shared_ptr<Button> addAtomButton = dropDown->GetDropDownLayout()->CreateControl<Button>(1, 0);
 		addAtomButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		addAtomButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		addAtomButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> addAtomGlyph = addAtomButton->GetLayout()->CreateControl<Text>(0, 0);
@@ -191,6 +199,7 @@ namespace LayoutConfiguration
 		// Edit Atom
 		std::shared_ptr<Button> editAtomButton = dropDown->GetDropDownLayout()->CreateControl<Button>(2, 0);
 		editAtomButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		editAtomButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		editAtomButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> editAtomGlyph = editAtomButton->GetLayout()->CreateControl<Text>(0, 0);
@@ -211,6 +220,7 @@ namespace LayoutConfiguration
 		// For the main button, we don't need to set the rows/columns - already 1 of each
 		std::shared_ptr<Button> dropDownMainButton = dropDown->GetMainLayout()->CreateControl<Button>();
 		dropDownMainButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		dropDownMainButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		std::shared_ptr<Text> dropDownMainButtonText = dropDownMainButton->GetLayout()->CreateControl<Text>();
 		dropDownMainButtonText->SetTextTheme(THEME_MENU_BAR_TEXT);
 		dropDownMainButtonText->SetText(L"View");
@@ -229,6 +239,7 @@ namespace LayoutConfiguration
 		// Atom Summary
 		std::shared_ptr<Button> atomSummaryButton = dropDown->GetDropDownLayout()->CreateControl<Button>(0, 0);
 		atomSummaryButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+		atomSummaryButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		atomSummaryButton->GetLayout()->SetColumnDefinitions(dropDownButtonColumns);
 
 		std::shared_ptr<Text> atomSummaryGlyph = atomSummaryButton->GetLayout()->CreateControl<Text>(0, 0);
@@ -256,6 +267,7 @@ namespace LayoutConfiguration
 		// New Simulation
 		std::shared_ptr<Button> newSimulationButton = layout->CreateControl<Button>(0, 0);
 		newSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		newSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		std::shared_ptr<Text> newSimulationText = newSimulationButton->GetLayout()->CreateControl<Text>();
 		newSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
 		newSimulationText->SetText(L"\xE710");
@@ -263,6 +275,7 @@ namespace LayoutConfiguration
 		// Open Simulation
 		std::shared_ptr<Button> openSimulationButton = layout->CreateControl<Button>(0, 1);
 		openSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		openSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		std::shared_ptr<Text> openSimulationText = openSimulationButton->GetLayout()->CreateControl<Text>();
 		openSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
 		openSimulationText->SetText(L"\xE8E5");
@@ -270,6 +283,7 @@ namespace LayoutConfiguration
 		// Save Simulation
 		std::shared_ptr<Button> saveSimulationButton = layout->CreateControl<Button>(0, 2);
 		saveSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		saveSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		std::shared_ptr<Text> saveSimulationText = saveSimulationButton->GetLayout()->CreateControl<Text>();
 		saveSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
 		saveSimulationText->SetText(L"\xE74E");
@@ -277,6 +291,7 @@ namespace LayoutConfiguration
 		// Play / Pause Simulation
 		std::shared_ptr<Button> playSimulationButton = layout->CreateControl<Button>(0, 3);
 		playSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		playSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		std::shared_ptr<Text> playSimulationText = playSimulationButton->GetLayout()->CreateControl<Text>();
 		playSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
 		playSimulationText->SetText(L"\xE769");

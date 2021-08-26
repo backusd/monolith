@@ -35,7 +35,9 @@ public:
 	OnMessageResult OnMouseLeave() override;
 
 	void Click(std::function<void()> method) { ClickMethod = method; }
+
 	void SetColorTheme(std::string name) {  m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
+	void SetBorderTheme(std::string name) { m_borderTheme = std::static_pointer_cast<BorderTheme>(ThemeManager::GetTheme(name)); }
 
 	std::shared_ptr<Layout> GetLayout() { return m_buttonLayout; }
 
@@ -47,10 +49,8 @@ private:
 	MouseOverDown m_mouseOverDownState;
 
 	// Themes
-	std::shared_ptr<ColorTheme> m_colorTheme;
-	//std::string m_borderTheme;
-
-
+	std::shared_ptr<ColorTheme>  m_colorTheme;
+	std::shared_ptr<BorderTheme> m_borderTheme;
 
 	std::function<void()> ClickMethod;
 };

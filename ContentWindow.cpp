@@ -378,7 +378,7 @@ void ContentWindow::NewSimulationButtonClick()
 	simulationNameTextInput->Margin(0.0f, 0.0f, 5.0f, 0.0f);
 	// ============================================================================================================
 	// ============================================================================================================
-	// Sub Layout for simulation name controls
+	// Sub Layout for add atom controls
 	std::shared_ptr<Layout> addAtomSubLayout = layout->CreateSubLayout(1, 0);
 
 	RowColDefinitions addAtomColumns;
@@ -386,7 +386,7 @@ void ContentWindow::NewSimulationButtonClick()
 	addAtomColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 	addAtomSubLayout->SetColumnDefinitions(addAtomColumns);
 
-	// Text for Simulation Name
+	// Text for Add atom
 	std::shared_ptr<Text> addAtomText = addAtomSubLayout->CreateControl<Text>(0, 0);
 	addAtomText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	addAtomText->SetText(L"Add Atom:");
@@ -396,5 +396,15 @@ void ContentWindow::NewSimulationButtonClick()
 	atomComboBox->AddComboBoxItem(L"Hydrogen");
 	atomComboBox->AddComboBoxItem(L"Helium");
 	atomComboBox->AddComboBoxItem(L"Lithium");
+	atomComboBox->AddComboBoxItem(L"Beryllium");
+	atomComboBox->AddComboBoxItem(L"Boron");
+	atomComboBox->AddComboBoxItem(L"Carbon");
+	atomComboBox->AddComboBoxItem(L"Nitrogen");
+	atomComboBox->AddComboBoxItem(L"Oxygen");
+	atomComboBox->AddComboBoxItem(L"Flourine");
+	atomComboBox->AddComboBoxItem(L"Neon");
 	atomComboBox->Margin(5.0f, 10.0f);
+	// ============================================================================================================
+	// ============================================================================================================
+	// Sub Layout for editing position and velocity
 }

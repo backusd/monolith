@@ -77,6 +77,8 @@ public:
 	bool Render2DControls();
 	bool Render2DCapturedControl();
 
+	std::shared_ptr<Control> GetChildControl(unsigned int index);
+
 private:
 	void UpdateLayout();
 

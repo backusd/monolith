@@ -22,6 +22,7 @@ ComboBox::ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
 	// we can automatically assign the layout to be the same as the (0,0) rectangle of the parent layout
 	m_mainLayout = std::make_shared<Layout>(m_deviceResources, GetParentRect());
 
+
 	std::shared_ptr<Button> mainButton = m_mainLayout->CreateControl<Button>(0, 0);
 	mainButton->SetColorTheme(THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR);
 
@@ -47,8 +48,8 @@ ComboBox::ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
 	// left aligned with the main layout
 	D2D1_RECT_F dropDownRect;
 	dropDownRect.top = m_mainLayout->Bottom();
-	dropDownRect.left = m_mainLayout->Left();
-	dropDownRect.right = dropDownRect.left + m_dropDownWidth;
+	dropDownRect.left = m_mainLayout->Left();	
+	dropDownRect.right = m_mainLayout->Right(); // Set the width of the drop down to the width of the main layout
 	dropDownRect.bottom = dropDownRect.top + (m_dropDownItemHeight * m_dropDownItemCount);
 
 	m_dropDownLayout = std::make_shared<Layout>(m_deviceResources, dropDownRect);
@@ -56,11 +57,6 @@ ComboBox::ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
 
 }
 
-void ComboBox::SetDropDownWidth(float width)
-{
-	m_dropDownWidth = width;
-	Resize();
-}
 void ComboBox::SetDropDownItemHeight(float height)
 {
 	m_dropDownItemHeight = height;
@@ -76,24 +72,9 @@ void ComboBox::ReleaseLayout()
 }
 
 bool ComboBox::Render2D()
-{
-	/*
-	// Draw the background and border of the main layout
-	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
-	context->SetTransform(m_deviceResources->OrientationTransform2D());
-	D2D1_RECT_F rect = m_mainLayout->GetRect(
-		0,
-		0,
-		m_mainLayout->RowCount(),
-		m_mainLayout->ColumnCount()
-	);
-	context->FillRectangle(rect, m_backgroundTheme->GetBrush(m_mouseOverDownState));
-	context->DrawRectangle(rect, m_borderTheme->GetBrush(m_mouseOverDownState));
-	*/
-	
+{	
 	// Draw the text of the main layout
-	m_mainLayout->Render2DControls();
-	
+	m_mainLayout->Render2DControls();	
 
 	// Draw the background of the drop down region and then draw the drop down controls over it
 	if (m_dropDownIsOpen)
@@ -107,7 +88,7 @@ bool ComboBox::Render2D()
 			m_dropDownLayout->ColumnCount()
 		);
 		context->FillRectangle(rect, m_backgroundTheme->GetBrush(MouseOverDown::NONE));
-		context->DrawRectangle(rect, m_borderTheme->GetBrush(MouseOverDown::NONE));
+		context->DrawRectangle(rect, m_borderTheme->GetBrush(MouseOverDown::NONE));		
 
 		// Draw the drop down items
 		m_dropDownLayout->Render2DControls();
@@ -128,7 +109,6 @@ void ComboBox::Resize()
 	m_mainLayout->OnResize(rect);
 
 	rect.top = rect.bottom;
-	rect.right = rect.left + m_dropDownWidth;
 	rect.bottom = rect.top + (m_dropDownItemHeight * m_dropDownItemCount);
 
 	m_dropDownLayout->OnResize(rect);
@@ -173,7 +153,13 @@ OnMessageResult ComboBox::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 	// If the drop down is open and mouse is over, send message to drop down layout.
 	// Otherwise, just send message to main layout
 	if (m_dropDownIsOpen && m_dropDownLayout->MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
 		result = m_dropDownLayout->OnLButtonUp(mouseState);
+
+		// If the click was handled, then expand/collapse the drop down
+		//if (result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
+
+	}
 	else
 		result = m_mainLayout->OnLButtonUp(mouseState);
 
@@ -186,20 +172,6 @@ OnMessageResult ComboBox::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 
 OnMessageResult ComboBox::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 {
-	/*
-	// Don't worry about adjusting activelyEnteringText value - that should only change on L button down
-	if (MouseIsOver(mouseState->X(), mouseState->Y()))
-	{
-		m_mouseOverDownState = mouseState->LButtonDown() ? MouseOverDown::MOUSE_DOWN : MouseOverDown::MOUSE_OVER;
-		return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
-	}
-
-	m_mouseOverDownState = MouseOverDown::NONE;
-	m_dropDownIsOpen = false;
-	return OnMessageResult::NONE;
-	*/
-
-
 	// If the drop down is not open, just send the message to the main layout. Otherwise,
 	// send to both layouts
 	OnMessageResult result1 = m_mainLayout->OnMouseMove(mouseState);
@@ -260,7 +232,24 @@ void ComboBox::AddComboBoxItem(std::wstring text)
 
 	// Must add the drop down item as a button so that it can react to mouse messages
 	std::shared_ptr<Button> newButton = m_dropDownLayout->CreateControl<Button>(m_dropDownItemCount - 1, 0);
-	newButton->SetColorTheme(THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR);
+	newButton->SetColorTheme(THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_COLOR);
+	newButton->SetBorderTheme(THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_BORDER);
+
+	const int index = m_dropDownItemCount - 1;
+
+	// Cannot directly use m_dropDownItemCount as it will get updated when new items are added
+	// Instead, pass the index by value so it remains const for each new item
+	newButton->Click([&, index]() 
+		{ 
+			std::shared_ptr<Control> buttonBase = m_dropDownLayout->GetChildControl(index);
+			std::shared_ptr<Button> button = std::dynamic_pointer_cast<Button>(buttonBase);
+
+			std::shared_ptr<Control> textBase = button->GetLayout()->GetChildControl(0);
+			std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(textBase);
+
+			m_mainText->SetText(text->GetText());
+		}
+	);
 
 	std::shared_ptr<Layout> buttonLayout = newButton->GetLayout();
 

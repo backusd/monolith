@@ -11,10 +11,12 @@ Button::Button(const std::shared_ptr<DeviceResources>& deviceResources,
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_buttonLayout(nullptr),
 	m_colorTheme(nullptr),
+	m_borderTheme(nullptr),
 	m_mouseOverDownState(MouseOverDown::NONE),
 	ClickMethod(WindowManager::DefaultClickMethod)
 {
 	SetColorTheme(THEME_DEFAULT_BUTTON_COLOR);
+	SetBorderTheme(THEME_DEFAULT_BUTTON_BORDER);
 
 	// Create its own sub layout not as a child of the parent
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1
@@ -43,6 +45,10 @@ bool Button::Render2D()
 	);
 
 	context->FillRectangle(rect, m_colorTheme->GetBrush(m_mouseOverDownState));
+
+	// if the border theme is not nullptr and stroke width > 0, draw the border
+	if (m_borderTheme != nullptr && m_borderTheme->GetStrokeWidth() > 0.0f)
+		context->DrawRectangle(rect, m_borderTheme->GetBrush(m_mouseOverDownState), m_borderTheme->GetStrokeWidth());
 
 	// Now paint the layout and child controls
 	m_buttonLayout->Render2DControls();

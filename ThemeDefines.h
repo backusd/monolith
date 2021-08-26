@@ -6,6 +6,7 @@
 // Defaults
 #define THEME_DEFAULT_TEXT "default-text"
 #define THEME_DEFAULT_BUTTON_COLOR "default-button-color"
+#define THEME_DEFAULT_BUTTON_BORDER "default-button-border"
 #define THEME_DEFAULT_DROP_DOWN_COLOR "default-drop-down-color"
 #define THEME_DEFAULT_TEXT_INPUT_BACKGROUND_COLOR "default-text-input-background-color"
 #define THEME_DEFAULT_TEXT_INPUT_BORDER_COLOR "default-text-input-border-color"
@@ -16,10 +17,13 @@
 #define THEME_DEFAULT_COMBO_BOX_BACKGROUND_COLOR "default-combo-box-background-color"
 #define THEME_DEFAULT_COMBO_BOX_BORDER_COLOR "default-combo-box-border-color"
 #define THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR "default-combo-box-button-color"
+#define THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_COLOR "default-combo-box-item-button-color"
+#define THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_BORDER "default-combo-box-item-button-border"
 
 // Menu Bar
 #define THEME_MENU_BAR_TEXT "menu-bar-text"
-#define THEME_MENU_BAR_BUTTON_COLOR "menu-bar-color"
+#define THEME_MENU_BAR_BUTTON_COLOR "menu-bar-button-color"
+#define THEME_MENU_BAR_BUTTON_BORDER "menu-bar-button-border"
 #define THEME_MENU_BAR_DROP_DOWN_COLOR "menu-drop-down-color"
 #define THEME_MENU_BAR_DROP_DOWN_TEXT "menu-drop-down-text"
 #define THEME_MENU_BAR_DROP_DOWN_GLYPH "menu-drop-down-glyph"

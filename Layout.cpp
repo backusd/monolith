@@ -279,10 +279,6 @@ OnMessageResult Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseSt
 
 	OnMessageResult result = OnMessageResult::NONE;
 
-	// If both are null, just return none
-	//if (m_mouseCapturedControl == nullptr && m_mouseCapturedLayout == nullptr)
-	//	return result;
-
 	// Pass OnLButtonDown message to the control that has captured the mouse if it exists
 	if (m_mouseCapturedControl != nullptr)
 		result = m_mouseCapturedControl->OnLButtonDown(mouseState);
@@ -667,4 +663,9 @@ bool Layout::Render2DCapturedControl()
 		return m_mouseCapturedLayout->Render2DCapturedControl();
 
 	return false;
+}
+
+std::shared_ptr<Control> Layout::GetChildControl(unsigned int index)
+{
+	return m_controls.size() > index ? m_controls[index] : nullptr;
 }

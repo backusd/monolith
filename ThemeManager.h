@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Theme.h"
+#include "BorderTheme.h"
 #include "ColorTheme.h"
 #include "TextTheme.h"
 #include "ThemeDefines.h"
