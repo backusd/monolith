@@ -34,11 +34,15 @@ public:
 	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
 	OnMessageResult OnMouseLeave() override;
 
-	void SetColorTheme(std::string name) { m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
+	void SetBackgroundTheme(std::string name) { m_backgroundTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
+	void SetBorderTheme(std::string name) { m_borderTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
+
 
 	std::shared_ptr<Layout> GetMainLayout() { return m_mainLayout; }
 	std::shared_ptr<Layout> GetDropDownLayout() { return m_dropDownLayout; }
-	void SetDropDownSize(float height, float width);
+	
+	void SetDropDownWidth(float width);
+	void SetDropDownItemHeight(float height);
 
 private:
 	void Resize();
@@ -48,12 +52,15 @@ private:
 	std::shared_ptr<Layout> m_mainLayout;
 	std::shared_ptr<Layout> m_dropDownLayout;
 
-	std::shared_ptr<ColorTheme> m_colorTheme;
+	// Themes
+	std::shared_ptr<ColorTheme> m_backgroundTheme;
+	std::shared_ptr<ColorTheme> m_borderTheme;
 
 	std::shared_ptr<Text> m_mainText;
 
 	bool m_dropDownIsOpen;
 
 	float m_dropDownWidth;
-	float m_dropDownHeight;
+	float m_dropDownItemHeight;
+	int m_dropDownItemCount;
 };

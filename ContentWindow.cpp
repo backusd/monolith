@@ -138,11 +138,7 @@ LRESULT ContentWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
 	// Pass the coordinates of the mouse click to the main layout
 	m_layout->OnLButtonDown(m_mouseState);
-	/*
-	std::shared_ptr<OnMessageResult> result = m_layout->OnLButtonDown(m_mouseState);
-	if (result != nullptr && result->Redraw())
-		InvalidateRect(hWnd, NULL, FALSE);
-	*/
+
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -327,33 +323,18 @@ LRESULT ContentWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	// Pass the char to main layout / controls
 	m_layout->OnChar((char)wParam);
-	/*
-	std::shared_ptr<OnMessageResult> result = m_layout->OnChar((char)wParam);
-	if (result->Redraw())
-		InvalidateRect(hWnd, NULL, FALSE);
-	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 LRESULT ContentWindow::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	m_layout->OnKeyUp(static_cast<unsigned char>(wParam));
-	/*
-	std::shared_ptr<OnMessageResult> result = m_layout->OnKeyUp(static_cast<unsigned char>(wParam));
-	if (result->Redraw())
-		InvalidateRect(hWnd, NULL, FALSE);
-	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 LRESULT ContentWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	m_layout->OnKeyDown(static_cast<unsigned char>(wParam));
-	/*
-	std::shared_ptr<OnMessageResult> result = m_layout->OnKeyDown(static_cast<unsigned char>(wParam));
-	if (result->Redraw())
-		InvalidateRect(hWnd, NULL, FALSE);
-	*/
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
@@ -412,6 +393,8 @@ void ContentWindow::NewSimulationButtonClick()
 	addAtomText->Margin(5.0f, 0.0f);
 
 	std::shared_ptr<ComboBox> atomComboBox = addAtomSubLayout->CreateControl<ComboBox>(0, 1);
-
-	
+	atomComboBox->AddComboBoxItem(L"Hydrogen");
+	atomComboBox->AddComboBoxItem(L"Helium");
+	atomComboBox->AddComboBoxItem(L"Lithium");
+	atomComboBox->Margin(5.0f, 10.0f);
 }

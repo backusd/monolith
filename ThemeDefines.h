@@ -13,6 +13,9 @@
 #define THEME_DEFAULT_TEXT_INPUT_PLACEHOLDER_TEXT "default-text-input-placeholder-text"
 #define THEME_DEFAULT_COMBO_BOX_DOWN_ARROW_GLYPH "default-combo-box-down-arrow-glyph"
 #define THEME_DEFAULT_COMBO_BOX_TEXT "default-combo-box-text"
+#define THEME_DEFAULT_COMBO_BOX_BACKGROUND_COLOR "default-combo-box-background-color"
+#define THEME_DEFAULT_COMBO_BOX_BORDER_COLOR "default-combo-box-border-color"
+#define THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR "default-combo-box-button-color"
 
 // Menu Bar
 #define THEME_MENU_BAR_TEXT "menu-bar-text"

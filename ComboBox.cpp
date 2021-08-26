@@ -7,31 +7,39 @@ ComboBox::ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_mainLayout(nullptr),
 	m_dropDownLayout(nullptr),
 	m_dropDownIsOpen(false),
-	m_colorTheme(nullptr),
-	m_dropDownHeight(100.0f),
+	m_backgroundTheme(nullptr),
+	m_borderTheme(nullptr),
+	m_dropDownItemHeight(30.0f),
 	m_dropDownWidth(100.0f),
+	m_dropDownItemCount(0),
 	m_mainText(nullptr)
 {
-	SetColorTheme(THEME_DEFAULT_DROP_DOWN_COLOR);
+	SetBackgroundTheme(THEME_DEFAULT_COMBO_BOX_BACKGROUND_COLOR);
+	SetBorderTheme(THEME_DEFAULT_COMBO_BOX_BORDER_COLOR);
 
 	// Create a sub layout not as a child of the parent that will house the main button
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1
 	// we can automatically assign the layout to be the same as the (0,0) rectangle of the parent layout
 	m_mainLayout = std::make_shared<Layout>(m_deviceResources, GetParentRect());
 
-	// Main layout will have two controls, the down arrow glyph and the main text
+	std::shared_ptr<Button> mainButton = m_mainLayout->CreateControl<Button>(0, 0);
+	mainButton->SetColorTheme(THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR);
+
+	std::shared_ptr<Layout> mainButtonLayout = mainButton->GetLayout();
+
+	// Main button layout will have two controls, the down arrow glyph and the main text
 	RowColDefinitions columnDefs;
 	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);
 	columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
-	m_mainLayout->SetColumnDefinitions(columnDefs);
+	mainButtonLayout->SetColumnDefinitions(columnDefs);
 
 	// Down arrow glyph
-	std::shared_ptr<Text> downArrowGlyph = m_mainLayout->CreateControl<Text>(0, 0);
+	std::shared_ptr<Text> downArrowGlyph = mainButtonLayout->CreateControl<Text>(0, 0);
 	downArrowGlyph->SetTextTheme(THEME_DEFAULT_COMBO_BOX_DOWN_ARROW_GLYPH);
 	downArrowGlyph->SetText(L"\xE70D");
 
-	// Main text
-	m_mainText = m_mainLayout->CreateControl<Text>(0, 1);
+	// Create the main button text
+	m_mainText = mainButtonLayout->CreateControl<Text>(0, 1);
 	m_mainText->SetTextTheme(THEME_DEFAULT_COMBO_BOX_TEXT);
 
 
@@ -41,18 +49,21 @@ ComboBox::ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
 	dropDownRect.top = m_mainLayout->Bottom();
 	dropDownRect.left = m_mainLayout->Left();
 	dropDownRect.right = dropDownRect.left + m_dropDownWidth;
-	dropDownRect.bottom = dropDownRect.top + m_dropDownHeight;
+	dropDownRect.bottom = dropDownRect.top + (m_dropDownItemHeight * m_dropDownItemCount);
 
 	m_dropDownLayout = std::make_shared<Layout>(m_deviceResources, dropDownRect);
 
 
 }
 
-void ComboBox::SetDropDownSize(float height, float width)
+void ComboBox::SetDropDownWidth(float width)
 {
-	m_dropDownHeight = height;
 	m_dropDownWidth = width;
-
+	Resize();
+}
+void ComboBox::SetDropDownItemHeight(float height)
+{
+	m_dropDownItemHeight = height;
 	Resize();
 }
 
@@ -66,7 +77,23 @@ void ComboBox::ReleaseLayout()
 
 bool ComboBox::Render2D()
 {
+	/*
+	// Draw the background and border of the main layout
+	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+	context->SetTransform(m_deviceResources->OrientationTransform2D());
+	D2D1_RECT_F rect = m_mainLayout->GetRect(
+		0,
+		0,
+		m_mainLayout->RowCount(),
+		m_mainLayout->ColumnCount()
+	);
+	context->FillRectangle(rect, m_backgroundTheme->GetBrush(m_mouseOverDownState));
+	context->DrawRectangle(rect, m_borderTheme->GetBrush(m_mouseOverDownState));
+	*/
+	
+	// Draw the text of the main layout
 	m_mainLayout->Render2DControls();
+	
 
 	// Draw the background of the drop down region and then draw the drop down controls over it
 	if (m_dropDownIsOpen)
@@ -79,9 +106,10 @@ bool ComboBox::Render2D()
 			m_dropDownLayout->RowCount(),
 			m_dropDownLayout->ColumnCount()
 		);
-		context->FillRectangle(rect, m_colorTheme->GetBrush(MouseOverDown::NONE));
+		context->FillRectangle(rect, m_backgroundTheme->GetBrush(MouseOverDown::NONE));
+		context->DrawRectangle(rect, m_borderTheme->GetBrush(MouseOverDown::NONE));
 
-
+		// Draw the drop down items
 		m_dropDownLayout->Render2DControls();
 	}
 
@@ -101,7 +129,7 @@ void ComboBox::Resize()
 
 	rect.top = rect.bottom;
 	rect.right = rect.left + m_dropDownWidth;
-	rect.bottom = rect.top + m_dropDownHeight;
+	rect.bottom = rect.top + (m_dropDownItemHeight * m_dropDownItemCount);
 
 	m_dropDownLayout->OnResize(rect);
 }
@@ -158,6 +186,20 @@ OnMessageResult ComboBox::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 
 OnMessageResult ComboBox::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 {
+	/*
+	// Don't worry about adjusting activelyEnteringText value - that should only change on L button down
+	if (MouseIsOver(mouseState->X(), mouseState->Y()))
+	{
+		m_mouseOverDownState = mouseState->LButtonDown() ? MouseOverDown::MOUSE_DOWN : MouseOverDown::MOUSE_OVER;
+		return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+	}
+
+	m_mouseOverDownState = MouseOverDown::NONE;
+	m_dropDownIsOpen = false;
+	return OnMessageResult::NONE;
+	*/
+
+
 	// If the drop down is not open, just send the message to the main layout. Otherwise,
 	// send to both layouts
 	OnMessageResult result1 = m_mainLayout->OnMouseMove(mouseState);
@@ -202,4 +244,33 @@ OnMessageResult ComboBox::OnMouseLeave()
 	m_dropDownIsOpen = false;
 
 	return result;
+}
+
+void ComboBox::AddComboBoxItem(std::wstring text)
+{
+	// First, resize the drop down so that it has room for the new control
+	++m_dropDownItemCount;
+	Resize();
+
+	// Update the row definitions for the drop down layout
+	RowColDefinitions rowDefs;
+	for (int iii = 0; iii < m_dropDownItemCount; ++iii)
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, m_dropDownItemHeight);
+	m_dropDownLayout->SetRowDefinitions(rowDefs);
+
+	// Must add the drop down item as a button so that it can react to mouse messages
+	std::shared_ptr<Button> newButton = m_dropDownLayout->CreateControl<Button>(m_dropDownItemCount - 1, 0);
+	newButton->SetColorTheme(THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR);
+
+	std::shared_ptr<Layout> buttonLayout = newButton->GetLayout();
+
+	// Add a new text control to the button
+	std::shared_ptr<Text> newText = buttonLayout->CreateControl<Text>(0, 0);
+	newText->SetTextTheme(THEME_DEFAULT_COMBO_BOX_TEXT);
+	newText->SetText(text);
+	newText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+
+	// If this is the first item added, set the main text as well
+	if (m_dropDownItemCount == 1)
+		m_mainText->SetText(text);
 }

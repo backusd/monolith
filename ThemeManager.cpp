@@ -92,6 +92,22 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 	comboBoxText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	comboBoxText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	comboBoxText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// ComboBox Control - Background Color
+	std::shared_ptr<ColorTheme> comboBoxBackgroundColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_COMBO_BOX_BACKGROUND_COLOR, deviceResources);
+	comboBoxBackgroundColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	comboBoxBackgroundColor->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+	comboBoxBackgroundColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::DarkGray));
+
+	// ComboBox Control - Border Color
+	std::shared_ptr<ColorTheme> comboBoxBorderColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_COMBO_BOX_BORDER_COLOR, deviceResources);
+	comboBoxBorderColor->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	// ComboBox Control - Drop down button color
+	std::shared_ptr<ColorTheme> comboBoxButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR, deviceResources);
+	comboBoxButtonColor->SetColor(D2D1::ColorF(45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f));
+	comboBoxButtonColor->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
+	comboBoxButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
 }
 
 void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)

@@ -280,8 +280,8 @@ OnMessageResult Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseSt
 	OnMessageResult result = OnMessageResult::NONE;
 
 	// If both are null, just return none
-	if (m_mouseCapturedControl == nullptr && m_mouseCapturedLayout == nullptr)
-		return result;
+	//if (m_mouseCapturedControl == nullptr && m_mouseCapturedLayout == nullptr)
+	//	return result;
 
 	// Pass OnLButtonDown message to the control that has captured the mouse if it exists
 	if (m_mouseCapturedControl != nullptr)
@@ -295,6 +295,10 @@ OnMessageResult Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseSt
 	// If the result is still NONE, then the captured control did not want to handle it and we need
 	// to pass the message to all other controls
 
+	// Clear both values as they should now only be set from the two loops below
+	m_mouseCapturedControl = nullptr;
+	m_mouseCapturedLayout = nullptr;
+
 	// First, attempt to pass the message along to one of the controls bound to the layout
 	for (std::shared_ptr<Control> control : m_controls)
 	{
@@ -305,10 +309,7 @@ OnMessageResult Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseSt
 
 			// Capture the mouse if necessary
 			if (result == OnMessageResult::CAPTURE_MOUSE || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
-			{
 				m_mouseCapturedControl = control;
-				m_mouseCapturedLayout = nullptr;
-			}
 
 			// return if handled
 			if (result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
@@ -330,10 +331,7 @@ OnMessageResult Layout::OnLButtonDown(const std::shared_ptr<MouseState>& mouseSt
 
 			// Capture the mouse if necessary
 			if (result == OnMessageResult::CAPTURE_MOUSE || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED)
-			{
-				m_mouseCapturedControl = nullptr;
 				m_mouseCapturedLayout = layout;
-			}
 
 			return result;
 		}
