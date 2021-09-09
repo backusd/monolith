@@ -185,6 +185,7 @@
     <ClCompile Include="Hydrogen.cpp" />
     <ClCompile Include="Layout.cpp" />
     <ClCompile Include="LayoutConfig.cpp" />
+    <ClCompile Include="LineTheme.cpp" />
     <ClCompile Include="Lithium.cpp" />
     <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="MonolithException.cpp" />
@@ -199,6 +200,7 @@
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="SimulationManager.cpp" />
     <ClCompile Include="SimulationRenderer.cpp" />
+    <ClCompile Include="Slider.cpp" />
     <ClCompile Include="SphereMesh.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="TextInput.cpp" />
@@ -237,6 +239,7 @@
     <ClInclude Include="Hydrogen.h" />
     <ClInclude Include="Layout.h" />
     <ClInclude Include="LayoutConfig.h" />
+    <ClInclude Include="LineTheme.h" />
     <ClInclude Include="Lithium.h" />
     <ClInclude Include="MeshManager.h" />
     <ClInclude Include="MonolithException.h" />
@@ -254,6 +257,7 @@
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="SimulationManager.h" />
     <ClInclude Include="SimulationRenderer.h" />
+    <ClInclude Include="Slider.h" />
     <ClInclude Include="SphereMesh.h" />
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Text.h" />

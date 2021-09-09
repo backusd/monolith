@@ -13,6 +13,7 @@
 #include "Text.h"
 #include "TextInput.h"
 #include "ComboBox.h"
+#include "Slider.h"
 
 #include <memory>
 #include <map>

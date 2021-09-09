@@ -216,6 +216,12 @@
     <ClCompile Include="BorderTheme.cpp">
       <Filter>Source Files\UI\Themes</Filter>
     </ClCompile>
+    <ClCompile Include="Slider.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="LineTheme.cpp">
+      <Filter>Source Files\UI\Themes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -381,6 +387,12 @@
       <Filter>Header Files\UI\Controls</Filter>
     </ClInclude>
     <ClInclude Include="BorderTheme.h">
+      <Filter>Header Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="Slider.h">
+      <Filter>Header Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="LineTheme.h">
       <Filter>Header Files\UI\Themes</Filter>
     </ClInclude>
   </ItemGroup>

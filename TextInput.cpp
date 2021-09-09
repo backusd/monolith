@@ -127,8 +127,8 @@ OnMessageResult TextInput::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 	// Don't worry about adjusting activelyEnteringText value - that should only change on L button down
 	m_mouseOverDownState = MouseIsOver(mouseState->X(), mouseState->Y()) ? MouseOverDown::MOUSE_OVER : MouseOverDown::NONE;
 
-	// Always return captured & handled because only on L button down should that change
-	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+	// If actively entering text, return capture and handled, otherwise, none
+	return m_activelyEnteringText ? OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED : OnMessageResult::NONE;
 }
 
 OnMessageResult TextInput::OnMouseLeave()
@@ -152,17 +152,18 @@ OnMessageResult TextInput::OnKeyUp(unsigned char keycode)
 	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
 }
 OnMessageResult TextInput::OnChar(char key)
-{
-	// Handle backspace character
+{	
 	switch (key)
 	{
-	case '\r':
-		// Enter key was pressed - stop actively inputing text
+	// Enter key was pressed - stop actively inputing text
+	case '\r':		
 		m_activelyEnteringText = false;
 		m_mouseOverDownState = MouseOverDown::NONE;
 		return OnMessageResult::MESSAGE_HANDLED;
 		
+	// Handle backspace character
 	case '\b':	m_text->Pop(); break;
+
 	default:	m_text->AddChar(key); break;
 	}	
 

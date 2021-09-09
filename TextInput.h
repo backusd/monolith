@@ -10,6 +10,7 @@
 
 #include <string>
 
+
 class TextInput : public Control
 {
 public:
@@ -43,6 +44,10 @@ public:
 	std::shared_ptr<Layout> GetLayout() { return m_layout; }
 
 	void SetPlaceHolderText(std::string text) { m_placeholderText = text; }
+	void SetText(std::wstring text) { m_text->SetText(text); }
+	void SetText(float value) { m_text->SetText(std::to_wstring(value)); }
+
+	std::wstring GetText() { return m_text->GetText(); }
 
 private:
 	void Resize();

@@ -3,6 +3,7 @@
 #include "Theme.h"
 #include "BorderTheme.h"
 #include "ColorTheme.h"
+#include "LineTheme.h"
 #include "TextTheme.h"
 #include "ThemeDefines.h"
 #include "DeviceResources.h"

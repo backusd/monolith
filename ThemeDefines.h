@@ -19,6 +19,8 @@
 #define THEME_DEFAULT_COMBO_BOX_BUTTON_COLOR "default-combo-box-button-color"
 #define THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_COLOR "default-combo-box-item-button-color"
 #define THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_BORDER "default-combo-box-item-button-border"
+#define THEME_DEFAULT_LINE_COLOR "default-line-color"
+#define THEME_DEFAULT_SLIDER_RECT_COLOR "default-slider-rect-color"
 
 // Menu Bar
 #define THEME_MENU_BAR_TEXT "menu-bar-text"

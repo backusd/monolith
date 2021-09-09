@@ -54,7 +54,7 @@ public:
 	template<typename T>
 	void AddControl(std::shared_ptr<T> control) { m_controls.push_back(control); }
 
-	D2D1_RECT_F GetRect(int rowIndex, int columnIndex, int rowSpan, int columnSpan);
+	D2D1_RECT_F GetRect(int rowIndex, int columnIndex, int rowSpan = 1, int columnSpan = 1);
 
 	// void PaintBorders();
 	

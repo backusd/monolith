@@ -123,6 +123,16 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 	// ComboBox Control - Drop down item button border
 	std::shared_ptr<BorderTheme> comboBoxItemButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_COMBO_BOX_ITEM_BUTTON_BORDER, deviceResources);
 	comboBoxItemButtonBorder->SetStrokeWidth(0.0f);
+
+	// Line - line color
+	std::shared_ptr<LineTheme> line = ThemeManager::CreateTheme<LineTheme>(THEME_DEFAULT_LINE_COLOR, deviceResources);
+	line->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+
+	// Slider Control - Rect color
+	std::shared_ptr<ColorTheme> sliderRectColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_SLIDER_RECT_COLOR, deviceResources);
+	sliderRectColor->SetColor(D2D1::ColorF(D2D1::ColorF::Blue));
+	sliderRectColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::LightBlue));
+	sliderRectColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::DarkBlue));
 }
 
 void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)

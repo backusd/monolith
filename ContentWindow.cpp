@@ -353,8 +353,10 @@ void ContentWindow::NewSimulationButtonClick()
 
 
 	RowColDefinitions rowDefs;
-	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Simulation Name sublayout
-	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f); // Add Atom sublayout
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Simulation Name sublayout
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f);		// Add Atom combo box
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 240.0f);	// Atom Position / Velocity
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Add atom button
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 	layout->SetRowDefinitions(rowDefs);
 
@@ -407,4 +409,89 @@ void ContentWindow::NewSimulationButtonClick()
 	// ============================================================================================================
 	// ============================================================================================================
 	// Sub Layout for editing position and velocity
+	std::shared_ptr<Layout> atomPositionVelocitySubLayout = layout->CreateSubLayout(2, 0);
+
+	RowColDefinitions positionVelocityColumns;
+	positionVelocityColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 60.0f);
+	positionVelocityColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+	atomPositionVelocitySubLayout->SetColumnDefinitions(positionVelocityColumns);
+
+	RowColDefinitions positionVelocityRows;
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position:
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position X
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position Y
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position Z
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity:
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity X
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity Y
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity Z
+	atomPositionVelocitySubLayout->SetRowDefinitions(positionVelocityRows);
+
+	// Text for "Position"
+	std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(0, 0);
+	positionText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	positionText->SetText(L"Position");
+	positionText->Margin(5.0f, 0.0f);
+
+	// Text for X Position
+	std::shared_ptr<Text> positionXText = atomPositionVelocitySubLayout->CreateControl<Text>(1, 0);
+	positionXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	positionXText->SetText(L"X:");
+	positionXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+	// Slider for X Position
+	std::shared_ptr<Slider> positionXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 1);
+
+
+
+
+
+	// Text for Y Position
+	std::shared_ptr<Text> positionYText = atomPositionVelocitySubLayout->CreateControl<Text>(2, 0);
+	positionYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	positionYText->SetText(L"Y:");
+	positionYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+	// Text for Z Position
+	std::shared_ptr<Text> positionZText = atomPositionVelocitySubLayout->CreateControl<Text>(3, 0);
+	positionZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	positionZText->SetText(L"Z:");
+	positionZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+	// Text for "Velocity"
+	std::shared_ptr<Text> velocityText = atomPositionVelocitySubLayout->CreateControl<Text>(4, 0);
+	velocityText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	velocityText->SetText(L"Velocity");
+	velocityText->Margin(5.0f, 0.0f);
+
+	// Text for X Velocity
+	std::shared_ptr<Text> velocityXText = atomPositionVelocitySubLayout->CreateControl<Text>(5, 0);
+	velocityXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	velocityXText->SetText(L"X:");
+	velocityXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+	// Text for Y Velocity
+	std::shared_ptr<Text> velocityYText = atomPositionVelocitySubLayout->CreateControl<Text>(6, 0);
+	velocityYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	velocityYText->SetText(L"Y:");
+	velocityYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+	// Text for Z Velocity
+	std::shared_ptr<Text> velocityZText = atomPositionVelocitySubLayout->CreateControl<Text>(7, 0);
+	velocityZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	velocityZText->SetText(L"Z:");
+	velocityZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+	// ============================================================================================================
+	// ============================================================================================================
+	// Add atom button
+	std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(3, 0);
+	addAtomButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
+	addAtomButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+	addAtomButton->Margin(10.0f, 0.0f);
+
+	std::shared_ptr<Layout> addAtomButtonLayout = addAtomButton->GetLayout();
+
+	std::shared_ptr<Text> addAtomButtonText = addAtomButtonLayout->CreateControl<Text>();
+	addAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	addAtomButtonText->SetText(L"Add Atom");
 }

@@ -258,7 +258,7 @@ void Layout::PaintBorders()
 }
 */
 
-D2D1_RECT_F Layout::GetRect(int rowIndex, int columnIndex, int rowSpan = 1, int columnSpan = 1)
+D2D1_RECT_F Layout::GetRect(int rowIndex, int columnIndex, int rowSpan, int columnSpan)
 {
 	D2D1_RECT_F rect;
 	rect.left = m_columns[columnIndex].Left();
