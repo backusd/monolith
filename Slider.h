@@ -46,8 +46,8 @@ public:
 
 	std::shared_ptr<Layout> GetLayout() { return m_layout; }
 
-	void SetMin(float min) { m_sliderMin = min; }
-	void SetMax(float max) { m_sliderMax = max; }
+	void SetMin(float min);
+	void SetMax(float max);
 
 private:
 	void Resize();

@@ -16,7 +16,9 @@ class Simulation
 public:
 	Simulation(const std::shared_ptr<DeviceResources>& deviceResources);
 
-	void AddNewAtom(std::shared_ptr<Atom> atom);
+	template<typename T>
+	void AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
+
 	void RemoveAtom();
 
 	void PlaySimulation() { m_paused = false; }
@@ -51,10 +53,11 @@ public:
 
 	void ElapsedTime(float time) { m_elapsedTime = time; }
 
+	//template<typename T>
+	//std::shared_ptr<T> CreateAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
+
 
 private:
-	template<typename T>
-	std::shared_ptr<T> CreateAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 
@@ -72,10 +75,39 @@ private:
 	bool m_paused;
 };
 
+/*
 template<typename T>
 std::shared_ptr<T> Simulation::CreateAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
 {
 	std::shared_ptr<T> atom = std::make_shared<T>(m_deviceResources, position, velocity);
 	atom->SetMesh(MeshManager::GetSphereMesh());
 	return atom;
+}
+*/
+
+template<typename T>
+void Simulation::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
+{
+	std::shared_ptr<T> atom = std::make_shared<T>(m_deviceResources, position, velocity);
+	atom->SetMesh(MeshManager::GetSphereMesh());
+	
+
+	// We need to make sure that the atoms are sorted by element type
+	// So insert the new atom in the first spot after all of the elements with smaller
+	// element numbers
+
+	// Get the first index where the current element is greater than or equal to the new atom
+	unsigned int index;
+	for (index = 0; index < m_atoms.size(); ++index)
+	{
+		if (m_atoms[index]->ElementType() >= atom->ElementType())
+			break;
+	}
+
+	// if we got to the end, just add the new atom
+	// else, insert it at the appropriate spot in the vector
+	if (index == m_atoms.size())
+		m_atoms.push_back(atom);
+	else
+		m_atoms.insert(m_atoms.begin() + index, atom);
 }

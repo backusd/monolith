@@ -1,6 +1,7 @@
 #include "ContentWindow.h"
 
 using Microsoft::WRL::ComPtr;
+using DirectX::XMFLOAT3;
 
 ContentWindow::ContentWindow(int width, int height, const char* name) :
 	WindowBase(width, height, name),
@@ -355,7 +356,7 @@ void ContentWindow::NewSimulationButtonClick()
 	RowColDefinitions rowDefs;
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Simulation Name sublayout
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f);		// Add Atom combo box
-	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 240.0f);	// Atom Position / Velocity
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 300.0f);	// Atom Position / Velocity
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Add atom button
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 	layout->SetRowDefinitions(rowDefs);
@@ -417,6 +418,8 @@ void ContentWindow::NewSimulationButtonClick()
 	atomPositionVelocitySubLayout->SetColumnDefinitions(positionVelocityColumns);
 
 	RowColDefinitions positionVelocityRows;
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions:
+	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions Slider
 	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position:
 	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position X
 	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position Y
@@ -427,60 +430,119 @@ void ContentWindow::NewSimulationButtonClick()
 	positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity Z
 	atomPositionVelocitySubLayout->SetRowDefinitions(positionVelocityRows);
 
+	// Text for "Box Dimensions"
+	std::shared_ptr<Text> boxDimensionsText = atomPositionVelocitySubLayout->CreateControl<Text>(0, 0, 1, 2);
+	boxDimensionsText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	boxDimensionsText->SetText(L"Box Dimensions");
+	boxDimensionsText->Margin(5.0f, 0.0f);
+
+	// Box Dimension Slider
+	std::shared_ptr<Slider> boxDimensionSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 0, 1, 2);
+	boxDimensionSlider->SetMin(10.0f);
+	boxDimensionSlider->SetMax(100.0f);
+	boxDimensionSlider->Margin(10.0f, 2.0f);
+
+
+
+
 	// Text for "Position"
-	std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(0, 0);
+	std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(2, 0);
 	positionText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	positionText->SetText(L"Position");
 	positionText->Margin(5.0f, 0.0f);
 
 	// Text for X Position
-	std::shared_ptr<Text> positionXText = atomPositionVelocitySubLayout->CreateControl<Text>(1, 0);
+	std::shared_ptr<Text> positionXText = atomPositionVelocitySubLayout->CreateControl<Text>(3, 0);
 	positionXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	positionXText->SetText(L"X:");
 	positionXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
 
 	// Slider for X Position
-	std::shared_ptr<Slider> positionXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 1);
-
+	std::shared_ptr<Slider> positionXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(3, 1);
+	positionXSlider->SetMin(-100.0f);
+	positionXSlider->SetMax(100.0f);
+	positionXSlider->Margin(0.0f, 2.0f);
 
 
 
 
 	// Text for Y Position
-	std::shared_ptr<Text> positionYText = atomPositionVelocitySubLayout->CreateControl<Text>(2, 0);
+	std::shared_ptr<Text> positionYText = atomPositionVelocitySubLayout->CreateControl<Text>(4, 0);
 	positionYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	positionYText->SetText(L"Y:");
 	positionYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
 
+	// Slider for Y Position
+	std::shared_ptr<Slider> positionYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(4, 1);
+	positionYSlider->SetMin(1.0f);
+	positionYSlider->SetMax(100.0f);
+	positionYSlider->Margin(0.0f, 2.0f);
+
+
+
+
 	// Text for Z Position
-	std::shared_ptr<Text> positionZText = atomPositionVelocitySubLayout->CreateControl<Text>(3, 0);
+	std::shared_ptr<Text> positionZText = atomPositionVelocitySubLayout->CreateControl<Text>(5, 0);
 	positionZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	positionZText->SetText(L"Z:");
 	positionZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
 
+	// Slider for Z Position
+	std::shared_ptr<Slider> positionZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(5, 1);
+	positionZSlider->SetMin(1.0f);
+	positionZSlider->SetMax(100.0f);
+	positionZSlider->Margin(0.0f, 2.0f);
+
+
+
+
 	// Text for "Velocity"
-	std::shared_ptr<Text> velocityText = atomPositionVelocitySubLayout->CreateControl<Text>(4, 0);
+	std::shared_ptr<Text> velocityText = atomPositionVelocitySubLayout->CreateControl<Text>(6, 0);
 	velocityText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	velocityText->SetText(L"Velocity");
 	velocityText->Margin(5.0f, 0.0f);
 
 	// Text for X Velocity
-	std::shared_ptr<Text> velocityXText = atomPositionVelocitySubLayout->CreateControl<Text>(5, 0);
+	std::shared_ptr<Text> velocityXText = atomPositionVelocitySubLayout->CreateControl<Text>(7, 0);
 	velocityXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	velocityXText->SetText(L"X:");
 	velocityXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
 
+	// Slider for X Velocity
+	std::shared_ptr<Slider> velocityXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(7, 1);
+	velocityXSlider->SetMin(1.0f);
+	velocityXSlider->SetMax(100.0f);
+	velocityXSlider->Margin(0.0f, 2.0f);
+
+
+
 	// Text for Y Velocity
-	std::shared_ptr<Text> velocityYText = atomPositionVelocitySubLayout->CreateControl<Text>(6, 0);
+	std::shared_ptr<Text> velocityYText = atomPositionVelocitySubLayout->CreateControl<Text>(8, 0);
 	velocityYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	velocityYText->SetText(L"Y:");
 	velocityYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
 
+	// Slider for X Velocity
+	std::shared_ptr<Slider> velocityYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(8, 1);
+	velocityYSlider->SetMin(1.0f);
+	velocityYSlider->SetMax(100.0f);
+	velocityYSlider->Margin(0.0f, 2.0f);
+
+
+
 	// Text for Z Velocity
-	std::shared_ptr<Text> velocityZText = atomPositionVelocitySubLayout->CreateControl<Text>(7, 0);
+	std::shared_ptr<Text> velocityZText = atomPositionVelocitySubLayout->CreateControl<Text>(9, 0);
 	velocityZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	velocityZText->SetText(L"Z:");
 	velocityZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+	// Slider for X Velocity
+	std::shared_ptr<Slider> velocityZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(9, 1);
+	velocityZSlider->SetMin(1.0f);
+	velocityZSlider->SetMax(100.0f);
+	velocityZSlider->Margin(0.0f, 2.0f);
+
+
 	// ============================================================================================================
 	// ============================================================================================================
 	// Add atom button
@@ -494,4 +556,14 @@ void ContentWindow::NewSimulationButtonClick()
 	std::shared_ptr<Text> addAtomButtonText = addAtomButtonLayout->CreateControl<Text>();
 	addAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 	addAtomButtonText->SetText(L"Add Atom");
+
+
+	// ============================================================================================================
+	// ============================================================================================================
+	// Add a Hydrogen Atom to the simulation
+	SimulationManager::Pause();
+	XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3 velocity = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
+
 }

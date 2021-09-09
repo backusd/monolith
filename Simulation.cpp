@@ -14,7 +14,7 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 
 	// TEMPORARY SETUP ===================================
 
-
+	/*
 	XMFLOAT3 initPos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 initVelocity = XMFLOAT3(-1.0f, 0.0f, 0.0f);
 	AddNewAtom(CreateAtom<Hydrogen>(initPos, initVelocity));
@@ -58,10 +58,12 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	initPos = XMFLOAT3(-0.7f, 0.2f, 0.7f);
 	initVelocity = XMFLOAT3(-1.0f, 0.5f, 1.0f);
 	AddNewAtom(CreateAtom<Neon>(initPos, initVelocity));
+	*/
 
 	m_paused = false;
 }
 
+/*
 void Simulation::AddNewAtom(std::shared_ptr<Atom> atom)
 {
 	// We need to make sure that the atoms are sorted by element type
@@ -84,6 +86,7 @@ void Simulation::AddNewAtom(std::shared_ptr<Atom> atom)
 		m_atoms.insert(m_atoms.begin() + index, atom);
 
 }
+*/
 void Simulation::RemoveAtom()
 {
 

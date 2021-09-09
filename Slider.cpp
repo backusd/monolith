@@ -170,8 +170,11 @@ OnMessageResult Slider::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 		return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
 	}
 
-	// Slider is not actively moving, so first pass it to the layout (TextInput control)
-	OnMessageResult result = m_layout->OnMouseMove(mouseState);
+	// Slider is not actively moving, so first pass it to the TextInput control
+	// NOTE: Do not pass it to the layout which houses the TextInput because when the mouse
+	//       leaves the TextInput control, the message will not get passed and the TextInput will
+	//       remain in the MouseOver color state
+	OnMessageResult result = m_textInput->OnMouseMove(mouseState);
 
 	bool messagedHandled = result == OnMessageResult::MESSAGE_HANDLED || result == OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
 	if (messagedHandled || !MouseIsOver(mouseState->X(), mouseState->Y()))
@@ -246,7 +249,7 @@ OnMessageResult Slider::OnChar(char key)
 				m_sliderValue = std::max(m_sliderMin, m_sliderValue);
 				m_sliderValue = std::min(m_sliderMax, m_sliderValue);
 			}
-			catch (const std::invalid_argument& ia)
+			catch (const std::invalid_argument& /*ia*/)
 			{
 				m_sliderValue = m_sliderMin;
 			}
@@ -256,4 +259,24 @@ OnMessageResult Slider::OnChar(char key)
 	}
 
 	return result;
+}
+
+void Slider::SetMin(float min) 
+{ 
+	m_sliderMin = min;
+	if (m_sliderValue < m_sliderMin)
+	{
+		m_sliderValue = m_sliderMin;
+		m_textInput->SetText(m_sliderValue);
+	}
+}
+
+void Slider::SetMax(float max) 
+{ 
+	m_sliderMax = max;
+	if (m_sliderValue > m_sliderMax)
+	{
+		m_sliderValue = m_sliderMax;
+		m_textInput->SetText(m_sliderValue);
+	}
 }
