@@ -17,7 +17,8 @@ Slider::Slider(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_sliderMin(0.0f),
 	m_sliderMax(1.0f),
 	m_sliderValue(0.0f),
-	m_rectWidth(20.0f)
+	m_rectWidth(20.0f),
+	ValueChangedMethod(WindowManager::DefaultSliderValueChangedMethod)
 {
 	SetLineTheme(THEME_DEFAULT_LINE_COLOR);
 	SetRectColorTheme(THEME_DEFAULT_SLIDER_RECT_COLOR);
@@ -167,6 +168,9 @@ OnMessageResult Slider::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 		// Update the value and apply it to TextInput
 		m_textInput->SetText(m_sliderValue);
 
+		// Call the value changed method
+		ValueChangedMethod(m_sliderValue);
+
 		return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
 	}
 
@@ -256,6 +260,9 @@ OnMessageResult Slider::OnChar(char key)
 		}
 
 		m_textInput->SetText(m_sliderValue);
+
+		// Call the value changed method
+		ValueChangedMethod(m_sliderValue);
 	}
 
 	return result;

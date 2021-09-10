@@ -23,6 +23,9 @@ public:
 	static void DefaultClickMethod() {}
 	static void NewSimulationButtonClick();
 
+	// Slider methods
+	static void DefaultSliderValueChangedMethod(float value) {}
+
 private:
 	// Disallow creation of a WindowManager object
 	WindowManager() {}

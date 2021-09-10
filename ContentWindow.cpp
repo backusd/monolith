@@ -459,9 +459,12 @@ void ContentWindow::NewSimulationButtonClick()
 
 	// Slider for X Position
 	std::shared_ptr<Slider> positionXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(3, 1);
-	positionXSlider->SetMin(-100.0f);
-	positionXSlider->SetMax(100.0f);
+	positionXSlider->SetMin(-1.0f);
+	positionXSlider->SetMax(1.0f);
 	positionXSlider->Margin(0.0f, 2.0f);
+	positionXSlider->ValueChanged([](float value) {
+		SimulationManager::SelectedAtomPositionX(value);
+	});
 
 
 
@@ -474,9 +477,12 @@ void ContentWindow::NewSimulationButtonClick()
 
 	// Slider for Y Position
 	std::shared_ptr<Slider> positionYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(4, 1);
-	positionYSlider->SetMin(1.0f);
-	positionYSlider->SetMax(100.0f);
+	positionYSlider->SetMin(-1.0f);
+	positionYSlider->SetMax(1.0f);
 	positionYSlider->Margin(0.0f, 2.0f);
+	positionYSlider->ValueChanged([](float value) {
+		SimulationManager::SelectedAtomPositionY(value);
+	});
 
 
 
@@ -489,9 +495,12 @@ void ContentWindow::NewSimulationButtonClick()
 
 	// Slider for Z Position
 	std::shared_ptr<Slider> positionZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(5, 1);
-	positionZSlider->SetMin(1.0f);
-	positionZSlider->SetMax(100.0f);
+	positionZSlider->SetMin(-1.0f);
+	positionZSlider->SetMax(1.0f);
 	positionZSlider->Margin(0.0f, 2.0f);
+	positionZSlider->ValueChanged([](float value) {
+		SimulationManager::SelectedAtomPositionZ(value);
+	});
 
 
 
@@ -565,5 +574,5 @@ void ContentWindow::NewSimulationButtonClick()
 	XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 velocity = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
-
+	SimulationManager::SelectAtom(0);
 }

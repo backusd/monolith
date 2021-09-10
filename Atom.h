@@ -56,6 +56,10 @@ public:
 	void Velocity(DirectX::XMFLOAT3 velocity) { m_velocity = velocity; }
 	void SetMesh(const std::shared_ptr<SphereMesh>& mesh) { m_mesh = mesh; }
 
+	void SetPositionX(float positionX) { m_position.x = positionX; }
+	void SetPositionY(float positionY) { m_position.y = positionY; }
+	void SetPositionZ(float positionZ) { m_position.z = positionZ; }
+
 protected:
 	std::shared_ptr<SphereMesh> m_mesh;
 

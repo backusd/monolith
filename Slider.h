@@ -49,6 +49,9 @@ public:
 	void SetMin(float min);
 	void SetMax(float max);
 
+	// Event Method assignments
+	void ValueChanged(std::function<void(float)> method) { ValueChangedMethod = method; }
+
 private:
 	void Resize();
 
@@ -73,4 +76,8 @@ private:
 	float m_sliderValue;
 
 	float m_rectWidth;
+
+	// Event methods
+	std::function<void(float)> ValueChangedMethod;
+
 };

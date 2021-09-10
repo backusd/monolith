@@ -9,6 +9,7 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	m_boxVisible(true),
 	m_elapsedTime(0.0f),
 	m_paused(true),
+	m_selectedAtomIndex(0),
 	m_deviceResources(deviceResources)
 {
 

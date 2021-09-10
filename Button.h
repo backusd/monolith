@@ -6,8 +6,8 @@
 #include "MouseOverDown.h"
 #include "WindowManager.h"
 
-
 #include <string>
+
 
 class Button : public Control
 {
