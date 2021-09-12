@@ -42,6 +42,9 @@ public:
 	void SelectedAtomPositionX(float positionX) { m_atoms[m_selectedAtomIndex]->SetPositionX(positionX); }
 	void SelectedAtomPositionY(float positionY) { m_atoms[m_selectedAtomIndex]->SetPositionY(positionY); }
 	void SelectedAtomPositionZ(float positionZ) { m_atoms[m_selectedAtomIndex]->SetPositionZ(positionZ); }
+	void SelectedAtomVelocityX(float velocityX) { m_atoms[m_selectedAtomIndex]->SetVelocityX(velocityX); }
+	void SelectedAtomVelocityY(float velocityY) { m_atoms[m_selectedAtomIndex]->SetVelocityY(velocityY); }
+	void SelectedAtomVelocityZ(float velocityZ) { m_atoms[m_selectedAtomIndex]->SetVelocityZ(velocityZ); }
 
 	// GET
 	std::vector<std::shared_ptr<Atom>> Atoms() { return m_atoms; }
@@ -84,7 +87,8 @@ template<typename T>
 void Simulation::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
 {
 	std::shared_ptr<T> atom = std::make_shared<T>(m_deviceResources, position, velocity);
-	atom->SetMesh(MeshManager::GetSphereMesh());
+	atom->SetSphereMesh(MeshManager::GetSphereMesh());
+	atom->SetArrowMesh(MeshManager::GetArrowMesh());
 	
 
 	// We need to make sure that the atoms are sorted by element type

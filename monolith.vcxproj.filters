@@ -222,6 +222,9 @@
     <ClCompile Include="LineTheme.cpp">
       <Filter>Source Files\UI\Themes</Filter>
     </ClCompile>
+    <ClCompile Include="ArrowMesh.cpp">
+      <Filter>Source Files\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -394,6 +397,9 @@
     </ClInclude>
     <ClInclude Include="LineTheme.h">
       <Filter>Header Files\UI\Themes</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrowMesh.h">
+      <Filter>Header Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

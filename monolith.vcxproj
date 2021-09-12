@@ -166,6 +166,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="ArrowMesh.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="Beryllium.cpp" />
     <ClCompile Include="BorderTheme.cpp" />
@@ -215,6 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="ArrowMesh.h" />
     <ClInclude Include="Atom.h" />
     <ClInclude Include="Beryllium.h" />
     <ClInclude Include="BorderTheme.h" />

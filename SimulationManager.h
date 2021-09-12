@@ -32,6 +32,9 @@ public:
 	static void SelectedAtomPositionX(float positionX) { m_simulation->SelectedAtomPositionX(positionX); }
 	static void SelectedAtomPositionY(float positionY) { m_simulation->SelectedAtomPositionY(positionY); }
 	static void SelectedAtomPositionZ(float positionZ) { m_simulation->SelectedAtomPositionZ(positionZ); }
+	static void SelectedAtomVelocityX(float velocityX) { m_simulation->SelectedAtomVelocityX(velocityX); }
+	static void SelectedAtomVelocityY(float velocityY) { m_simulation->SelectedAtomVelocityY(velocityY); }
+	static void SelectedAtomVelocityZ(float velocityZ) { m_simulation->SelectedAtomVelocityZ(velocityZ); }
 
 private:
 	// Disallow creation of a SimulationManager object

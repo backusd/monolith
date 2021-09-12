@@ -6,6 +6,7 @@
 #include "Electron.h"
 #include "Enums.h"
 #include "SphereMesh.h"
+#include "ArrowMesh.h"
 
 #include <memory>
 #include <vector>
@@ -38,7 +39,7 @@ public:
 
 	// Render
 	void Render(DirectX::XMMATRIX viewProjectionMatrix);
-	DirectX::XMMATRIX ModelMatrix() { return m_mesh->ModelMatrix(); }
+	DirectX::XMMATRIX ModelMatrix() { return m_sphereMesh->ModelMatrix(); }
 	DirectX::XMMATRIX TranslationMatrix() { return DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z); }
 
 	// Get
@@ -54,14 +55,19 @@ public:
 
 	// Set
 	void Velocity(DirectX::XMFLOAT3 velocity) { m_velocity = velocity; }
-	void SetMesh(const std::shared_ptr<SphereMesh>& mesh) { m_mesh = mesh; }
+	void SetSphereMesh(const std::shared_ptr<SphereMesh>& mesh) { m_sphereMesh = mesh; }
+	void SetArrowMesh(const std::shared_ptr<ArrowMesh>& mesh) { m_arrowMesh = mesh; }
 
 	void SetPositionX(float positionX) { m_position.x = positionX; }
 	void SetPositionY(float positionY) { m_position.y = positionY; }
 	void SetPositionZ(float positionZ) { m_position.z = positionZ; }
+	void SetVelocityX(float velocityX) { m_velocity.x = velocityX; }
+	void SetVelocityY(float velocityY) { m_velocity.y = velocityY; }
+	void SetVelocityZ(float velocityZ) { m_velocity.z = velocityZ; }
 
 protected:
-	std::shared_ptr<SphereMesh> m_mesh;
+	std::shared_ptr<SphereMesh> m_sphereMesh;
+	std::shared_ptr<ArrowMesh> m_arrowMesh;
 
 	DirectX::XMFLOAT3		m_position;
 	DirectX::XMFLOAT3		m_velocity;
