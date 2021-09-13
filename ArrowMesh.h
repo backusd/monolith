@@ -32,6 +32,7 @@ private:
 	void CreateModelViewProjectionBuffer();
 	void CreateAndLoadVertexAndIndexBuffers();
 
+	DirectX::XMMATRIX ComputeRotationMatrix(DirectX::XMFLOAT3 direction);
 
 
 public:

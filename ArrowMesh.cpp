@@ -149,127 +149,6 @@ void ArrowMesh::CreateAndLoadVertexAndIndexBuffers()
 		)
 	);
 
-
-
-	// ==================================================================
-	/*
-	unsigned int segments = 26;
-	unsigned int slices = segments / 2;
-	unsigned int numVertices = (slices + 1) * (segments + 1) + 1;
-	unsigned int numIndices = slices * segments * 3 * 2;
-
-	std::vector<VertexPositionNormal> sphereVertices(numVertices);
-
-	// To make the texture look right on the top and bottom of the sphere
-	// each slice will have 'segments + 1' vertices.  The top and bottom
-	// vertices will all be coincident, but have different U texture cooordinates.
-	unsigned int p = 0;
-	XMFLOAT3 positionNormal; // We are creating a unit sphere so the position is the same as the normal
-	for (unsigned int a = 0; a <= slices; a++)
-	{
-		float angle1 = static_cast<float>(a) / static_cast<float>(slices) * DirectX::XM_PI;
-		float z = static_cast<float>(cos(angle1));
-		float r = static_cast<float>(sin(angle1));
-
-		for (unsigned int b = 0; b <= segments; b++)
-		{
-			float angle2 = static_cast<float>(b) / static_cast<float>(segments) * DirectX::XM_2PI;
-
-			// We are working with the unit sphere so the position and normal
-			// vectors are the same
-			positionNormal = XMFLOAT3(
-				static_cast<float>(r * cos(angle2)),
-				static_cast<float>(r * sin(angle2)),
-				z
-			);
-			sphereVertices[p].position = positionNormal;
-			sphereVertices[p].normal = positionNormal;
-
-			p++;
-		}
-	}
-	unsigned int vertexCount = p;
-
-	D3D11_SUBRESOURCE_DATA vertexBufferDataSphere = { 0 };
-	vertexBufferDataSphere.pSysMem = sphereVertices.data();
-	vertexBufferDataSphere.SysMemPitch = 0;
-	vertexBufferDataSphere.SysMemSlicePitch = 0;
-
-	CD3D11_BUFFER_DESC vertexBufferDescSphere(
-		sizeof(VertexPositionNormal) * vertexCount,
-		D3D11_BIND_VERTEX_BUFFER
-	);
-
-	m_vertexBuffer = nullptr;
-	ThrowIfFailed(
-		m_deviceResources->D3DDevice()->CreateBuffer(
-			&vertexBufferDescSphere,
-			&vertexBufferDataSphere,
-			m_vertexBuffer.ReleaseAndGetAddressOf()
-		)
-	);
-
-	// Load mesh indices. Each trio of indices represents
-	// a triangle to be rendered on the screen.
-	// For example: 0,2,1 means that the vertices with indexes
-	// 0, 2 and 1 from the vertex buffer compose the 
-	// first triangle of this mesh.
-
-	std::vector<unsigned short> sphereIndices(numIndices);
-
-	p = 0;
-	for (unsigned short a = 0; a < slices; a++)
-	{
-		unsigned short p1 = a * (segments + 1);
-		unsigned short p2 = (a + 1) * (segments + 1);
-
-		// Generate two triangles for each segment around the slice.
-		for (unsigned short b = 0; b < segments; b++)
-		{
-			if (a < (slices - 1))
-			{
-				// For all but the bottom slice add the triangle with one
-				// vertex in the a slice and two vertices in the a + 1 slice.
-				// Skip it for the bottom slice since the triangle would be
-				// degenerate as all the vertices in the bottom slice are coincident.
-				sphereIndices[p] = b + p1;
-				sphereIndices[p + 1] = b + p2;
-				sphereIndices[p + 2] = b + p2 + 1;
-				p = p + 3;
-			}
-			if (a > 0)
-			{
-				// For all but the top slice add the triangle with two
-				// vertices in the a slice and one vertex in the a + 1 slice.
-				// Skip it for the top slice since the triangle would be
-				// degenerate as all the vertices in the top slice are coincident.
-				sphereIndices[p] = b + p1;
-				sphereIndices[p + 1] = b + p2 + 1;
-				sphereIndices[p + 2] = b + p1 + 1;
-				p = p + 3;
-			}
-		}
-	}
-	m_indexCount = p;
-
-	D3D11_SUBRESOURCE_DATA indexBufferDataSphere = { 0 };
-	indexBufferDataSphere.pSysMem = sphereIndices.data();
-	indexBufferDataSphere.SysMemPitch = 0;
-	indexBufferDataSphere.SysMemSlicePitch = 0;
-
-	CD3D11_BUFFER_DESC indexBufferDescSphere(
-		sizeof(unsigned short) * m_indexCount,
-		D3D11_BIND_INDEX_BUFFER
-	);
-
-	ThrowIfFailed(
-		m_deviceResources->D3DDevice()->CreateBuffer(
-			&indexBufferDescSphere,
-			&indexBufferDataSphere,
-			m_indexBuffer.ReleaseAndGetAddressOf()
-		)
-	);
-	*/
 }
 
 void ArrowMesh::Render(XMFLOAT3 position, XMFLOAT3 velocity, float radius, XMMATRIX viewProjection)
@@ -284,36 +163,59 @@ void ArrowMesh::Render(XMFLOAT3 position, XMFLOAT3 velocity, float radius, XMMAT
 
 	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
-	// Compute the model matrix
-	//m_modelMatrix = DirectX::XMMatrixScaling(radius, radius, radius) * DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-	
 	// The cylinder circles are in the xy-plane, so we must scale them to an appropriate width for the atom radius
 	// The z-direction must be scaled to match the velocity of the atom
 	XMVECTOR velocityVector = DirectX::XMLoadFloat3(&velocity);
 	XMVECTOR magnitudeVector = DirectX::XMVector3Length(velocityVector);
-	XMFLOAT3 _magnitude;
-	DirectX::XMStoreFloat3(&_magnitude, magnitudeVector);
-	float magnitude = _magnitude.x;
+	XMFLOAT3 magnitude;
+	DirectX::XMStoreFloat3(&magnitude, magnitudeVector);
 
-	float xyScaling = radius / 3.0f;
-	m_modelMatrix = DirectX::XMMatrixScaling(xyScaling, xyScaling, magnitude / 100.0f) // scale down the z-stretch by 100
-		* DirectX::XMMatrixTranslation(position.x, position.y, position.z) 
-		* DirectX::XMMatrixRotationX(DirectX::XM_PIDIV2);
+	if (magnitude.x > 0.0f)
+	{
+		XMMATRIX rotationMatrix = DirectX::XMMatrixIdentity();
+
+		// If the velocity is only in the z direction, handle it manually
+		if (velocity.x == 0.0f && velocity.y == 0.0f)
+		{
+			// If only in the negative z, just rotate over the x-axis
+			if (velocity.z < 0.0f)
+			{
+				XMFLOAT3 xAxis = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+				XMVECTOR xAxisVector = DirectX::XMLoadFloat3(&xAxis);
+				rotationMatrix = DirectX::XMMatrixRotationAxis(xAxisVector, DirectX::XM_PI);
+			}
+
+			// If positive z, do nothing (just use the identity matrix
+		}
+		else
+		{
+			XMFLOAT3 zAxis = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);
+			XMVECTOR zAxisVector = DirectX::XMLoadFloat3(&zAxis);
+
+			XMVECTOR middleVector = DirectX::XMVectorAdd(zAxisVector, DirectX::XMVector3Normalize(velocityVector));
+			rotationMatrix = DirectX::XMMatrixRotationAxis(middleVector, DirectX::XM_PI);
+		}
+
+		float xyScaling = radius / 3.0f;
+
+		m_modelMatrix = DirectX::XMMatrixScaling(xyScaling, xyScaling, magnitude.x / 100.0f) // scale down the z-stretch by 100
+			* rotationMatrix
+			* DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
 
+		// Store model, modelviewprojection, and inversetransposemodel matrices
+		XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, m_modelMatrix);
+		XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, m_modelMatrix * viewProjection);
+		XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, m_modelMatrix)));
 
-	// Store model, modelviewprojection, and inversetransposemodel matrices
-	XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, m_modelMatrix);
-	XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, m_modelMatrix * viewProjection);
-	XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, m_modelMatrix)));
+		// Prepare the constant buffer to send it to the graphics device.
+		context->UpdateSubresource1(m_modelViewProjectionBuffer.Get(), 0, NULL, &m_modelViewProjectionBufferData, 0, 0, 0);
 
-	// Prepare the constant buffer to send it to the graphics device.
-	context->UpdateSubresource1(m_modelViewProjectionBuffer.Get(), 0, NULL, &m_modelViewProjectionBufferData, 0, 0, 0);
+		// Send the constant buffer to the graphics device.
+		ID3D11Buffer* const constantBuffers[] = { m_modelViewProjectionBuffer.Get() };
+		context->VSSetConstantBuffers1(0, 1, constantBuffers, nullptr, nullptr);
 
-	// Send the constant buffer to the graphics device.
-	ID3D11Buffer* const constantBuffers[] = { m_modelViewProjectionBuffer.Get() };
-	context->VSSetConstantBuffers1(0, 1, constantBuffers, nullptr, nullptr);
-
-	// Draw the objects.
-	context->DrawIndexed(m_indexCount, 0, 0);
+		// Draw the objects.
+		context->DrawIndexed(m_indexCount, 0, 0);
+	}
 }

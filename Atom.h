@@ -66,6 +66,7 @@ public:
 	void SetVelocityZ(float velocityZ) { m_velocity.z = velocityZ; }
 
 protected:
+
 	std::shared_ptr<SphereMesh> m_sphereMesh;
 	std::shared_ptr<ArrowMesh> m_arrowMesh;
 
