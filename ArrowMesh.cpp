@@ -28,8 +28,7 @@ void ArrowMesh::CreateAndLoadVertexAndIndexBuffers()
 {
 	unsigned int slices = 40;
 	
-	// unsigned int numVertices = slices * 3 + 1; // vertices around the base and top of cylinder + base of cone + 1 for top of cone
-	unsigned int numVertices = slices * 2;
+	unsigned int numVertices = slices * 3 + 1; // vertices around the base and top of cylinder + base of cone + 1 for top of cone
 	
 	std::vector<VertexPositionNormal> arrowVertices(numVertices);
 
@@ -66,6 +65,41 @@ void ArrowMesh::CreateAndLoadVertexAndIndexBuffers()
 		arrowVertices[a + slices].position = position;
 		arrowVertices[a + slices].normal = normal;
 	}
+
+	// Bottom of the cone vertices
+	for (unsigned int a = 0; a < slices; ++a)
+	{
+		position.z = 1.0f;
+
+		angle = static_cast<float>(a) / static_cast<float>(slices) * DirectX::XM_2PI;
+		position.x = 2.0f * static_cast<float>(cos(angle));
+		position.y = 2.0f * static_cast<float>(sin(angle));
+
+		// Normal is same as position except no z component
+		normal = position;
+		normal.z = 0.0f;
+
+		// Must normalize the normal
+		XMVECTOR n = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&normal));
+		DirectX::XMStoreFloat3(&normal, n);
+
+		arrowVertices[a + (2 * slices)].position = position;
+		arrowVertices[a + (2 * slices)].normal = normal;
+	}
+
+	// Top of the cone vertex
+	position.x = 0.0f;
+	position.y = 0.0f;
+	position.z = 1.5f;
+
+	normal = position;
+	normal.z = 1.0f;
+
+	arrowVertices[3 * slices].position = position;
+	arrowVertices[3 * slices].normal = normal;
+
+
+
 
 	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
 	vertexBufferData.pSysMem = arrowVertices.data();
@@ -127,7 +161,58 @@ void ArrowMesh::CreateAndLoadVertexAndIndexBuffers()
 	// Second triangle
 	indices.push_back(slices - 1);
 	indices.push_back(slices);
-	indices.push_back(numVertices - 1);
+	indices.push_back(2 * slices - 1);
+
+	// Add triangles connecting the top of the cylinder to the bottom of the cone
+	for (unsigned short iii = 0; iii + 1 < slices; ++iii)
+	{
+		// Each slice consists of 4 vertices, two from the cylinder, two from the cone
+		i_1 = iii + slices;
+		i_2 = iii + slices + 1;
+		i_3 = i_1 + slices;
+		i_4 = i_2 + slices;
+
+		// First triangle
+		indices.push_back(i_1);
+		indices.push_back(i_2);
+		indices.push_back(i_4);
+
+		// Second triangle
+		indices.push_back(i_1);
+		indices.push_back(i_3);
+		indices.push_back(i_4);
+	}
+
+	// Add final two triangles where the cylinder wraps back around to the initial vertices
+	// First triangle
+	indices.push_back(2 * slices - 1);
+	indices.push_back(slices);
+	indices.push_back(2 * slices);
+
+	// Second triangle
+	indices.push_back(2 * slices - 1);
+	indices.push_back(2 * slices);
+	indices.push_back(3 * slices - 1);
+
+	// Add each triangle connecting bottom of the cone to the top
+	i_3 = 3 * slices; // top vertex
+	for (unsigned short iii = 0; iii + 1 < slices; ++iii)
+	{
+		// Each slice consists of 4 vertices, two from the cylinder, two from the cone
+		i_1 = iii + 2 * slices;
+
+		// First triangle
+		indices.push_back(i_1);
+		indices.push_back(i_1 + 1);
+		indices.push_back(i_3);
+	}
+
+	// Add final triangle where cone wraps back around on itself
+	indices.push_back(2 * slices);
+	indices.push_back(3 * slices - 1);
+	indices.push_back(i_3);
+
+
 
 	m_indexCount = indices.size();
 
