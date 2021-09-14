@@ -36,3 +36,6 @@
 
 // New simulation pane themes
 #define THEME_NEW_SIMULATION_TEXT "new-simulation-text"
+#define THEME_NEW_SIMULATION_ADD_BUTTON_COLOR "new-simulation-add-button-color"
+#define THEME_NEW_SIMULATION_ADD_BUTTON_BORDER "new-simulation-add-button-border"
+#define THEME_NEW_SIMULATION_ADD_BUTTON_TEXT "new-simulation-add-button-text"

@@ -357,7 +357,7 @@ void ContentWindow::NewSimulationButtonClick()
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Simulation Name sublayout
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f);		// Add Atom combo box
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 300.0f);	// Atom Position / Velocity
-	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Add atom button
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);		// Add atom button
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 	layout->SetRowDefinitions(rowDefs);
 
@@ -392,7 +392,7 @@ void ContentWindow::NewSimulationButtonClick()
 	// Text for Add atom
 	std::shared_ptr<Text> addAtomText = addAtomSubLayout->CreateControl<Text>(0, 0);
 	addAtomText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-	addAtomText->SetText(L"Add Atom:");
+	addAtomText->SetText(L"Atom Type:");
 	addAtomText->Margin(5.0f, 0.0f);
 
 	std::shared_ptr<ComboBox> atomComboBox = addAtomSubLayout->CreateControl<ComboBox>(0, 1);
@@ -612,14 +612,14 @@ void ContentWindow::NewSimulationButtonClick()
 	// ============================================================================================================
 	// Add atom button
 	std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(3, 0);
-	addAtomButton->SetColorTheme(THEME_MENU_BAR_BUTTON_COLOR);
-	addAtomButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
-	addAtomButton->Margin(10.0f, 0.0f);
+	addAtomButton->SetColorTheme(THEME_NEW_SIMULATION_ADD_BUTTON_COLOR);
+	addAtomButton->SetBorderTheme(THEME_NEW_SIMULATION_ADD_BUTTON_BORDER);
+	addAtomButton->Margin(20.0f, 5.0f);
 
 	std::shared_ptr<Layout> addAtomButtonLayout = addAtomButton->GetLayout();
 
 	std::shared_ptr<Text> addAtomButtonText = addAtomButtonLayout->CreateControl<Text>();
-	addAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+	addAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
 	addAtomButtonText->SetText(L"Add Atom");
 
 

@@ -230,6 +230,28 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	textTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	textTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 
+	// Add New Atom Button
+	std::shared_ptr<ColorTheme> addButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_ADD_BUTTON_COLOR, deviceResources);
+	addButtonColor->SetColor(D2D1::ColorF(0.0f / 255.0f, 70.0f / 255.0f, 180.0f / 255.0f));
+	addButtonColor->SetColorPointerOver(D2D1::ColorF(0.0f / 255.0f, 40.0f / 255.0f, 105.0f / 255.0f));
+	addButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::shared_ptr<BorderTheme> addButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_ADD_BUTTON_BORDER, deviceResources);
+	addButtonBorder->SetStrokeWidth(1.0f);
+	addButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	std::shared_ptr<TextTheme> addButtonText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT, deviceResources);
+	addButtonText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	addButtonText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	addButtonText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	addButtonText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	addButtonText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	addButtonText->SetFontSize(13.0f);
+	addButtonText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	addButtonText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	addButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	addButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
 }
 
 std::shared_ptr<Theme> ThemeManager::GetTheme(std::string name)
