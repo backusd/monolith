@@ -275,6 +275,9 @@ void Slider::SetMin(float min)
 	{
 		m_sliderValue = m_sliderMin;
 		m_textInput->SetText(m_sliderValue);
+
+		// Slider Value changed, so call the changed method
+		ValueChangedMethod(m_sliderValue);
 	}
 }
 
@@ -285,5 +288,8 @@ void Slider::SetMax(float max)
 	{
 		m_sliderValue = m_sliderMax;
 		m_textInput->SetText(m_sliderValue);
+
+		// Slider Value changed, so call the changed method
+		ValueChangedMethod(m_sliderValue);
 	}
 }

@@ -50,5 +50,9 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 void Atom::Render(XMMATRIX viewProjectionMatrix)
 {
 	m_sphereMesh->Render(m_position, m_radius, viewProjectionMatrix);
+}
+
+void Atom::RenderVelocityArrow(XMMATRIX viewProjectionMatrix)
+{
 	m_arrowMesh->Render(m_position, m_velocity, m_radius, viewProjectionMatrix);
 }

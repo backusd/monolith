@@ -6,7 +6,8 @@ using DirectX::XMVECTOR;
 
 ArrowMesh::ArrowMesh(const std::shared_ptr<DeviceResources>& deviceResources) :
 	m_deviceResources(deviceResources),
-	m_cylinderIndexCount(0)
+	m_cylinderIndexCount(0),
+	m_xyScaling(Constants::AtomicRadii[Element::HYDROGEN] / 3.0f)
 {
 	CreateModelViewProjectionBuffer();
 	LoadCylinderVertexAndIndexBuffers();
@@ -291,9 +292,7 @@ void ArrowMesh::RenderCylinder(XMFLOAT3 position, XMFLOAT3 velocity, float radiu
 
 	if (magnitude.x > 0.0f)
 	{
-		float xyScaling = radius / 3.0f;
-
-		m_modelMatrix = DirectX::XMMatrixScaling(xyScaling, xyScaling, magnitude.x / 100.0f) // scale down the z-stretch by 100
+		m_modelMatrix = DirectX::XMMatrixScaling(m_xyScaling, m_xyScaling, magnitude.x / 100.0f) // scale down the z-stretch by 100
 			* ComputeRotationMatrix(velocity)
 			* DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 
@@ -335,13 +334,11 @@ void ArrowMesh::RenderCone(XMFLOAT3 position, XMFLOAT3 velocity, float radius, X
 
 	if (magnitude.x > 0.0f)
 	{
-		float xyScaling = radius / 3.0f;
-
 		// 1. Scale the cone so it is twice as wide as the cylinder
 		// 2. Translate the cone along the z-axis so that it will reside at the end of the cylinder
 		// 3. Rotate the cone through space so it points in the correct direction
 		// 4. Translate the cone to the correct location
-		m_modelMatrix = DirectX::XMMatrixScaling(2 * xyScaling, 2 * xyScaling, 0.1f) // scale down the z-stretch by 100
+		m_modelMatrix = DirectX::XMMatrixScaling(2 * m_xyScaling, 2 * m_xyScaling, 0.1f) // scale down the z-stretch by 100
 			* DirectX::XMMatrixTranslation(0.0f, 0.0f, magnitude.x / 100.0f)
 			* ComputeRotationMatrix(velocity)
 			* DirectX::XMMatrixTranslation(position.x, position.y, position.z);

@@ -1,7 +1,9 @@
 #pragma once
 #include "pch.h"
 
+#include "Constants.h"
 #include "DeviceResources.h"
+#include "Enums.h"
 #include "HLSLStructures.h"
 
 #include <memory>
@@ -32,6 +34,8 @@ private:
 	ModelViewProjectionConstantBuffer		m_modelViewProjectionBufferData;
 
 	DirectX::XMMATRIX m_modelMatrix;
+
+	float m_xyScaling;
 
 	void CreateModelViewProjectionBuffer();
 	void LoadCylinderVertexAndIndexBuffers();

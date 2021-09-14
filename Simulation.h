@@ -19,6 +19,9 @@ public:
 	template<typename T>
 	void AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
 
+	template<typename T>
+	void ChangeSelectedAtom();
+
 	void RemoveAtom();
 
 	void PlaySimulation() { m_paused = false; }
@@ -57,6 +60,7 @@ public:
 
 	// SET
 	void BoxDimensions(DirectX::XMFLOAT3 dimensions) { m_boxDimensions = dimensions; }
+	void BoxDimensions(float dimensions) { m_boxDimensions = DirectX::XMFLOAT3(dimensions, dimensions, dimensions); }
 
 	void BoxVisible(bool visible) { m_boxVisible = visible; }
 
@@ -109,4 +113,18 @@ void Simulation::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 veloci
 		m_atoms.push_back(atom);
 	else
 		m_atoms.insert(m_atoms.begin() + index, atom);
+}
+
+template<typename T>
+void Simulation::ChangeSelectedAtom()
+{
+	// Get position and velocity of current selected atom
+	DirectX::XMFLOAT3 position = m_atoms[m_selectedAtomIndex]->Position();
+	DirectX::XMFLOAT3 velocity = m_atoms[m_selectedAtomIndex]->Velocity();
+
+	// Remove the selected atom
+	m_atoms.erase(m_atoms.begin() + m_selectedAtomIndex);
+
+	// Add the new atom
+	AddNewAtom<T>(position, velocity);
 }

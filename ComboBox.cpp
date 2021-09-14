@@ -247,7 +247,12 @@ void ComboBox::AddComboBoxItem(std::wstring text)
 			std::shared_ptr<Control> textBase = button->GetLayout()->GetChildControl(0);
 			std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(textBase);
 
-			m_mainText->SetText(text->GetText());
+			// If a new drop down item was selected, update the main and trigger SelectionChangedMethod
+			if (m_mainText->GetText() != text->GetText())
+			{
+				m_mainText->SetText(text->GetText());
+				SelectionChangedMethod(text->GetText());
+			}			
 		}
 	);
 

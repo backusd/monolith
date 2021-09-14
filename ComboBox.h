@@ -43,6 +43,10 @@ public:
 	
 	void SetDropDownItemHeight(float height);
 
+	// Event Method assignments
+	void SelectionChanged(std::function<void(std::wstring)> method) { SelectionChangedMethod = method; }
+
+
 private:
 	void Resize();
 	bool MouseIsOverMainLayout(int x, int y);
@@ -62,4 +66,8 @@ private:
 	float m_dropDownWidth;
 	float m_dropDownItemHeight;
 	int m_dropDownItemCount;
+
+	// Event methods
+	std::function<void(std::wstring)> SelectionChangedMethod;
+
 };

@@ -20,7 +20,8 @@ SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& d
 SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& deviceResources,
 									   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
-	m_atomHoveredOver(nullptr)
+	m_atomHoveredOver(nullptr),
+	m_velocityArrowMaterial(nullptr)
 {
 	// Create resources that will not change on window resizing and not device dependent
 	// -- Must call this first because it will create the MoveLookController which will be used later
@@ -196,6 +197,14 @@ void SimulationRenderer::CreateStaticResources()
 
 	m_materialProperties.push_back(neon);
 
+	// Velocity Arrow Material =================================================
+	m_velocityArrowMaterial = std::make_unique<MaterialProperties>();
+	m_velocityArrowMaterial->Material.Emissive = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
+	m_velocityArrowMaterial->Material.Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_velocityArrowMaterial->Material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+	m_velocityArrowMaterial->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_velocityArrowMaterial->Material.SpecularPower = 6.0f;
+
 	// Box Material ============================================================
 	m_boxMaterialProperties = MaterialProperties();
 	m_boxMaterialProperties.Material.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -365,12 +374,10 @@ void SimulationRenderer::CreateBuffers()
 
 void SimulationRenderer::CreateBox()
 {
-	DirectX::XMFLOAT3 boxDimensions = SimulationManager::BoxDimensions();
-
-	// Draw the simulation box
-	float x = boxDimensions.x / 2.0f;
-	float y = boxDimensions.y / 2.0f;
-	float z = boxDimensions.z / 2.0f;
+	// Create a unit cube - will be scaled up to size of simulation during rendering
+	float x = 0.5f;
+	float y = 0.5f;
+	float z = 0.5f;
 
 	std::vector<VertexPositionNormal> v(8); // box vertices
 	v[0].position = XMFLOAT3(x, y, z);
@@ -534,6 +541,17 @@ bool SimulationRenderer::Render3D()
 		atom->Render(viewProjectionMatrix);
 	}
 
+	// Draw Atom velocity arrows ============================================================
+
+	// Update the material constant buffers
+	context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_velocityArrowMaterial.get(), 0, 0);
+	ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+	context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+
+	for (std::shared_ptr<Atom> atom : atoms)
+	{
+		atom->RenderVelocityArrow(viewProjectionMatrix);
+	}
 
 	// Draw Box =============================================================================
 	UINT stride = sizeof(VertexPositionNormal);
@@ -542,8 +560,10 @@ bool SimulationRenderer::Render3D()
 	context->IASetVertexBuffers(0, 1, boxVertexBuffers, &stride, &offset);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 
-	// Set the translation to 0 and update the modelviewprojection matrices
-	XMMATRIX model = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	// Scale the box according to the current box dimensions
+	XMFLOAT3 dims = SimulationManager::BoxDimensions();
+	XMMATRIX model = DirectX::XMMatrixScaling(dims.x, dims.y, dims.z);
+
 	XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, model);
 	XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, model* viewProjectionMatrix);
 	XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, model)));

@@ -27,6 +27,9 @@ public:
 	template<typename T>
 	static void AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
 
+	template<typename T>
+	static void ChangeSelectedAtom();
+
 	static void SelectAtom(int index) { m_simulation->SelectAtom(index); }
 
 	static void SelectedAtomPositionX(float positionX) { m_simulation->SelectedAtomPositionX(positionX); }
@@ -35,6 +38,8 @@ public:
 	static void SelectedAtomVelocityX(float velocityX) { m_simulation->SelectedAtomVelocityX(velocityX); }
 	static void SelectedAtomVelocityY(float velocityY) { m_simulation->SelectedAtomVelocityY(velocityY); }
 	static void SelectedAtomVelocityZ(float velocityZ) { m_simulation->SelectedAtomVelocityZ(velocityZ); }
+
+	static void BoxDimensions(float value) { m_simulation->BoxDimensions(value); }
 
 private:
 	// Disallow creation of a SimulationManager object
@@ -47,4 +52,10 @@ template<typename T>
 void SimulationManager::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
 {
 	m_simulation->AddNewAtom<T>(position, velocity);
+}
+
+template<typename T>
+void SimulationManager::ChangeSelectedAtom()
+{
+	m_simulation->ChangeSelectedAtom<T>();
 }

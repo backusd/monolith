@@ -94,6 +94,7 @@ private:
 	// MaterialProperties
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_materialPropertiesConstantBuffer;
 	std::vector<MaterialProperties*>			m_materialProperties;
+	std::unique_ptr<MaterialProperties>			m_velocityArrowMaterial;
 
 	// Box Resources
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_boxVertexBuffer;

@@ -407,6 +407,30 @@ void ContentWindow::NewSimulationButtonClick()
 	atomComboBox->AddComboBoxItem(L"Flourine");
 	atomComboBox->AddComboBoxItem(L"Neon");
 	atomComboBox->Margin(5.0f, 10.0f);
+	atomComboBox->SelectionChanged([](std::wstring value)
+		{
+			if (value == L"Hydrogen")
+				SimulationManager::ChangeSelectedAtom<Hydrogen>();
+			else if (value == L"Helium")
+				SimulationManager::ChangeSelectedAtom<Helium>();
+			else if (value == L"Lithium")
+				SimulationManager::ChangeSelectedAtom<Lithium>();
+			else if (value == L"Beryllium")
+				SimulationManager::ChangeSelectedAtom<Beryllium>();
+			else if (value == L"Boron")
+				SimulationManager::ChangeSelectedAtom<Boron>();
+			else if (value == L"Carbon")
+				SimulationManager::ChangeSelectedAtom<Carbon>();
+			else if (value == L"Nitrogen")
+				SimulationManager::ChangeSelectedAtom<Nitrogen>();
+			else if (value == L"Oxygen")
+				SimulationManager::ChangeSelectedAtom<Oxygen>();
+			else if (value == L"Flourine")
+				SimulationManager::ChangeSelectedAtom<Flourine>();
+			else if (value == L"Neon")
+				SimulationManager::ChangeSelectedAtom<Neon>();
+		});
+
 	// ============================================================================================================
 	// ============================================================================================================
 	// Sub Layout for editing position and velocity
@@ -438,9 +462,13 @@ void ContentWindow::NewSimulationButtonClick()
 
 	// Box Dimension Slider
 	std::shared_ptr<Slider> boxDimensionSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 0, 1, 2);
-	boxDimensionSlider->SetMin(10.0f);
+	boxDimensionSlider->SetMin(2.0f);
 	boxDimensionSlider->SetMax(100.0f);
 	boxDimensionSlider->Margin(10.0f, 2.0f);
+	boxDimensionSlider->ValueChanged([](float value)
+	{
+		SimulationManager::BoxDimensions(value);
+	});
 
 
 
@@ -502,6 +530,25 @@ void ContentWindow::NewSimulationButtonClick()
 		SimulationManager::SelectedAtomPositionZ(value);
 	});
 
+
+
+	// ===========================================================
+	// Now that all the position sliders have been created, we can 
+	// reference them in the lambda for the box dimension slider
+	// - Capture values by value, capturing shared_ptr's by reference
+	//   will cause some kind of read access error
+	boxDimensionSlider->ValueChanged([=](float value)
+	{
+		SimulationManager::BoxDimensions(value);
+		float half = value / 2.0f;
+		positionXSlider->SetMin(-half);
+		positionXSlider->SetMax(half);
+		positionYSlider->SetMin(-half);
+		positionYSlider->SetMax(half);
+		positionZSlider->SetMin(-half);
+		positionZSlider->SetMax(half);
+	});
+	// ===========================================================
 
 
 
