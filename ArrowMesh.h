@@ -20,9 +20,13 @@ class ArrowMesh
 private:
 	std::shared_ptr<DeviceResources>		m_deviceResources;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_vertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_indexBuffer;
-	uint32_t								m_indexCount;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_cylinderVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_cylinderIndexBuffer;
+	uint32_t								m_cylinderIndexCount;
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_coneVertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_coneIndexBuffer;
+	uint32_t								m_coneIndexCount;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_modelViewProjectionBuffer;
 	ModelViewProjectionConstantBuffer		m_modelViewProjectionBufferData;
@@ -30,10 +34,13 @@ private:
 	DirectX::XMMATRIX m_modelMatrix;
 
 	void CreateModelViewProjectionBuffer();
-	void CreateAndLoadVertexAndIndexBuffers();
+	void LoadCylinderVertexAndIndexBuffers();
+	void LoadConeVertexAndIndexBuffers();
 
-	DirectX::XMMATRIX ComputeRotationMatrix(DirectX::XMFLOAT3 direction);
+	void RenderCylinder(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity, float radius, DirectX::XMMATRIX viewProjection);
+	void RenderCone(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity, float radius, DirectX::XMMATRIX viewProjection);
 
+	DirectX::XMMATRIX ComputeRotationMatrix(DirectX::XMFLOAT3 velocity);
 
 public:
 	ArrowMesh(const std::shared_ptr<DeviceResources>& deviceResources);
