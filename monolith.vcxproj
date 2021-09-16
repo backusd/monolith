@@ -242,6 +242,7 @@
     <ClInclude Include="Layout.h" />
     <ClInclude Include="LayoutConfig.h" />
     <ClInclude Include="LineTheme.h" />
+    <ClInclude Include="ListView.h" />
     <ClInclude Include="Lithium.h" />
     <ClInclude Include="MeshManager.h" />
     <ClInclude Include="MonolithException.h" />

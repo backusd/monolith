@@ -401,6 +401,9 @@
     <ClInclude Include="ArrowMesh.h">
       <Filter>Header Files\Rendering</Filter>
     </ClInclude>
+    <ClInclude Include="ListView.h">
+      <Filter>Header Files\UI\Controls</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="dpi-aware-manifest.xml">
