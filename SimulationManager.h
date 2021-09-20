@@ -31,6 +31,7 @@ public:
 	static void ChangeSelectedAtom();
 
 	static void SelectAtom(int index) { m_simulation->SelectAtom(index); }
+	static std::shared_ptr<Atom> GetSelectedAtom() { return m_simulation->GetSelectedAtom(); }
 
 	static void SelectedAtomPositionX(float positionX) { m_simulation->SelectedAtomPositionX(positionX); }
 	static void SelectedAtomPositionY(float positionY) { m_simulation->SelectedAtomPositionY(positionY); }

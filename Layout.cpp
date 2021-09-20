@@ -1,9 +1,6 @@
 #include "Layout.h"
 #include "Control.h"
 
-// std::shared_ptr<Control> Layout::m_mouseCapturedControl = nullptr;
-//bool Layout::m_mouseAlreadyCapturedForThisMessage = false;
-
 Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources, D2D1_RECT_F rect) :
 	Layout(deviceResources, rect.top, rect.left, rect.bottom - rect.top, rect.right - rect.left)
 {
@@ -194,6 +191,22 @@ std::shared_ptr<Layout> Layout::GetSubLayout(int rowIndex, int columnIndex)
 
 	return nullptr;
 }
+void Layout::SetSubLayout(std::shared_ptr<Layout> layout, int rowIndex, int columnIndex)
+{
+	// Set the size / location for the layout
+	float top = m_rows[rowIndex].Top();
+	float left = m_columns[columnIndex].Left();
+	float height = m_rows[rowIndex].Height();
+	float width = m_columns[columnIndex].Width();
+
+	layout->OnResize(top, left, height, width);
+
+	// Add Layout to the tuple
+	m_subLayouts.push_back(
+		std::tuple<std::shared_ptr<Layout>, int, int>(layout, rowIndex, columnIndex)
+	);
+}
+
 
 void Layout::Clear()
 {

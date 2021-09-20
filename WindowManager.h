@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 
+#include "Layout.h"
 #include "WindowBase.h"
 
 #include <functional>
@@ -22,6 +23,14 @@ public:
 	// Button click methods
 	static void DefaultClickMethod() {}
 	static void NewSimulationButtonClick();
+
+	// Default ListView Item format method
+	template <typename T>
+	static std::shared_ptr<Layout> DefaultListViewFormatAddedItem(std::shared_ptr<T> item)
+	{
+		// just return an empty layout
+		return std::make_shared<Layout>(nullptr, 0.0f, 0.0f, 0.0f, 0.0f);
+	}
 
 	// Slider methods
 	static void DefaultSliderValueChangedMethod(float value) {}

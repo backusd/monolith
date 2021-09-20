@@ -41,6 +41,7 @@ public:
 	void SwitchPlayPause() { m_paused = !m_paused; if (m_paused) m_elapsedTime = -1.0f; }
 
 	void SelectAtom(int index) { m_selectedAtomIndex = index; }
+	std::shared_ptr<Atom> GetSelectedAtom() { return m_atoms[m_selectedAtomIndex]; }
 
 	void SelectedAtomPositionX(float positionX) { m_atoms[m_selectedAtomIndex]->SetPositionX(positionX); }
 	void SelectedAtomPositionY(float positionY) { m_atoms[m_selectedAtomIndex]->SetPositionY(positionY); }

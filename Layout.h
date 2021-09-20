@@ -38,9 +38,11 @@ public:
 	void OnResize(D2D1_RECT_F rect);
 
 	void Clear();
+	void ClearSubLayouts() { m_subLayouts.clear(); }
 
 	std::shared_ptr<Layout> GetSubLayout(int rowIndex, int columnIndex);
 	std::shared_ptr<Layout> CreateSubLayout(int rowIndex, int columnIndex);
+	void SetSubLayout(std::shared_ptr<Layout> layout, int rowIndex, int columnIndex);
 
 	template<typename T>
 	std::shared_ptr<T> CreateControl();
@@ -50,6 +52,12 @@ public:
 
 	template<typename T>
 	std::shared_ptr<T> CreateControl(int row, int column, int rowSpan, int columnSpan);
+
+	// Use template template type when creating ListViews
+	//template<template<typename> typename T, typename N>
+	//std::shared_ptr<T<N>> CreateControl(int row, int column, int rowSpan, int columnSpan);
+
+
 
 	template<typename T>
 	void AddControl(std::shared_ptr<T> control) { m_controls.push_back(control); }
@@ -132,3 +140,19 @@ std::shared_ptr<T> Layout::CreateControl(int row, int column, int rowSpan, int c
 	// return the control
 	return control;
 }
+
+/*
+// Use template template type when creating ListViews
+template<template<typename> typename T, typename N>
+std::shared_ptr<T<N>> Layout::CreateControl(int row, int column, int rowSpan, int columnSpan)
+{
+	// Create the control - must use shared_from_this to pass shared pointer to Layout
+	std::shared_ptr<T<N>> control = std::make_shared<T<N>>(m_deviceResources, shared_from_this(), row, column, rowSpan, columnSpan);
+
+	// Add control to the list within the layout
+	AddControl(std::static_pointer_cast<Control>(control));
+
+	// return the control
+	return control;
+}
+*/

@@ -358,7 +358,7 @@ void ContentWindow::NewSimulationButtonClick()
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f);		// Add Atom combo box
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 300.0f);	// Atom Position / Velocity
 	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);		// Add atom button
-	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+	rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Atom ListView
 	layout->SetRowDefinitions(rowDefs);
 
 	// ============================================================================================================
@@ -614,13 +614,48 @@ void ContentWindow::NewSimulationButtonClick()
 	std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(3, 0);
 	addAtomButton->SetColorTheme(THEME_NEW_SIMULATION_ADD_BUTTON_COLOR);
 	addAtomButton->SetBorderTheme(THEME_NEW_SIMULATION_ADD_BUTTON_BORDER);
-	addAtomButton->Margin(20.0f, 5.0f);
+	addAtomButton->Margin(20.0f, 5.0f);	
 
 	std::shared_ptr<Layout> addAtomButtonLayout = addAtomButton->GetLayout();
 
 	std::shared_ptr<Text> addAtomButtonText = addAtomButtonLayout->CreateControl<Text>();
 	addAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
 	addAtomButtonText->SetText(L"Add Atom");
+
+
+	// ============================================================================================================
+	// ============================================================================================================
+	// Atom List View
+	std::shared_ptr<ListView<Atom>> atomListView = layout->CreateControl<ListView<Atom>>(4, 0);
+	atomListView->SetItemHeight(40.0f);
+	atomListView->SetFormatFunction([=](std::shared_ptr<Atom> atom) 
+		{
+			// Create a new layout object with the same height and a reasonable width
+			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, 40.0f, 100.0f);
+
+			// Create a single Text control within the layout and assign the atom name
+			std::shared_ptr<Text> newText = newLayout->CreateControl<Text>();
+			newText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
+			newText->SetText(L"Suck Me");
+
+			return newLayout;
+		}
+	);
+
+	
+
+	addAtomButton->Click([=]() {
+		// Add the atom to the list view
+		atomListView->AddItem(SimulationManager::GetSelectedAtom());
+
+		// Add a new hydrogen atom to the center of the simulation and let
+		// that be the newly selected atom
+
+
+
+
+
+	});
 
 
 	// ============================================================================================================

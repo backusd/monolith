@@ -187,6 +187,7 @@
     <ClCompile Include="Layout.cpp" />
     <ClCompile Include="LayoutConfig.cpp" />
     <ClCompile Include="LineTheme.cpp" />
+    <ClCompile Include="ListView.cpp" />
     <ClCompile Include="Lithium.cpp" />
     <ClCompile Include="MeshManager.cpp" />
     <ClCompile Include="MonolithException.cpp" />

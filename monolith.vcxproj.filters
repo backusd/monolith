@@ -225,6 +225,9 @@
     <ClCompile Include="ArrowMesh.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="ListView.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
