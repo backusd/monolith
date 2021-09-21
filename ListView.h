@@ -40,6 +40,9 @@ public:
 	// Add item to list and call FormatAddedItem to add it to the list
 	void AddItem(std::shared_ptr<T> item);
 
+	// Remove item from listview
+	void RemoveItem(std::shared_ptr<T> item);
+
 	// Set the item height - modify the rowCol structure
 	void SetItemHeight(float height);
 
@@ -152,16 +155,39 @@ void ListView<T>::AddItem(std::shared_ptr<T> item)
 	m_items.push_back(item);
 
 	// Create the list view item UI element
-	std::shared_ptr<Layout> itemLayout = this->FormatAddedItem(item);
+	//std::shared_ptr<Layout> itemLayout = this->FormatAddedItem(item);
 
 	// Add the layout to the list of layouts
-	m_itemLayouts.push_back(itemLayout);
+	m_itemLayouts.push_back(this->FormatAddedItem(item));
 
 	// If there is room in the list view to present this item, update the layouts 
 	// that are bound to the main layout
 	if (m_items.size() <= this->MaxItemsCount())
 	{
 		this->UpdateSubLayouts();
+	}
+}
+
+template <class T>
+void ListView<T>::RemoveItem(std::shared_ptr<T> item)
+{
+	int removeIndex = -1;
+
+	for (unsigned int iii = 0; iii < m_items.size(); ++iii)
+	{
+		if (m_items[iii] == item)
+		{
+			removeIndex = iii;
+			break;
+		}
+	}
+
+	if (removeIndex != -1)
+	{
+		m_items.erase(m_items.begin() + removeIndex);
+		m_itemLayouts[removeIndex]->ReleaseLayout();
+		m_itemLayouts.erase(m_itemLayouts.begin() + removeIndex);
+		UpdateSubLayouts();
 	}
 }
 
@@ -195,6 +221,8 @@ void ListView<T>::ReleaseLayout()
 	//		but I think calling ReleaseLayout twice is fine
 	for (std::shared_ptr<Layout> layout : m_itemLayouts)
 		layout->ReleaseLayout();
+
+	m_parentLayout = nullptr;
 }
 
 template <class T>

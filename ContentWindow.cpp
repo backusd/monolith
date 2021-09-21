@@ -537,17 +537,25 @@ void ContentWindow::NewSimulationButtonClick()
 	// reference them in the lambda for the box dimension slider
 	// - Capture values by value, capturing shared_ptr's by reference
 	//   will cause some kind of read access error
-	boxDimensionSlider->ValueChanged([=](float value)
-	{
-		SimulationManager::BoxDimensions(value);
-		float half = value / 2.0f;
-		positionXSlider->SetMin(-half);
-		positionXSlider->SetMax(half);
-		positionYSlider->SetMin(-half);
-		positionYSlider->SetMax(half);
-		positionZSlider->SetMin(-half);
-		positionZSlider->SetMax(half);
-	});
+	boxDimensionSlider->ValueChanged(
+		[weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
+		weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
+		weakPZSlider = std::weak_ptr<Slider>(positionZSlider)](float value)
+		{
+			auto pXSlider = weakPXSlider.lock();
+			auto pYSlider = weakPYSlider.lock();
+			auto pZSlider = weakPZSlider.lock();
+
+			SimulationManager::BoxDimensions(value);
+			float half = value / 2.0f;
+			pXSlider->SetMin(-half);
+			pXSlider->SetMax(half);
+			pYSlider->SetMin(-half);
+			pYSlider->SetMax(half);
+			pZSlider->SetMin(-half);
+			pZSlider->SetMax(half);
+		}
+	);
 	// ===========================================================
 
 
@@ -628,10 +636,15 @@ void ContentWindow::NewSimulationButtonClick()
 	// Atom List View
 	std::shared_ptr<ListView<Atom>> atomListView = layout->CreateControl<ListView<Atom>>(4, 0);
 	atomListView->SetItemHeight(40.0f);
-	atomListView->SetFormatFunction([=](std::shared_ptr<Atom> atom) 
+	atomListView->SetFormatFunction(
+		[weakDeviceResources = std::weak_ptr<DeviceResources>(m_deviceResources),
+		weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](std::shared_ptr<Atom> atom)
 		{
+			auto deviceResources = weakDeviceResources.lock();
+			auto listView = weakListView.lock();
+
 			// Create a new layout object with the same height and a reasonable width
-			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, 40.0f, 1000.0f);
+			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(deviceResources, 0.0f, 0.0f, 40.0f, 1000.0f);
 
 			std::shared_ptr<Button> newButton = newLayout->CreateControl<Button>();
 			newButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR);
@@ -690,8 +703,20 @@ void ContentWindow::NewSimulationButtonClick()
 			removeButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_COLOR);
 			removeButton->SetBorderTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_BORDER);
 			removeButton->Margin(5.0f, 10.0f);
-			std::shared_ptr<Layout> removeButtonLayout = removeButton->GetLayout();
+			
+			removeButton->Click(
+				[weakListView = std::weak_ptr<ListView<Atom>>(listView), 
+				weakAtom = std::weak_ptr<Atom>(atom)]() 
+				{
+					auto listView = weakListView.lock();
+					auto atom = weakAtom.lock();
 
+					listView->RemoveItem(atom);
+					SimulationManager::RemoveAtom(atom);
+				}
+			);
+			
+			std::shared_ptr<Layout> removeButtonLayout = removeButton->GetLayout();
 			std::shared_ptr<Text> removeGlyph = removeButtonLayout->CreateControl<Text>();
 			removeGlyph->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_GLYPH);
 			removeGlyph->SetText(L"\xE711");
@@ -702,25 +727,41 @@ void ContentWindow::NewSimulationButtonClick()
 
 	
 
-	addAtomButton->Click([=]() {
-		// Add the atom to the list view
-		atomListView->AddItem(SimulationManager::GetSelectedAtom());
+	addAtomButton->Click(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView), 
+		weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
+		weakPYSlider = std::weak_ptr<Slider>(positionYSlider), 
+		weakPZSlider = std::weak_ptr<Slider>(positionZSlider), 
+		weakVXSlider = std::weak_ptr<Slider>(velocityXSlider), 
+		weakVYSlider = std::weak_ptr<Slider>(velocityYSlider), 
+		weakVZSlider = std::weak_ptr<Slider>(velocityZSlider)]() 
+		{
+			auto listView = weakListView.lock();
+			auto pXSlider = weakPXSlider.lock();
+			auto pYSlider = weakPYSlider.lock();
+			auto pZSlider = weakPZSlider.lock();
+			auto vXSlider = weakVXSlider.lock();
+			auto vYSlider = weakVYSlider.lock();
+			auto vZSlider = weakVZSlider.lock();
 
-		// Add a new hydrogen atom to the center of the simulation and let
-		// that be the newly selected atom
-		XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		std::shared_ptr<Hydrogen> newAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
-		SimulationManager::SelectAtom(newAtom);
+			// Add the atom to the list view
+			listView->AddItem(SimulationManager::GetSelectedAtom());
 
-		// Update the position/velocity sliders
-		positionXSlider->SetValue(0.0f);
-		positionYSlider->SetValue(0.0f);
-		positionZSlider->SetValue(0.0f);
-		velocityXSlider->SetValue(0.0f);
-		velocityYSlider->SetValue(0.0f);
-		velocityZSlider->SetValue(0.0f);
-	});
+			// Add a new hydrogen atom to the center of the simulation and let
+			// that be the newly selected atom
+			XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			SimulationManager::SelectAtom(SimulationManager::AddNewAtom<Hydrogen>(position, velocity));
+
+			// Update the position/velocity sliders
+			pXSlider->SetValue(0.0f);
+			pYSlider->SetValue(0.0f);
+			pZSlider->SetValue(0.0f);
+			vXSlider->SetValue(0.0f);
+			vYSlider->SetValue(0.0f);
+			vZSlider->SetValue(0.0f);
+		}
+	);
 
 
 	// ============================================================================================================

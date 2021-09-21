@@ -22,7 +22,7 @@ public:
 	template<typename T>
 	void ChangeSelectedAtomType();
 
-	void RemoveAtom();
+	void RemoveAtom(std::shared_ptr<Atom> atom);
 
 	void PlaySimulation() { m_paused = false; }
 	void PauseSimulation() { m_paused = true; m_elapsedTime = -1.0f; }

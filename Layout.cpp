@@ -586,11 +586,11 @@ OnMessageResult Layout::OnChar(char key)
 
 void Layout::ReleaseLayout()
 {
-	// Call ClearContents for each control
+	// Call ReleaseLayout for each control
 	for (auto control : m_controls)
 		control->ReleaseLayout();
 
-	// Call ClearContents for each sublayout
+	// Call ReleaseLayout for each sublayout
 	for (auto sub : m_subLayouts)
 		sub._Myfirst._Val->ReleaseLayout();
 

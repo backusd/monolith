@@ -30,6 +30,8 @@ public:
 	template<typename T>
 	static void ChangeSelectedAtomType();
 
+	static void RemoveAtom(std::shared_ptr<Atom> atom) { m_simulation->RemoveAtom(atom); }
+
 	static void SelectAtom(int index) { m_simulation->SelectAtom(index); }
 	static void SelectAtom(std::shared_ptr<Atom> atom) { m_simulation->SelectAtom(atom); }
 	static std::shared_ptr<Atom> GetSelectedAtom() { return m_simulation->GetSelectedAtom(); }

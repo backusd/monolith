@@ -88,9 +88,38 @@ void Simulation::AddNewAtom(std::shared_ptr<Atom> atom)
 
 }
 */
-void Simulation::RemoveAtom()
+void Simulation::RemoveAtom(std::shared_ptr<Atom> atom)
 {
+	// Get the currently selected atom
+	std::shared_ptr<Atom> selectedAtom = m_atoms[m_selectedAtomIndex];
 
+	// If trying to remove the selected atom, just remove it and set the selected index to -1
+	if (selectedAtom == atom)
+	{
+		m_atoms.erase(m_atoms.begin() + m_selectedAtomIndex);
+		m_selectedAtomIndex = -1;
+	}
+	else
+	{
+		int removeIndex = -1;
+
+		for (unsigned int iii = 0; iii < m_atoms.size(); ++iii)
+		{
+			if (m_atoms[iii] == atom)
+			{
+				removeIndex = iii;
+				break;
+			}
+		}
+
+		if (removeIndex != -1)
+		{
+			m_atoms.erase(m_atoms.begin() + removeIndex);
+
+			// Must re-select the selected atom because the index could have changed
+			SelectAtom(selectedAtom);
+		}
+	}
 }
 
 
