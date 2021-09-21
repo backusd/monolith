@@ -30,6 +30,7 @@ public:
 	OnMessageResult OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
 	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
 	OnMessageResult OnMouseLeave() override;
+	OnMessageResult OnMouseWheel(int wheelDelta) override;
 
 	bool Render2D() override;
 
@@ -187,6 +188,11 @@ void ListView<T>::RemoveItem(std::shared_ptr<T> item)
 		m_items.erase(m_items.begin() + removeIndex);
 		m_itemLayouts[removeIndex]->ReleaseLayout();
 		m_itemLayouts.erase(m_itemLayouts.begin() + removeIndex);
+
+		// if the scroll offset would leave an empty spot, then we must decrement the offset
+		if (m_scrollOffset > 0 && m_scrollOffset + MaxItemsCount() > m_itemLayouts.size())
+			--m_scrollOffset;
+
 		UpdateSubLayouts();
 	}
 }
@@ -264,4 +270,33 @@ bool ListView<T>::MouseIsOver(int x, int y)
 			x <= m_layout->Right() &&
 			y >= m_layout->Top() &&
 			y <= m_layout->Bottom();
+}
+
+template <class T>
+OnMessageResult ListView<T>::OnMouseWheel(int wheelDelta)
+{
+	// Only scroll if delta is >120 or <-120
+	if (abs(wheelDelta) >= 120)
+	{
+		// If scrolling up, just decrement the offset by 1 and update layouts
+		if (wheelDelta < 0)
+		{
+			if (m_scrollOffset > 0)
+			{
+				--m_scrollOffset;
+				UpdateSubLayouts();
+			}
+		}
+		else if (m_itemLayouts.size() > MaxItemsCount() + m_scrollOffset)
+		{
+			++m_scrollOffset;
+			UpdateSubLayouts();
+		}
+	}
+
+	//std::ostringstream oss;
+	//oss << wheelDelta << '\n';
+	//OutputDebugString(oss.str().c_str());
+
+	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
 }
