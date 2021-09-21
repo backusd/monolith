@@ -39,3 +39,6 @@
 #define THEME_NEW_SIMULATION_ADD_BUTTON_COLOR "new-simulation-add-button-color"
 #define THEME_NEW_SIMULATION_ADD_BUTTON_BORDER "new-simulation-add-button-border"
 #define THEME_NEW_SIMULATION_ADD_BUTTON_TEXT "new-simulation-add-button-text"
+#define THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR "new-simulation-atom-listvieww-button-color"
+#define THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_BORDER "new-simulation-atom-listvieww-button-border"
+#define THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT "new-simulation-atom-listvieww-button-text"

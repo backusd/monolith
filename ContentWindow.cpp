@@ -633,10 +633,26 @@ void ContentWindow::NewSimulationButtonClick()
 			// Create a new layout object with the same height and a reasonable width
 			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, 40.0f, 100.0f);
 
+			std::shared_ptr<Button> newButton = newLayout->CreateControl<Button>();
+			newButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR);
+			newButton->SetBorderTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_BORDER);
+			newButton->Margin(5.0f, 0.0f);
+			std::shared_ptr<Layout> newButtonLayout = newButton->GetLayout();
+
+			RowColDefinitions columnDefs;
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);
+			newButtonLayout->SetColumnDefinitions(columnDefs);
+
 			// Create a single Text control within the layout and assign the atom name
-			std::shared_ptr<Text> newText = newLayout->CreateControl<Text>();
-			newText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
-			newText->SetText(L"Suck Me");
+			std::shared_ptr<Text> atomNameText = newButtonLayout->CreateControl<Text>(0, 0);
+			atomNameText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT);
+			atomNameText->SetText(atom->Name());
+			atomNameText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+
+			std::shared_ptr<Text> newText = newButtonLayout->CreateControl<Text>(0, 1);
+			newText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT);
+			newText->SetText(L"X");
 
 			return newLayout;
 		}

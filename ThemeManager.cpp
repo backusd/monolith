@@ -252,6 +252,28 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	addButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	addButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 
+
+	// Atom ListView
+	std::shared_ptr<ColorTheme> atomListViewButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR, deviceResources);
+	atomListViewButtonColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	atomListViewButtonColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	atomListViewButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::shared_ptr<BorderTheme> atomListViewButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_BORDER, deviceResources);
+	atomListViewButtonBorder->SetStrokeWidth(1.0f);
+	atomListViewButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	std::shared_ptr<TextTheme> atomListViewButtonText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT, deviceResources);
+	atomListViewButtonText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	atomListViewButtonText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	atomListViewButtonText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	atomListViewButtonText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	atomListViewButtonText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	atomListViewButtonText->SetFontSize(13.0f);
+	atomListViewButtonText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	atomListViewButtonText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	atomListViewButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	atomListViewButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 }
 
 std::shared_ptr<Theme> ThemeManager::GetTheme(std::string name)

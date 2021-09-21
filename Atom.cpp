@@ -56,3 +56,17 @@ void Atom::RenderVelocityArrow(XMMATRIX viewProjectionMatrix)
 {
 	m_arrowMesh->Render(m_position, m_velocity, m_radius, viewProjectionMatrix);
 }
+
+std::wstring Atom::Name()
+{
+	// This will return something like "class Hydrogen"
+	std::string name = typeid(*this).name();
+
+	// Erase everything up to and including the first space char
+	name.erase(0, name.find(" ") + 1);
+
+	// Create the wide string
+	std::wstring w(name.begin(), name.end());
+
+	return w;
+}

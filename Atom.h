@@ -8,8 +8,11 @@
 #include "SphereMesh.h"
 #include "ArrowMesh.h"
 
+#include <string>
 #include <memory>
 #include <vector>
+
+#include <typeinfo>
 
 class Atom
 {
@@ -53,6 +56,8 @@ public:
 	int ElectronsCount() { return static_cast<int>(m_electrons.size()); }
 	float Radius() { return m_radius; }
 	int Charge() { return ProtonsCount() - ElectronsCount(); }
+
+	std::wstring Name();
 
 	// Set
 	void Velocity(DirectX::XMFLOAT3 velocity) { m_velocity = velocity; }
