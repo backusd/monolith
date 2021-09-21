@@ -734,7 +734,8 @@ void ContentWindow::NewSimulationButtonClick()
 		weakPZSlider = std::weak_ptr<Slider>(positionZSlider), 
 		weakVXSlider = std::weak_ptr<Slider>(velocityXSlider), 
 		weakVYSlider = std::weak_ptr<Slider>(velocityYSlider), 
-		weakVZSlider = std::weak_ptr<Slider>(velocityZSlider)]() 
+		weakVZSlider = std::weak_ptr<Slider>(velocityZSlider),
+		weakComboBox = std::weak_ptr<ComboBox>(atomComboBox)]()
 		{
 			auto listView = weakListView.lock();
 			auto pXSlider = weakPXSlider.lock();
@@ -743,6 +744,7 @@ void ContentWindow::NewSimulationButtonClick()
 			auto vXSlider = weakVXSlider.lock();
 			auto vYSlider = weakVYSlider.lock();
 			auto vZSlider = weakVZSlider.lock();
+			auto comboBox = weakComboBox.lock();
 
 			// Add the atom to the list view
 			listView->AddItem(SimulationManager::GetSelectedAtom());
@@ -760,6 +762,9 @@ void ContentWindow::NewSimulationButtonClick()
 			vXSlider->SetValue(0.0f);
 			vYSlider->SetValue(0.0f);
 			vZSlider->SetValue(0.0f);
+
+			// Update the Atom type combo box to display "Hydrogen"
+			comboBox->SelectItem(L"Hydrogen");
 		}
 	);
 

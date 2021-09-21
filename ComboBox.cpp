@@ -239,19 +239,26 @@ void ComboBox::AddComboBoxItem(std::wstring text)
 
 	// Cannot directly use m_dropDownItemCount as it will get updated when new items are added
 	// Instead, pass the index by value so it remains const for each new item
-	newButton->Click([&, index]() 
+	newButton->Click(
+		[this, 
+		weakDropDownLayout = std::weak_ptr<Layout>(m_dropDownLayout),
+		weakMainText = std::weak_ptr<Text>(m_mainText), 
+		index]() 
 		{ 
-			std::shared_ptr<Control> buttonBase = m_dropDownLayout->GetChildControl(index);
+			auto dropDownLayout = weakDropDownLayout.lock();
+			auto mainText = weakMainText.lock();
+
+			std::shared_ptr<Control> buttonBase = dropDownLayout->GetChildControl(index);
 			std::shared_ptr<Button> button = std::dynamic_pointer_cast<Button>(buttonBase);
 
 			std::shared_ptr<Control> textBase = button->GetLayout()->GetChildControl(0);
 			std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(textBase);
 
 			// If a new drop down item was selected, update the main and trigger SelectionChangedMethod
-			if (m_mainText->GetText() != text->GetText())
+			if (mainText->GetText() != text->GetText())
 			{
-				m_mainText->SetText(text->GetText());
-				SelectionChangedMethod(text->GetText());
+				mainText->SetText(text->GetText());
+				this->SelectionChangedMethod(text->GetText());
 			}			
 		}
 	);
@@ -267,4 +274,13 @@ void ComboBox::AddComboBoxItem(std::wstring text)
 	// If this is the first item added, set the main text as well
 	if (m_dropDownItemCount == 1)
 		m_mainText->SetText(text);
+}
+
+void ComboBox::SelectItem(std::wstring text)
+{
+	if (m_mainText->GetText() != text)
+	{
+		m_mainText->SetText(text);
+		SelectionChangedMethod(text);
+	}
 }

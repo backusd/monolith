@@ -27,6 +27,7 @@ public:
 
 	// Right now, combobox items are just Text controls, could expand this in the future
 	void AddComboBoxItem(std::wstring text);
+	void SelectItem(std::wstring text);
 
 
 	OnMessageResult OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
