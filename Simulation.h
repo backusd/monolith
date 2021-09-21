@@ -17,10 +17,10 @@ public:
 	Simulation(const std::shared_ptr<DeviceResources>& deviceResources);
 
 	template<typename T>
-	void AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
+	std::shared_ptr<T> AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
 
 	template<typename T>
-	void ChangeSelectedAtom();
+	void ChangeSelectedAtomType();
 
 	void RemoveAtom();
 
@@ -41,6 +41,7 @@ public:
 	void SwitchPlayPause() { m_paused = !m_paused; if (m_paused) m_elapsedTime = -1.0f; }
 
 	void SelectAtom(int index) { m_selectedAtomIndex = index; }
+	void SelectAtom(std::shared_ptr<Atom> atom);
 	std::shared_ptr<Atom> GetSelectedAtom() { return m_atoms[m_selectedAtomIndex]; }
 
 	void SelectedAtomPositionX(float positionX) { m_atoms[m_selectedAtomIndex]->SetPositionX(positionX); }
@@ -89,7 +90,7 @@ private:
 };
 
 template<typename T>
-void Simulation::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
+std::shared_ptr<T> Simulation::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
 {
 	std::shared_ptr<T> atom = std::make_shared<T>(m_deviceResources, position, velocity);
 	atom->SetSphereMesh(MeshManager::GetSphereMesh());
@@ -114,10 +115,12 @@ void Simulation::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 veloci
 		m_atoms.push_back(atom);
 	else
 		m_atoms.insert(m_atoms.begin() + index, atom);
+
+	return atom;
 }
 
 template<typename T>
-void Simulation::ChangeSelectedAtom()
+void Simulation::ChangeSelectedAtomType()
 {
 	// Get position and velocity of current selected atom
 	DirectX::XMFLOAT3 position = m_atoms[m_selectedAtomIndex]->Position();
@@ -126,6 +129,6 @@ void Simulation::ChangeSelectedAtom()
 	// Remove the selected atom
 	m_atoms.erase(m_atoms.begin() + m_selectedAtomIndex);
 
-	// Add the new atom
-	AddNewAtom<T>(position, velocity);
+	// Add the new atom and also select it
+	SelectAtom(AddNewAtom<T>(position, velocity));
 }

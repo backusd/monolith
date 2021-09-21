@@ -410,25 +410,25 @@ void ContentWindow::NewSimulationButtonClick()
 	atomComboBox->SelectionChanged([](std::wstring value)
 		{
 			if (value == L"Hydrogen")
-				SimulationManager::ChangeSelectedAtom<Hydrogen>();
+				SimulationManager::ChangeSelectedAtomType<Hydrogen>();
 			else if (value == L"Helium")
-				SimulationManager::ChangeSelectedAtom<Helium>();
+				SimulationManager::ChangeSelectedAtomType<Helium>();
 			else if (value == L"Lithium")
-				SimulationManager::ChangeSelectedAtom<Lithium>();
+				SimulationManager::ChangeSelectedAtomType<Lithium>();
 			else if (value == L"Beryllium")
-				SimulationManager::ChangeSelectedAtom<Beryllium>();
+				SimulationManager::ChangeSelectedAtomType<Beryllium>();
 			else if (value == L"Boron")
-				SimulationManager::ChangeSelectedAtom<Boron>();
+				SimulationManager::ChangeSelectedAtomType<Boron>();
 			else if (value == L"Carbon")
-				SimulationManager::ChangeSelectedAtom<Carbon>();
+				SimulationManager::ChangeSelectedAtomType<Carbon>();
 			else if (value == L"Nitrogen")
-				SimulationManager::ChangeSelectedAtom<Nitrogen>();
+				SimulationManager::ChangeSelectedAtomType<Nitrogen>();
 			else if (value == L"Oxygen")
-				SimulationManager::ChangeSelectedAtom<Oxygen>();
+				SimulationManager::ChangeSelectedAtomType<Oxygen>();
 			else if (value == L"Flourine")
-				SimulationManager::ChangeSelectedAtom<Flourine>();
+				SimulationManager::ChangeSelectedAtomType<Flourine>();
 			else if (value == L"Neon")
-				SimulationManager::ChangeSelectedAtom<Neon>();
+				SimulationManager::ChangeSelectedAtomType<Neon>();
 		});
 
 	// ============================================================================================================
@@ -708,11 +708,18 @@ void ContentWindow::NewSimulationButtonClick()
 
 		// Add a new hydrogen atom to the center of the simulation and let
 		// that be the newly selected atom
+		XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		std::shared_ptr<Hydrogen> newAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
+		SimulationManager::SelectAtom(newAtom);
 
-
-
-
-
+		// Update the position/velocity sliders
+		positionXSlider->SetValue(0.0f);
+		positionYSlider->SetValue(0.0f);
+		positionZSlider->SetValue(0.0f);
+		velocityXSlider->SetValue(0.0f);
+		velocityYSlider->SetValue(0.0f);
+		velocityZSlider->SetValue(0.0f);
 	});
 
 

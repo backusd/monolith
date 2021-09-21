@@ -24,6 +24,8 @@ public:
 
 	bool Render2D() override;
 
+	void SetValue(float value);
+
 
 	void OnLayoutResize() override { Resize(); }
 	void OnMarginChanged() override { Resize(); }
@@ -51,6 +53,7 @@ public:
 
 	// Event Method assignments
 	void ValueChanged(std::function<void(float)> method) { ValueChangedMethod = method; }
+	
 
 private:
 	void Resize();

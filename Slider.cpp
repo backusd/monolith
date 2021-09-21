@@ -293,3 +293,16 @@ void Slider::SetMax(float max)
 		ValueChangedMethod(m_sliderValue);
 	}
 }
+
+void Slider::SetValue(float value)
+{
+	// Make sure the slider value is within the correct range
+	m_sliderValue = std::max(m_sliderMin, value);
+	m_sliderValue = std::min(m_sliderMax, m_sliderValue);
+
+	// Set the text
+	m_textInput->SetText(m_sliderValue);
+
+	// Call the value changed method
+	ValueChangedMethod(m_sliderValue);
+}

@@ -206,3 +206,17 @@ void Simulation::Update(StepTimer const& timer)
 
 	}
 }
+
+void Simulation::SelectAtom(std::shared_ptr<Atom> atom)
+{
+	m_selectedAtomIndex = -1;
+
+	for (unsigned int iii = 0; iii < m_atoms.size(); ++iii)
+	{
+		if (m_atoms[iii] == atom)
+		{
+			m_selectedAtomIndex = iii;
+			break;
+		}
+	}
+}

@@ -25,12 +25,13 @@ public:
 	static DirectX::XMFLOAT3 BoxDimensions() { return m_simulation->BoxDimensions(); }
 
 	template<typename T>
-	static void AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
+	static std::shared_ptr<T> AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
 
 	template<typename T>
-	static void ChangeSelectedAtom();
+	static void ChangeSelectedAtomType();
 
 	static void SelectAtom(int index) { m_simulation->SelectAtom(index); }
+	static void SelectAtom(std::shared_ptr<Atom> atom) { m_simulation->SelectAtom(atom); }
 	static std::shared_ptr<Atom> GetSelectedAtom() { return m_simulation->GetSelectedAtom(); }
 
 	static void SelectedAtomPositionX(float positionX) { m_simulation->SelectedAtomPositionX(positionX); }
@@ -50,13 +51,13 @@ private:
 };
 
 template<typename T>
-void SimulationManager::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
+std::shared_ptr<T> SimulationManager::AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity)
 {
-	m_simulation->AddNewAtom<T>(position, velocity);
+	return m_simulation->AddNewAtom<T>(position, velocity);
 }
 
 template<typename T>
-void SimulationManager::ChangeSelectedAtom()
+void SimulationManager::ChangeSelectedAtomType()
 {
-	m_simulation->ChangeSelectedAtom<T>();
+	m_simulation->ChangeSelectedAtomType<T>();
 }
