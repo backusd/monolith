@@ -24,6 +24,12 @@ public:
 
 	void OnLayoutResize() override { Resize(); }
 	void OnMarginChanged() override { Resize(); }
+	bool MouseIsOver(int x, int y) override;
+
+	OnMessageResult OnLButtonDown(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnLButtonUp(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnMouseMove(std::shared_ptr<MouseState> mouseState) override;
+	OnMessageResult OnMouseLeave() override;
 
 	bool Render2D() override;
 
@@ -197,4 +203,37 @@ bool ListView<T>::Render2D()
 	m_layout->Render2DControls();
 
 	return true;
+}
+
+template <class T>
+OnMessageResult ListView<T>::OnMouseMove(std::shared_ptr<MouseState> mouseState)
+{
+	return m_layout->OnMouseMove(mouseState);
+}
+
+template <class T>
+OnMessageResult ListView<T>::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
+{
+	return m_layout->OnLButtonDown(mouseState);
+}
+
+template <class T>
+OnMessageResult ListView<T>::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
+{
+	return m_layout->OnLButtonUp(mouseState);
+}
+
+template <class T>
+OnMessageResult ListView<T>::OnMouseLeave()
+{
+	return m_layout->OnMouseLeave();
+}
+
+template <class T>
+bool ListView<T>::MouseIsOver(int x, int y)
+{
+	return	x >= m_layout->Left() &&
+			x <= m_layout->Right() &&
+			y >= m_layout->Top() &&
+			y <= m_layout->Bottom();
 }

@@ -631,7 +631,7 @@ void ContentWindow::NewSimulationButtonClick()
 	atomListView->SetFormatFunction([=](std::shared_ptr<Atom> atom) 
 		{
 			// Create a new layout object with the same height and a reasonable width
-			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, 40.0f, 100.0f);
+			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(m_deviceResources, 0.0f, 0.0f, 40.0f, 1000.0f);
 
 			std::shared_ptr<Button> newButton = newLayout->CreateControl<Button>();
 			newButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR);
@@ -640,19 +640,61 @@ void ContentWindow::NewSimulationButtonClick()
 			std::shared_ptr<Layout> newButtonLayout = newButton->GetLayout();
 
 			RowColDefinitions columnDefs;
-			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
-			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 75.0f);	// Name of the atom type
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 47.0f);	// Position: / Velocity:
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// Position / Velocity values
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);	// Remove Button
 			newButtonLayout->SetColumnDefinitions(columnDefs);
 
-			// Create a single Text control within the layout and assign the atom name
-			std::shared_ptr<Text> atomNameText = newButtonLayout->CreateControl<Text>(0, 0);
+			RowColDefinitions rowDefs;
+			rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+			rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+			newButtonLayout->SetRowDefinitions(rowDefs);
+
+			// Text of the atom type
+			std::shared_ptr<Text> atomNameText = newButtonLayout->CreateControl<Text>(0, 0, 2, 1);
 			atomNameText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT);
 			atomNameText->SetText(atom->Name());
-			atomNameText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+			atomNameText->Margin(5.0f, 0.0f, 0.0f, 0.0f);
 
-			std::shared_ptr<Text> newText = newButtonLayout->CreateControl<Text>(0, 1);
-			newText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT);
-			newText->SetText(L"X");
+
+			std::shared_ptr<Text> positionText = newButtonLayout->CreateControl<Text>(0, 1);
+			positionText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_POSITION_VELOCITY_TEXT);
+			positionText->SetText(L"Position:");
+
+			std::shared_ptr<Text> positionValueText = newButtonLayout->CreateControl<Text>(0, 2);
+			positionValueText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_POSITION_VELOCITY_TEXT);
+
+			std::ostringstream positionOSS;
+			positionOSS.precision(3);
+			positionOSS << std::fixed << "(" << atom->Position().x << ", " << atom->Position().y << ", " << atom->Position().z << ")";
+			positionValueText->SetText(positionOSS.str());
+
+
+			
+			std::shared_ptr<Text> velocityText = newButtonLayout->CreateControl<Text>(1, 1);
+			velocityText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_POSITION_VELOCITY_TEXT);
+			velocityText->SetText(L"Velocity:");
+
+			std::shared_ptr<Text> velocityValueText = newButtonLayout->CreateControl<Text>(1, 2);
+			velocityValueText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_POSITION_VELOCITY_TEXT);
+
+			std::ostringstream velocityOSS;
+			velocityOSS.precision(3);
+			velocityOSS << std::fixed << "(" << atom->Velocity().x << ", " << atom->Velocity().y << ", " << atom->Velocity().z << ")";
+			velocityValueText->SetText(velocityOSS.str());
+
+
+			// Remove button with "X" in it to remove this listview item
+			std::shared_ptr<Button> removeButton = newButtonLayout->CreateControl<Button>(0, 3, 2, 1);
+			removeButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_COLOR);
+			removeButton->SetBorderTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_BORDER);
+			removeButton->Margin(5.0f, 10.0f);
+			std::shared_ptr<Layout> removeButtonLayout = removeButton->GetLayout();
+
+			std::shared_ptr<Text> removeGlyph = removeButtonLayout->CreateControl<Text>();
+			removeGlyph->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_GLYPH);
+			removeGlyph->SetText(L"\xE711");
 
 			return newLayout;
 		}

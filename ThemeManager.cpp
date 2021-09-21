@@ -266,7 +266,7 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	std::shared_ptr<TextTheme> atomListViewButtonText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT, deviceResources);
 	atomListViewButtonText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
 	atomListViewButtonText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
-	atomListViewButtonText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	atomListViewButtonText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD);
 	atomListViewButtonText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
 	atomListViewButtonText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
 	atomListViewButtonText->SetFontSize(13.0f);
@@ -274,6 +274,40 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	atomListViewButtonText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	atomListViewButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	atomListViewButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	std::shared_ptr<TextTheme> atomListViewPositionVelocityText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_POSITION_VELOCITY_TEXT, deviceResources);
+	atomListViewPositionVelocityText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	atomListViewPositionVelocityText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	atomListViewPositionVelocityText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	atomListViewPositionVelocityText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	atomListViewPositionVelocityText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	atomListViewPositionVelocityText->SetFontSize(11.0f);
+	atomListViewPositionVelocityText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	atomListViewPositionVelocityText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	atomListViewPositionVelocityText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	atomListViewPositionVelocityText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// Atom ListView - Remove Button
+	std::shared_ptr<ColorTheme> atomListViewRemoveButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_COLOR, deviceResources);
+	atomListViewRemoveButtonColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	atomListViewRemoveButtonColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	atomListViewRemoveButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::shared_ptr<BorderTheme> atomListViewRemoveButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_BORDER, deviceResources);
+	atomListViewRemoveButtonBorder->SetStrokeWidth(0.0f);
+	atomListViewRemoveButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	std::shared_ptr<TextTheme> atomListViewRemoveButtonGlyph = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_GLYPH, deviceResources);
+	atomListViewRemoveButtonGlyph->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	atomListViewRemoveButtonGlyph->SetFontFamily(FONT_FAMILY::SEGOE_MDL2_ASSETS);
+	atomListViewRemoveButtonGlyph->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	atomListViewRemoveButtonGlyph->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	atomListViewRemoveButtonGlyph->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	atomListViewRemoveButtonGlyph->SetFontSize(13.0f);
+	atomListViewRemoveButtonGlyph->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	atomListViewRemoveButtonGlyph->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	atomListViewRemoveButtonGlyph->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	atomListViewRemoveButtonGlyph->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 }
 
 std::shared_ptr<Theme> ThemeManager::GetTheme(std::string name)

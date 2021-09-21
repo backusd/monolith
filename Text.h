@@ -24,6 +24,7 @@ public:
 
 	void SetTextTheme(std::string name) { m_textTheme = std::static_pointer_cast<TextTheme>(ThemeManager::GetTheme(name)); }
 	void SetText(std::wstring text) { m_text = text; TextChanged(); }
+	void SetText(std::string text) { m_text = std::wstring(text.begin(), text.end()); TextChanged(); }
 
 	void AddChar(char key) { m_text.push_back(key); TextChanged(); }
 	void Pop();
