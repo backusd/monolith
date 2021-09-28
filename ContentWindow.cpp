@@ -407,29 +407,9 @@ void ContentWindow::NewSimulationButtonClick()
 	atomComboBox->AddComboBoxItem(L"Flourine");
 	atomComboBox->AddComboBoxItem(L"Neon");
 	atomComboBox->Margin(5.0f, 10.0f);
-	atomComboBox->SelectionChanged([](std::wstring value)
-		{
-			if (value == L"Hydrogen")
-				SimulationManager::ChangeSelectedAtomType<Hydrogen>();
-			else if (value == L"Helium")
-				SimulationManager::ChangeSelectedAtomType<Helium>();
-			else if (value == L"Lithium")
-				SimulationManager::ChangeSelectedAtomType<Lithium>();
-			else if (value == L"Beryllium")
-				SimulationManager::ChangeSelectedAtomType<Beryllium>();
-			else if (value == L"Boron")
-				SimulationManager::ChangeSelectedAtomType<Boron>();
-			else if (value == L"Carbon")
-				SimulationManager::ChangeSelectedAtomType<Carbon>();
-			else if (value == L"Nitrogen")
-				SimulationManager::ChangeSelectedAtomType<Nitrogen>();
-			else if (value == L"Oxygen")
-				SimulationManager::ChangeSelectedAtomType<Oxygen>();
-			else if (value == L"Flourine")
-				SimulationManager::ChangeSelectedAtomType<Flourine>();
-			else if (value == L"Neon")
-				SimulationManager::ChangeSelectedAtomType<Neon>();
-		});
+	// atomComboBox->SelectionChanged() - defined below so it can capture the listview
+
+	
 
 	// ============================================================================================================
 	// ============================================================================================================
@@ -490,9 +470,7 @@ void ContentWindow::NewSimulationButtonClick()
 	positionXSlider->SetMin(-1.0f);
 	positionXSlider->SetMax(1.0f);
 	positionXSlider->Margin(0.0f, 2.0f);
-	positionXSlider->ValueChanged([](float value) {
-		SimulationManager::SelectedAtomPositionX(value);
-	});
+
 
 
 
@@ -508,9 +486,6 @@ void ContentWindow::NewSimulationButtonClick()
 	positionYSlider->SetMin(-1.0f);
 	positionYSlider->SetMax(1.0f);
 	positionYSlider->Margin(0.0f, 2.0f);
-	positionYSlider->ValueChanged([](float value) {
-		SimulationManager::SelectedAtomPositionY(value);
-	});
 
 
 
@@ -526,9 +501,6 @@ void ContentWindow::NewSimulationButtonClick()
 	positionZSlider->SetMin(-1.0f);
 	positionZSlider->SetMax(1.0f);
 	positionZSlider->Margin(0.0f, 2.0f);
-	positionZSlider->ValueChanged([](float value) {
-		SimulationManager::SelectedAtomPositionZ(value);
-	});
 
 
 
@@ -577,9 +549,6 @@ void ContentWindow::NewSimulationButtonClick()
 	velocityXSlider->SetMin(-100.0f);
 	velocityXSlider->SetMax(100.0f);
 	velocityXSlider->Margin(0.0f, 2.0f);
-	velocityXSlider->ValueChanged([](float value) {
-			SimulationManager::SelectedAtomVelocityX(value);
-	});
 
 
 
@@ -594,9 +563,6 @@ void ContentWindow::NewSimulationButtonClick()
 	velocityYSlider->SetMin(-100.0f);
 	velocityYSlider->SetMax(100.0f);
 	velocityYSlider->Margin(0.0f, 2.0f);
-	velocityYSlider->ValueChanged([](float value) {
-		SimulationManager::SelectedAtomVelocityY(value);
-	});
 
 
 
@@ -611,9 +577,6 @@ void ContentWindow::NewSimulationButtonClick()
 	velocityZSlider->SetMin(-100.0f);
 	velocityZSlider->SetMax(100.0f);
 	velocityZSlider->Margin(0.0f, 2.0f);
-	velocityZSlider->ValueChanged([](float value) {
-		SimulationManager::SelectedAtomVelocityZ(value);
-	});
 
 
 	// ============================================================================================================
@@ -628,7 +591,7 @@ void ContentWindow::NewSimulationButtonClick()
 
 	std::shared_ptr<Text> addAtomButtonText = addAtomButtonLayout->CreateControl<Text>();
 	addAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
-	addAtomButtonText->SetText(L"Add Atom");
+	addAtomButtonText->SetText(L"Add New Atom");
 
 
 	// ============================================================================================================
@@ -643,7 +606,7 @@ void ContentWindow::NewSimulationButtonClick()
 			auto deviceResources = weakDeviceResources.lock();
 			auto listView = weakListView.lock();
 
-			// Create a new layout object with the same height and a reasonable width
+			// Create a new layout object with the same height and a reasonable width (it will get resized)
 			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(deviceResources, 0.0f, 0.0f, 40.0f, 1000.0f);
 
 			std::shared_ptr<Button> newButton = newLayout->CreateControl<Button>();
@@ -724,6 +687,45 @@ void ContentWindow::NewSimulationButtonClick()
 			return newLayout;
 		}
 	);
+	atomListView->SetItemClickMethod(
+		[](std::shared_ptr<Atom> atom) {
+
+			// 
+			// Should have already set the color in the OnLButtonUp Method
+			// 
+
+			SimulationManager::SelectAtom(atom);
+
+
+
+
+		}
+	);
+	atomListView->SetValueChangedUpdateLayoutMethod(
+		[](std::shared_ptr<Atom> atom, std::shared_ptr<Layout> layout)
+		{
+			std::shared_ptr<Button> button = std::dynamic_pointer_cast<Button>(layout->GetChildControl(0));
+			std::shared_ptr<Layout> buttonLayout = button->GetLayout();
+
+			// Text of the atom type
+			std::shared_ptr<Text> atomNameText = std::dynamic_pointer_cast<Text>(buttonLayout->GetChildControl(0));
+			atomNameText->SetText(atom->Name());
+
+			// Atom position values
+			std::shared_ptr<Text> positionValueText = std::dynamic_pointer_cast<Text>(buttonLayout->GetChildControl(2));
+			std::ostringstream positionOSS;
+			positionOSS.precision(3);
+			positionOSS << std::fixed << "(" << atom->Position().x << ", " << atom->Position().y << ", " << atom->Position().z << ")";
+			positionValueText->SetText(positionOSS.str());
+
+			// Atom velocity values
+			std::shared_ptr<Text> velocityValueText = std::dynamic_pointer_cast<Text>(buttonLayout->GetChildControl(4));
+			std::ostringstream velocityOSS;
+			velocityOSS.precision(3);
+			velocityOSS << std::fixed << "(" << atom->Velocity().x << ", " << atom->Velocity().y << ", " << atom->Velocity().z << ")";
+			velocityValueText->SetText(velocityOSS.str());
+		}
+	);
 
 	
 
@@ -744,10 +746,7 @@ void ContentWindow::NewSimulationButtonClick()
 			auto vXSlider = weakVXSlider.lock();
 			auto vYSlider = weakVYSlider.lock();
 			auto vZSlider = weakVZSlider.lock();
-			auto comboBox = weakComboBox.lock();
-
-			// Add the atom to the list view
-			listView->AddItem(SimulationManager::GetSelectedAtom());
+			auto comboBox = weakComboBox.lock();			
 
 			// Add a new hydrogen atom to the center of the simulation and let
 			// that be the newly selected atom
@@ -763,8 +762,104 @@ void ContentWindow::NewSimulationButtonClick()
 			vYSlider->SetValue(0.0f);
 			vZSlider->SetValue(0.0f);
 
+			// Add the new atom to the list view
+			// NOTE: Must add it to the list view BEFORE updating the combobox selected item because
+			//       it will trigger an update to the listview item, which will cause an error because
+			//       it hasn't been added yet
+			listView->AddItem(SimulationManager::GetSelectedAtom());
+
 			// Update the Atom type combo box to display "Hydrogen"
-			comboBox->SelectItem(L"Hydrogen");
+			comboBox->SelectItem(L"Hydrogen");			
+		}
+	);
+
+	positionXSlider->ValueChanged(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
+		{
+			SimulationManager::SelectedAtomPositionX(value);
+
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
+	);
+	positionYSlider->ValueChanged(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
+		{
+			SimulationManager::SelectedAtomPositionY(value);
+
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
+	);
+	positionZSlider->ValueChanged(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
+		{
+			SimulationManager::SelectedAtomPositionZ(value);
+
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
+	);
+	velocityXSlider->ValueChanged(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value) 
+		{
+			SimulationManager::SelectedAtomVelocityX(value);
+
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
+	);
+	velocityYSlider->ValueChanged(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
+		{
+			SimulationManager::SelectedAtomVelocityY(value);
+
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
+	);
+	velocityZSlider->ValueChanged(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
+		{
+			SimulationManager::SelectedAtomVelocityZ(value);
+
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
+	);
+
+	atomComboBox->SelectionChanged(
+		[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](std::wstring value)
+		{
+			auto listView = weakListView.lock();
+			int index = listView->ItemIndex(SimulationManager::GetSelectedAtom());
+
+			if (value == L"Hydrogen")
+				SimulationManager::ChangeSelectedAtomType<Hydrogen>();
+			else if (value == L"Helium")
+				SimulationManager::ChangeSelectedAtomType<Helium>();
+			else if (value == L"Lithium")
+				SimulationManager::ChangeSelectedAtomType<Lithium>();
+			else if (value == L"Beryllium")
+				SimulationManager::ChangeSelectedAtomType<Beryllium>();
+			else if (value == L"Boron")
+				SimulationManager::ChangeSelectedAtomType<Boron>();
+			else if (value == L"Carbon")
+				SimulationManager::ChangeSelectedAtomType<Carbon>();
+			else if (value == L"Nitrogen")
+				SimulationManager::ChangeSelectedAtomType<Nitrogen>();
+			else if (value == L"Oxygen")
+				SimulationManager::ChangeSelectedAtomType<Oxygen>();
+			else if (value == L"Flourine")
+				SimulationManager::ChangeSelectedAtomType<Flourine>();
+			else if (value == L"Neon")
+				SimulationManager::ChangeSelectedAtomType<Neon>();
+
+			// Must completely replace the item instead of updating it because the 
+			// SimulationManager::ChangeSelectedAtomType method will delete the existing
+			// selected atom and replace it with a new one, which the listview does not 
+			// know about
+			listView->ReplaceItemAt(SimulationManager::GetSelectedAtom(), index);			
 		}
 	);
 
@@ -775,6 +870,9 @@ void ContentWindow::NewSimulationButtonClick()
 	SimulationManager::Pause();
 	XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
-	SimulationManager::SelectAtom(0);
+	std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
+	SimulationManager::SelectAtom(firstAtom);
+
+	// Add the atom to the list view
+	atomListView->AddItem(firstAtom);
 }

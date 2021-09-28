@@ -87,6 +87,8 @@ public:
 
 	std::shared_ptr<Control> GetChildControl(unsigned int index);
 
+	std::shared_ptr<Layout> GetMouseCapturedLayout() { return m_mouseCapturedLayout; }
+
 private:
 	void UpdateLayout();
 

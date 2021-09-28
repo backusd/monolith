@@ -38,6 +38,12 @@ public:
 	// Set the format function
 	void SetFormatFunction(std::function<std::shared_ptr<Layout>(std::shared_ptr<T>)> function) { FormatAddedItem = function; }
 
+	// Set the value changed update layout method
+	void SetValueChangedUpdateLayoutMethod(std::function<void(std::shared_ptr<T>, std::shared_ptr<Layout>)> function) { ValueChangedUpdateLayoutMethod = function; }
+
+	// Set the item click method
+	void SetItemClickMethod(std::function<void(std::shared_ptr<T>)> function) { ItemClickMethod = function; }
+
 	// Add item to list and call FormatAddedItem to add it to the list
 	void AddItem(std::shared_ptr<T> item);
 
@@ -46,6 +52,15 @@ public:
 
 	// Set the item height - modify the rowCol structure
 	void SetItemHeight(float height);
+
+	// Function to call when an item changes in some way and the UI may need updating
+	void ItemChanged(std::shared_ptr<T> item);
+
+	// Function to replace a list view item with another
+	void ReplaceItemAt(std::shared_ptr<T> newItem, int index);
+
+	// Function to return the index of an item
+	int ItemIndex(std::shared_ptr<T> item);
 
 
 private:
@@ -76,6 +91,24 @@ private:
 	// Input Parameter: Pointer to the item that was just added
 	// Return Value:    Pointer to the layout with the item UI contents
 	std::function<std::shared_ptr<Layout>(std::shared_ptr<T>)> FormatAddedItem;
+
+	// Function to invoke when a value has changed and the corresponding layout needs updating
+	// Input parameter 1: pointer to the item itself that has changed
+	// Input parameter 2: pointer to the layout that holds the UI for the item
+	std::function<void(std::shared_ptr<T>, std::shared_ptr<Layout>)> ValueChangedUpdateLayoutMethod;
+
+
+
+	// Item click function
+	std::function<void(std::shared_ptr<T>)> ItemClickMethod;
+
+
+
+
+
+
+
+
 };
 
 template <class T>
@@ -90,13 +123,14 @@ ListView<T>::ListView(const std::shared_ptr<DeviceResources>& deviceResources,
 					  const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_scrollOffset(0),
-	FormatAddedItem(WindowManager::DefaultListViewFormatAddedItem<T>)
+	FormatAddedItem(WindowManager::DefaultListViewFormatAddedItem<T>),
+	ValueChangedUpdateLayoutMethod(WindowManager::DefaultListViewValueChangedUpdateLayoutMethod<T>),
+	ItemClickMethod(WindowManager::DefaultListViewItemClickMethod<T>)
 {
 	// Create its own layout not as a child of the parent
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1
 	// we can automatically assign the layout to be the same as the (0,0) rectangle of the parent layout
 	m_layout = std::make_shared<Layout>(deviceResources, GetParentRect());
-
 
 	// Set a default height of 20 pixels
 	// MUST call this after creating the layout
@@ -254,7 +288,26 @@ OnMessageResult ListView<T>::OnLButtonDown(std::shared_ptr<MouseState> mouseStat
 template <class T>
 OnMessageResult ListView<T>::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 {
-	return m_layout->OnLButtonUp(mouseState);
+	OnMessageResult result = m_layout->OnLButtonUp(mouseState);
+
+	if (result != OnMessageResult::NONE)
+	{
+		std::shared_ptr<Layout> capturedLayout = m_layout->GetMouseCapturedLayout();
+
+		if (capturedLayout != nullptr)
+		{
+			for (unsigned int iii = 0; iii < m_itemLayouts.size(); ++iii)
+			{
+				if (m_itemLayouts[iii] == capturedLayout)
+				{
+					ItemClickMethod(m_items[iii]);
+					break;
+				}
+			}
+		}
+	}
+
+	return result;
 }
 
 template <class T>
@@ -299,4 +352,51 @@ OnMessageResult ListView<T>::OnMouseWheel(int wheelDelta)
 	//OutputDebugString(oss.str().c_str());
 
 	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
+}
+
+template <class T>
+void ListView<T>::ItemChanged(std::shared_ptr<T> item)
+{
+	// Determine the item index
+	for (unsigned int iii = 0; iii < m_items.size(); ++iii)
+	{
+		if (m_items[iii] == item)
+		{
+			// Get the layout for the item
+			std::shared_ptr<Layout> itemLayout = m_itemLayouts[iii];
+
+			// Call ValueChangedUpdateLayoutMethod to update the layout contents 
+			// (even if the layout is not visible, because scrolling may make it visible)
+			ValueChangedUpdateLayoutMethod(item, itemLayout);
+
+			break;
+		}
+	}
+}
+
+template <class T>
+void ListView<T>::ReplaceItemAt(std::shared_ptr<T> newItem, int index)
+{
+	m_items[index] = newItem;
+
+	// Release the existing layout
+	m_itemLayouts[index]->ReleaseLayout();
+
+	// Add the new layout
+	m_itemLayouts[index] = this->FormatAddedItem(newItem);
+
+	// Update the bound layouts so the change can be rendered
+	this->UpdateSubLayouts();
+}
+
+template <class T>
+int ListView<T>::ItemIndex(std::shared_ptr<T> item)
+{
+	for (unsigned int iii = 0; iii < m_items.size(); ++iii)
+	{
+		if (m_items[iii] == item)
+			return iii;
+	}
+
+	return -1;
 }

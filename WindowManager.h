@@ -32,6 +32,14 @@ public:
 		return std::make_shared<Layout>(nullptr, 0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
+	// Default ListView Item format method
+	template <typename T>
+	static void DefaultListViewValueChangedUpdateLayoutMethod(std::shared_ptr<T> item, std::shared_ptr<Layout> layout) {}
+
+	// Default ListView Item format method
+	template <typename T>
+	static void DefaultListViewItemClickMethod(std::shared_ptr<T> item) {}
+
 	// Slider methods
 	static void DefaultSliderValueChangedMethod(float value) {}
 
