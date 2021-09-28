@@ -601,7 +601,14 @@ void ContentWindow::NewSimulationButtonClick()
 	atomListView->SetItemHeight(40.0f);
 	atomListView->SetFormatFunction(
 		[weakDeviceResources = std::weak_ptr<DeviceResources>(m_deviceResources),
-		weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](std::shared_ptr<Atom> atom)
+		weakListView = std::weak_ptr<ListView<Atom>>(atomListView),
+		weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
+		weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
+		weakPZSlider = std::weak_ptr<Slider>(positionZSlider),
+		weakVXSlider = std::weak_ptr<Slider>(velocityXSlider),
+		weakVYSlider = std::weak_ptr<Slider>(velocityYSlider),
+		weakVZSlider = std::weak_ptr<Slider>(velocityZSlider),
+		weakComboBox = std::weak_ptr<ComboBox>(atomComboBox)](std::shared_ptr<Atom> atom, bool highlighted)
 		{
 			auto deviceResources = weakDeviceResources.lock();
 			auto listView = weakListView.lock();
@@ -610,7 +617,10 @@ void ContentWindow::NewSimulationButtonClick()
 			std::shared_ptr<Layout> newLayout = std::make_shared<Layout>(deviceResources, 0.0f, 0.0f, 40.0f, 1000.0f);
 
 			std::shared_ptr<Button> newButton = newLayout->CreateControl<Button>();
-			newButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR);
+			if (highlighted)
+				newButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_HIGHLIGHTED_COLOR);
+			else
+				newButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR);
 			newButton->SetBorderTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_BORDER);
 			newButton->Margin(5.0f, 0.0f);
 			std::shared_ptr<Layout> newButtonLayout = newButton->GetLayout();
@@ -669,13 +679,71 @@ void ContentWindow::NewSimulationButtonClick()
 			
 			removeButton->Click(
 				[weakListView = std::weak_ptr<ListView<Atom>>(listView), 
-				weakAtom = std::weak_ptr<Atom>(atom)]() 
-				{
+				weakAtom = std::weak_ptr<Atom>(atom),
+				weakPXSlider,
+				weakPYSlider,
+				weakPZSlider,
+				weakVXSlider,
+				weakVYSlider,
+				weakVZSlider,
+				weakComboBox]()
+				{	
 					auto listView = weakListView.lock();
 					auto atom = weakAtom.lock();
+					auto pXSlider = weakPXSlider.lock();
+					auto pYSlider = weakPYSlider.lock();
+					auto pZSlider = weakPZSlider.lock();
+					auto vXSlider = weakVXSlider.lock();
+					auto vYSlider = weakVYSlider.lock();
+					auto vZSlider = weakVZSlider.lock();
+					auto comboBox = weakComboBox.lock();
+
+					// Do not allow deleting of the last item
+					if (listView->ItemCount() == 1)
+						return;
+
+					// Get the index of the current atom and whether or not it was highlighted
+					int index = listView->ItemIndex(atom);
+					bool isHighlighted = listView->IsItemHighlighted(atom);
 
 					listView->RemoveItem(atom);
 					SimulationManager::RemoveAtom(atom);
+
+					// If the atom to be deleted was the highlighted one, we must try to re-select another atom
+					if (isHighlighted)
+					{
+						// If the index is now beyond the range of the total atoms, decrement the index
+						if (index == listView->ItemCount())
+							--index;
+
+						listView->HighlightItem(index);
+						SimulationManager::SelectAtom(index);
+
+						std::shared_ptr<Atom> selectedAtom = SimulationManager::GetSelectedAtom();
+
+						// Update the position/velocity sliders						
+						pXSlider->SetValue(selectedAtom->Position().x);
+						pYSlider->SetValue(selectedAtom->Position().y);
+						pZSlider->SetValue(selectedAtom->Position().z);
+						vXSlider->SetValue(selectedAtom->Velocity().x);
+						vYSlider->SetValue(selectedAtom->Velocity().y);
+						vZSlider->SetValue(selectedAtom->Velocity().z);
+
+						// Update the atom type comboBox
+						switch (selectedAtom->ElementType())
+						{
+						case Element::HYDROGEN:		comboBox->SelectItem(L"Hydrogen"); break;
+						case Element::HELIUM:		comboBox->SelectItem(L"Helium"); break;
+						case Element::LITHIUM:		comboBox->SelectItem(L"Lithium"); break;
+						case Element::BERYLLIUM:	comboBox->SelectItem(L"Beryllium"); break;
+						case Element::BORON:		comboBox->SelectItem(L"Boron"); break;
+						case Element::CARBON:		comboBox->SelectItem(L"Carbon"); break;
+						case Element::NITROGEN:		comboBox->SelectItem(L"Nitrogen"); break;
+						case Element::OXYGEN:		comboBox->SelectItem(L"Oxygen"); break;
+						case Element::FLOURINE:		comboBox->SelectItem(L"Flourine"); break;
+						case Element::NEON:			comboBox->SelectItem(L"Neon"); break;
+						}
+					}
 				}
 			);
 			
@@ -687,18 +755,59 @@ void ContentWindow::NewSimulationButtonClick()
 			return newLayout;
 		}
 	);
+	atomListView->SetHighlightItemLayoutMethod([](std::shared_ptr<Layout> layout) 
+		{
+			std::shared_ptr<Button> button = std::dynamic_pointer_cast<Button>(layout->GetChildControl(0));
+			button->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_HIGHLIGHTED_COLOR);
+		}
+	);
+	atomListView->SetUnhighlightItemLayoutMethod([](std::shared_ptr<Layout> layout)
+		{
+			std::shared_ptr<Button> button = std::dynamic_pointer_cast<Button>(layout->GetChildControl(0));
+			button->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_COLOR);
+		}
+	);
 	atomListView->SetItemClickMethod(
-		[](std::shared_ptr<Atom> atom) {
-
-			// 
-			// Should have already set the color in the OnLButtonUp Method
-			// 
+		[weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
+		weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
+		weakPZSlider = std::weak_ptr<Slider>(positionZSlider),
+		weakVXSlider = std::weak_ptr<Slider>(velocityXSlider),
+		weakVYSlider = std::weak_ptr<Slider>(velocityYSlider),
+		weakVZSlider = std::weak_ptr<Slider>(velocityZSlider),
+		weakComboBox = std::weak_ptr<ComboBox>(atomComboBox)](std::shared_ptr<Atom> atom) 
+		{
+			auto pXSlider = weakPXSlider.lock();
+			auto pYSlider = weakPYSlider.lock();
+			auto pZSlider = weakPZSlider.lock();
+			auto vXSlider = weakVXSlider.lock();
+			auto vYSlider = weakVYSlider.lock();
+			auto vZSlider = weakVZSlider.lock();
+			auto comboBox = weakComboBox.lock();
 
 			SimulationManager::SelectAtom(atom);
 
+			// Update the position/velocity sliders
+			pXSlider->SetValue(atom->Position().x);
+			pYSlider->SetValue(atom->Position().y);
+			pZSlider->SetValue(atom->Position().z);
+			vXSlider->SetValue(atom->Velocity().x);
+			vYSlider->SetValue(atom->Velocity().y);
+			vZSlider->SetValue(atom->Velocity().z);
 
-
-
+			// Update the atom type comboBox
+			switch (atom->ElementType())
+			{
+			case Element::HYDROGEN:		comboBox->SelectItem(L"Hydrogen"); break;
+			case Element::HELIUM:		comboBox->SelectItem(L"Helium"); break;
+			case Element::LITHIUM:		comboBox->SelectItem(L"Lithium"); break;
+			case Element::BERYLLIUM:	comboBox->SelectItem(L"Beryllium"); break;
+			case Element::BORON:		comboBox->SelectItem(L"Boron"); break;
+			case Element::CARBON:		comboBox->SelectItem(L"Carbon"); break;
+			case Element::NITROGEN:		comboBox->SelectItem(L"Nitrogen"); break;
+			case Element::OXYGEN:		comboBox->SelectItem(L"Oxygen"); break;
+			case Element::FLOURINE:		comboBox->SelectItem(L"Flourine"); break;
+			case Element::NEON:			comboBox->SelectItem(L"Neon"); break;
+			}
 		}
 	);
 	atomListView->SetValueChangedUpdateLayoutMethod(
@@ -767,6 +876,7 @@ void ContentWindow::NewSimulationButtonClick()
 			//       it will trigger an update to the listview item, which will cause an error because
 			//       it hasn't been added yet
 			listView->AddItem(SimulationManager::GetSelectedAtom());
+			listView->HighlightItem(SimulationManager::GetSelectedAtom());
 
 			// Update the Atom type combo box to display "Hydrogen"
 			comboBox->SelectItem(L"Hydrogen");			
@@ -859,7 +969,10 @@ void ContentWindow::NewSimulationButtonClick()
 			// SimulationManager::ChangeSelectedAtomType method will delete the existing
 			// selected atom and replace it with a new one, which the listview does not 
 			// know about
-			listView->ReplaceItemAt(SimulationManager::GetSelectedAtom(), index);			
+			listView->ReplaceItemAt(SimulationManager::GetSelectedAtom(), index);	
+
+			// Must make to re-select the new atom
+			listView->HighlightItem(SimulationManager::GetSelectedAtom());
 		}
 	);
 
@@ -875,4 +988,7 @@ void ContentWindow::NewSimulationButtonClick()
 
 	// Add the atom to the list view
 	atomListView->AddItem(firstAtom);
+
+	// Select the first item so the button is highlighted
+	atomListView->HighlightItem(firstAtom);
 }

@@ -36,13 +36,17 @@ public:
 
 
 	// Set the format function
-	void SetFormatFunction(std::function<std::shared_ptr<Layout>(std::shared_ptr<T>)> function) { FormatAddedItem = function; }
+	void SetFormatFunction(std::function<std::shared_ptr<Layout>(std::shared_ptr<T>, bool)> function) { FormatAddedItem = function; }
 
 	// Set the value changed update layout method
 	void SetValueChangedUpdateLayoutMethod(std::function<void(std::shared_ptr<T>, std::shared_ptr<Layout>)> function) { ValueChangedUpdateLayoutMethod = function; }
 
 	// Set the item click method
 	void SetItemClickMethod(std::function<void(std::shared_ptr<T>)> function) { ItemClickMethod = function; }
+
+	// Set highlighting methods
+	void SetHighlightItemLayoutMethod(std::function<void(std::shared_ptr<Layout>)> function) { HighlightItemLayoutMethod = function; }
+	void SetUnhighlightItemLayoutMethod(std::function<void(std::shared_ptr<Layout>)> function) { UnhighlightItemLayoutMethod = function; }
 
 	// Add item to list and call FormatAddedItem to add it to the list
 	void AddItem(std::shared_ptr<T> item);
@@ -61,6 +65,16 @@ public:
 
 	// Function to return the index of an item
 	int ItemIndex(std::shared_ptr<T> item);
+
+	// Function to select/highlight a specific item
+	void HighlightItem(std::shared_ptr<T> item);
+	void HighlightItem(int index);
+
+	// Return true if item is the selected one
+	bool IsItemHighlighted(std::shared_ptr<T> item);
+
+	// Get the count of all items
+	unsigned int ItemCount() { return static_cast<unsigned int>(m_items.size()); }
 
 
 private:
@@ -86,11 +100,15 @@ private:
 	// Must manually set the height of the items so the rows can be sized appropriately
 	float m_itemHeight;
 
+	// Index of selected/highlighted item
+	int m_highlightedItemIndex;
+
 	// Method that gets executed when a new item is added
 	// This allows for custom formatting of the objects in the list view
-	// Input Parameter: Pointer to the item that was just added
+	// Input Parameter 1: Pointer to the item that was just added
+	// Input Parameter 2: Boolean - true if the item to be format is the selected/highlighted item
 	// Return Value:    Pointer to the layout with the item UI contents
-	std::function<std::shared_ptr<Layout>(std::shared_ptr<T>)> FormatAddedItem;
+	std::function<std::shared_ptr<Layout>(std::shared_ptr<T>, bool)> FormatAddedItem;
 
 	// Function to invoke when a value has changed and the corresponding layout needs updating
 	// Input parameter 1: pointer to the item itself that has changed
@@ -102,7 +120,9 @@ private:
 	// Item click function
 	std::function<void(std::shared_ptr<T>)> ItemClickMethod;
 
-
+	// Methods to allow customization of highlighting/unhighlighting of items
+	std::function<void(std::shared_ptr<Layout>)> HighlightItemLayoutMethod;
+	std::function<void(std::shared_ptr<Layout>)> UnhighlightItemLayoutMethod;
 
 
 
@@ -123,9 +143,12 @@ ListView<T>::ListView(const std::shared_ptr<DeviceResources>& deviceResources,
 					  const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_scrollOffset(0),
+	m_highlightedItemIndex(-1),
 	FormatAddedItem(WindowManager::DefaultListViewFormatAddedItem<T>),
 	ValueChangedUpdateLayoutMethod(WindowManager::DefaultListViewValueChangedUpdateLayoutMethod<T>),
-	ItemClickMethod(WindowManager::DefaultListViewItemClickMethod<T>)
+	ItemClickMethod(WindowManager::DefaultListViewItemClickMethod<T>),
+	HighlightItemLayoutMethod(WindowManager::DefaultListViewHightlightItemLayoutMethod<T>),
+	UnhighlightItemLayoutMethod(WindowManager::DefaultListViewUnhightlightItemLayoutMethod<T>)
 {
 	// Create its own layout not as a child of the parent
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1
@@ -189,11 +212,8 @@ void ListView<T>::AddItem(std::shared_ptr<T> item)
 	// Add the item to the list of items
 	m_items.push_back(item);
 
-	// Create the list view item UI element
-	//std::shared_ptr<Layout> itemLayout = this->FormatAddedItem(item);
-
-	// Add the layout to the list of layouts
-	m_itemLayouts.push_back(this->FormatAddedItem(item));
+	// Add the layout to the list of layouts (don't highlight the item by default)
+	m_itemLayouts.push_back(this->FormatAddedItem(item, false));
 
 	// If there is room in the list view to present this item, update the layouts 
 	// that are bound to the main layout
@@ -222,6 +242,16 @@ void ListView<T>::RemoveItem(std::shared_ptr<T> item)
 		m_items.erase(m_items.begin() + removeIndex);
 		m_itemLayouts[removeIndex]->ReleaseLayout();
 		m_itemLayouts.erase(m_itemLayouts.begin() + removeIndex);
+
+		// If we are removing the selected/highlighted item, then we must set the highlighted index
+		// back to -1 so that we don't try to Unhighlight the corresponding layout
+		// Otherwise, if the index to be removed is at a lower index, then we must decrement
+		// the highlighted index accordingly
+		if (removeIndex == m_highlightedItemIndex)
+			m_highlightedItemIndex = -1;
+		else if (removeIndex < m_highlightedItemIndex)
+			--m_highlightedItemIndex;
+
 
 		// if the scroll offset would leave an empty spot, then we must decrement the offset
 		if (m_scrollOffset > 0 && m_scrollOffset + MaxItemsCount() > m_itemLayouts.size())
@@ -300,6 +330,10 @@ OnMessageResult ListView<T>::OnLButtonUp(std::shared_ptr<MouseState> mouseState)
 			{
 				if (m_itemLayouts[iii] == capturedLayout)
 				{
+					// Highlight the clicked item
+					this->HighlightItem(m_items[iii]);
+
+					// Call the click method
 					ItemClickMethod(m_items[iii]);
 					break;
 				}
@@ -383,7 +417,7 @@ void ListView<T>::ReplaceItemAt(std::shared_ptr<T> newItem, int index)
 	m_itemLayouts[index]->ReleaseLayout();
 
 	// Add the new layout
-	m_itemLayouts[index] = this->FormatAddedItem(newItem);
+	m_itemLayouts[index] = this->FormatAddedItem(newItem, index == m_highlightedItemIndex);
 
 	// Update the bound layouts so the change can be rendered
 	this->UpdateSubLayouts();
@@ -399,4 +433,38 @@ int ListView<T>::ItemIndex(std::shared_ptr<T> item)
 	}
 
 	return -1;
+}
+
+template <class T>
+void ListView<T>::HighlightItem(std::shared_ptr<T> item)
+{
+	int index = this->ItemIndex(item);
+	if (index != -1)
+	{
+		this->HighlightItem(index);
+	}
+}
+
+template <class T>
+void ListView<T>::HighlightItem(int index)
+{
+	if (index != m_highlightedItemIndex)
+	{
+		if (m_highlightedItemIndex != -1)
+		{
+			// Un-highlight the previously highlighted item layout
+			this->UnhighlightItemLayoutMethod(m_itemLayouts[m_highlightedItemIndex]);
+		}
+
+		m_highlightedItemIndex = index;
+
+		// Highlight the new item
+		this->HighlightItemLayoutMethod(m_itemLayouts[index]);
+	}
+}
+
+template <class T>
+bool ListView<T>::IsItemHighlighted(std::shared_ptr<T> item)
+{
+	return (m_highlightedItemIndex != -1) ? m_items[m_highlightedItemIndex] == item : false;
 }

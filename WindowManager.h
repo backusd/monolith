@@ -26,7 +26,7 @@ public:
 
 	// Default ListView Item format method
 	template <typename T>
-	static std::shared_ptr<Layout> DefaultListViewFormatAddedItem(std::shared_ptr<T> item)
+	static std::shared_ptr<Layout> DefaultListViewFormatAddedItem(std::shared_ptr<T> item, bool highlighted)
 	{
 		// just return an empty layout
 		return std::make_shared<Layout>(nullptr, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -36,9 +36,15 @@ public:
 	template <typename T>
 	static void DefaultListViewValueChangedUpdateLayoutMethod(std::shared_ptr<T> item, std::shared_ptr<Layout> layout) {}
 
-	// Default ListView Item format method
+	// Default ListView Item click method
 	template <typename T>
 	static void DefaultListViewItemClickMethod(std::shared_ptr<T> item) {}
+
+	// Default ListView Item highlight methods
+	template <typename T>
+	static void DefaultListViewHightlightItemLayoutMethod(std::shared_ptr<Layout> item) {}
+	template <typename T>
+	static void DefaultListViewUnhightlightItemLayoutMethod(std::shared_ptr<Layout> item) {}
 
 	// Slider methods
 	static void DefaultSliderValueChangedMethod(float value) {}

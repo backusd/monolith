@@ -259,6 +259,11 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	atomListViewButtonColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
 	atomListViewButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
 
+	std::shared_ptr<ColorTheme> atomListViewButtonHighlightedColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_HIGHLIGHTED_COLOR, deviceResources);
+	atomListViewButtonHighlightedColor->SetColor(D2D1::ColorF(D2D1::ColorF::Black));
+	atomListViewButtonHighlightedColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	atomListViewButtonHighlightedColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
 	std::shared_ptr<BorderTheme> atomListViewButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_BORDER, deviceResources);
 	atomListViewButtonBorder->SetStrokeWidth(1.0f);
 	atomListViewButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
