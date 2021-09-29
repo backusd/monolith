@@ -22,7 +22,7 @@ public:
 
 	// Button click methods
 	static void DefaultClickMethod() {}
-	static void NewSimulationButtonClick();
+
 
 	// Default ListView Item format method
 	template <typename T>

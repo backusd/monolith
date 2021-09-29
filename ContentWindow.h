@@ -42,9 +42,6 @@ public:
 	bool Render() override;
 	void Present() override;
 
-
-	// Click methods
-	void NewSimulationButtonClick() override;
 	
 protected:
 	LRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;

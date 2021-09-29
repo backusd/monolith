@@ -3,7 +3,6 @@
 
 #include "ThemeManager.h"
 #include "WindowBaseTemplate.h"
-//#include "WindowManager.h"
 
 #include <sstream>
 
@@ -21,8 +20,6 @@ public:
 	virtual bool Render() { return true; }
 	virtual void Present() {}
 
-	// Button click methods
-	virtual void NewSimulationButtonClick() {}
 
 protected:
 

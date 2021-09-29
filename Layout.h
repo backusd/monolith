@@ -23,6 +23,9 @@ public:
 
 	void ReleaseLayout();
 
+	std::shared_ptr<DeviceResources> GetDeviceResources() { return m_deviceResources; }
+
+
 	void SetRowDefinitions(RowColDefinitions rowDefs)    { m_rowDefinitions = rowDefs; UpdateLayout(); }
 	void SetColumnDefinitions(RowColDefinitions colDefs) { m_columnDefinitions = colDefs; UpdateLayout(); }
 	

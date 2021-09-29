@@ -341,7 +341,7 @@ LRESULT ContentWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 }
 
 
-
+/*
 // Button click methods
 void ContentWindow::NewSimulationButtonClick()
 {
@@ -992,3 +992,4 @@ void ContentWindow::NewSimulationButtonClick()
 	// Select the first item so the button is highlighted
 	atomListView->HighlightItem(firstAtom);
 }
+*/

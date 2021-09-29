@@ -210,9 +210,9 @@ void Layout::SetSubLayout(std::shared_ptr<Layout> layout, int rowIndex, int colu
 
 void Layout::Clear()
 {
-	// Clear bound controls, sublayouts, and set rows/columns back to default
-	m_controls.clear();
-	m_subLayouts.clear();
+	// ReleaseLayout will release references from child controls to their parents layout so that 
+	// there all resources are properly released. It will also clear all controls and layouts
+	ReleaseLayout();
 
 	RowColDefinitions defaultDefinition;
 	defaultDefinition.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);

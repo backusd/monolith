@@ -57,18 +57,3 @@ void WindowManager::UpdateRenderPresent()
 			iii->get()->Present();
 	}
 }
-
-
-
-
-// Button click methods
-void WindowManager::NewSimulationButtonClick()
-{
-	// Pass the call to window manager which will pass it to each window
-	for (std::shared_ptr<WindowBase> window : m_windows)
-		window->NewSimulationButtonClick();
-
-
-}
-
-

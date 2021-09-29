@@ -16,12 +16,18 @@ namespace LayoutConfiguration
 	// Configure the layout for the main application window
 	void ConfigureMainWindow(const std::shared_ptr<ContentWindow>& window);
 
-	void CreateMenuBar(const std::shared_ptr<Layout>& mainLayout);
-	void CreateFileDropDown(const std::shared_ptr<Layout>& menuBarLayout);
-	void CreateSimulationDropDown(const std::shared_ptr<Layout>& menuBarLayout);
-	void CreateViewDropDown(const std::shared_ptr<Layout>& menuBarLayout);
+	void CreateMenuBar(const std::shared_ptr<ContentWindow>& window);
+	void CreateFileDropDown(const std::shared_ptr<ContentWindow>& window);
+	void CreateSimulationDropDown(const std::shared_ptr<ContentWindow>& window);
+	void CreateViewDropDown(const std::shared_ptr<ContentWindow>& window);
 
-	void CreateQuickBar(const std::shared_ptr<Layout>& mainLayout);
+	// Display controls to create a new simulation
+	//		Only pass the layout the controls need to be created in
+	void CreateNewSimulationControls(const std::shared_ptr<Layout> layout);
 
-	void CreateRightPane(const std::shared_ptr<Layout>& mainLayout);
+
+
+	void CreateQuickBar(const std::shared_ptr<ContentWindow>& window);
+
+	void CreateRightPane(const std::shared_ptr<ContentWindow>& window);
 }
