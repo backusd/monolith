@@ -144,11 +144,11 @@ ListView<T>::ListView(const std::shared_ptr<DeviceResources>& deviceResources,
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_scrollOffset(0),
 	m_highlightedItemIndex(-1),
-	FormatAddedItem(WindowManager::DefaultListViewFormatAddedItem<T>),
-	ValueChangedUpdateLayoutMethod(WindowManager::DefaultListViewValueChangedUpdateLayoutMethod<T>),
-	ItemClickMethod(WindowManager::DefaultListViewItemClickMethod<T>),
-	HighlightItemLayoutMethod(WindowManager::DefaultListViewHightlightItemLayoutMethod<T>),
-	UnhighlightItemLayoutMethod(WindowManager::DefaultListViewUnhightlightItemLayoutMethod<T>)
+	FormatAddedItem([](std::shared_ptr<T> item, bool highlighted) { return std::make_shared<Layout>(nullptr, 0.0f, 0.0f, 0.0f, 0.0f); }), // return an empty layout
+	ValueChangedUpdateLayoutMethod([](std::shared_ptr<T> item, std::shared_ptr<Layout> layout) {}),
+	ItemClickMethod([](std::shared_ptr<T> item) {}),
+	HighlightItemLayoutMethod([](std::shared_ptr<Layout> layout) {}),
+	UnhighlightItemLayoutMethod([](std::shared_ptr<Layout> layout) {})
 {
 	// Create its own layout not as a child of the parent
 	// Because the default will be to have no margins, and row/column index = 0 and row/columnSpan = 1

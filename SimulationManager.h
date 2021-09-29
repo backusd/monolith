@@ -14,6 +14,7 @@ public:
 	}
 
 	static std::vector<std::shared_ptr<Atom>> Atoms() { return m_simulation->Atoms(); }
+	static unsigned int AtomCount() { return m_simulation->AtomCount(); }
 
 	static void Update(StepTimer const& timer) { m_simulation->Update(timer); }
 

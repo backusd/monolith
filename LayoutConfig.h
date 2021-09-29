@@ -11,6 +11,8 @@
 #include "SimulationRenderer.h"
 #include "WindowManager.h"
 
+#include <functional>
+
 namespace LayoutConfiguration
 {
 	// Configure the layout for the main application window
@@ -24,6 +26,10 @@ namespace LayoutConfiguration
 	// Display controls to create a new simulation
 	//		Only pass the layout the controls need to be created in
 	void CreateNewSimulationControls(const std::shared_ptr<Layout> layout);
+
+	// Display prompt on right side for whether or not to save the simulation
+	void CreatePromptSaveSimulationControls(const std::shared_ptr<Layout> layout);
+
 
 
 

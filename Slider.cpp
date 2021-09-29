@@ -18,7 +18,7 @@ Slider::Slider(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_sliderMax(1.0f),
 	m_sliderValue(0.0f),
 	m_rectWidth(20.0f),
-	ValueChangedMethod(WindowManager::DefaultSliderValueChangedMethod)
+	ValueChangedMethod([](float value) {})
 {
 	SetLineTheme(THEME_DEFAULT_LINE_COLOR);
 	SetRectColorTheme(THEME_DEFAULT_SLIDER_RECT_COLOR);

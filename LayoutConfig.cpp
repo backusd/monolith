@@ -94,12 +94,36 @@ namespace LayoutConfiguration
 
 				// Get the layout for the pane on the right
 				std::shared_ptr<Layout> layout = window->GetLayout()->GetSubLayout(2, 1);
+
+				// If the layout has not yet been created
 				if (layout == nullptr)
 					layout = window->GetLayout()->CreateSubLayout(2, 1);
 				else
 					layout->Clear();
 
-				CreateNewSimulationControls(layout);
+				// If there are any atoms in the existing simulation, prompt the user for
+				// if they would like to save the simulation before continuing
+				if (SimulationManager::AtomCount() > 0)
+				{
+
+
+
+
+
+
+				}
+				else
+				{
+					// Pause the simulation and add a single hydrogen atom to the simulation
+					SimulationManager::Pause();
+					XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+					XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+					std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
+					SimulationManager::SelectAtom(firstAtom);
+
+					// Create the UI controls to add/edit atoms
+					CreateNewSimulationControls(layout);
+				}
 			}
 		);
 
@@ -367,7 +391,6 @@ namespace LayoutConfiguration
 				SimulationManager::BoxDimensions(value);
 			}
 		);
-
 
 		// Text for "Position"
 		std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(2, 0);
@@ -742,6 +765,12 @@ namespace LayoutConfiguration
 				velocityValueText->SetText(velocityOSS.str());
 			}
 		);
+		// Add each atom to the list view
+		for (std::shared_ptr<Atom> atom : SimulationManager::Atoms())
+			atomListView->AddItem(atom);
+
+		// Highlight the selected atom
+		atomListView->HighlightItem(SimulationManager::GetSelectedAtom());
 
 
 
@@ -882,23 +911,16 @@ namespace LayoutConfiguration
 			listView->HighlightItem(SimulationManager::GetSelectedAtom());
 		}
 		);
-
-
-		// ============================================================================================================
-		// ============================================================================================================
-		// Add a Hydrogen Atom to the simulation
-		SimulationManager::Pause();
-		XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-		std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
-		SimulationManager::SelectAtom(firstAtom);
-
-		// Add the atom to the list view
-		atomListView->AddItem(firstAtom);
-
-		// Select the first item so the button is highlighted
-		atomListView->HighlightItem(firstAtom);
 	}
+
+	void CreatePromptSaveSimulationControls(const std::shared_ptr<Layout> layout)
+	{
+
+	}
+
+
+
+
 
 	void CreateQuickBar(const std::shared_ptr<ContentWindow>& window)
 	{

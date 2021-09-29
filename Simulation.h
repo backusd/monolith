@@ -53,6 +53,7 @@ public:
 
 	// GET
 	std::vector<std::shared_ptr<Atom>> Atoms() { return m_atoms; }
+	unsigned int AtomCount() { return static_cast<unsigned int>(m_atoms.size()); }
 
 	DirectX::XMFLOAT3	BoxDimensions() { return m_boxDimensions; }
 
