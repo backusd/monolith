@@ -105,12 +105,7 @@ namespace LayoutConfiguration
 				// if they would like to save the simulation before continuing
 				if (SimulationManager::AtomCount() > 0)
 				{
-
-
-
-
-
-
+					CreateSaveSimulationPromptControls(layout);
 				}
 				else
 				{
@@ -913,9 +908,111 @@ namespace LayoutConfiguration
 		);
 	}
 
-	void CreatePromptSaveSimulationControls(const std::shared_ptr<Layout> layout)
+	void CreateSaveSimulationPromptControls(const std::shared_ptr<Layout> layout)
 	{
+		// Create three columns that evenly divide the layout (one for each button)
+		RowColDefinitions columnDefs;
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Left Column
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Middle Column
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Right Column
+		layout->SetColumnDefinitions(columnDefs);
 
+		RowColDefinitions rowDefs;
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Row for Prompt Text
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Row for Buttons
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Space filling row
+		layout->SetRowDefinitions(rowDefs);
+
+		// Text Prompt
+		std::shared_ptr<Text> promptText = layout->CreateControl<Text>(0, 0, 1, 3);
+		promptText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_PROMPT_TEXT);
+		promptText->SetText(L"Would you like to save the current simulation?");
+
+		// Save Simulation Button
+		std::shared_ptr<Button> saveButton = layout->CreateControl<Button>(1, 0);
+		saveButton->SetColorTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_COLOR);
+		saveButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
+		saveButton->Margin(15.0f, 5.0f, 5.0f, 0.0f);
+		saveButton->Click(
+			[weakLayout = std::weak_ptr<Layout>(layout)]()
+		{
+			auto layout = weakLayout.lock();
+
+			// SAVE THE SIMULATION... (Assuming there are changes that need saving)
+			// ???
+			// ???
+
+			// Update the simulation to be a single hydrogen atom in the center of the simulation
+			SimulationManager::Pause();
+			SimulationManager::RemoveAllAtoms();
+			SimulationManager::BoxDimensions(2.0f);
+
+			XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
+			SimulationManager::SelectAtom(firstAtom);
+
+			// Just clear the existing layout and recreate the simulation edit controls
+			layout->Clear();
+			CreateNewSimulationControls(layout);
+		}
+		);
+
+		std::shared_ptr<Text> saveButtonText = saveButton->GetLayout()->CreateControl<Text>();
+		saveButtonText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT);
+		saveButtonText->SetText(L"Save");
+
+
+		// Discard Changes Button
+		std::shared_ptr<Button> discardButton = layout->CreateControl<Button>(1, 1);
+		discardButton->SetColorTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_COLOR);
+		discardButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
+		discardButton->Margin(5.0f, 5.0f, 5.0f, 0.0f);
+		discardButton->Click(
+			[weakLayout = std::weak_ptr<Layout>(layout)]()
+		{
+			auto layout = weakLayout.lock();
+
+			// Update the simulation to be a single hydrogen atom in the center of the simulation
+			SimulationManager::Pause();
+			SimulationManager::RemoveAllAtoms();
+			SimulationManager::BoxDimensions(2.0f);
+
+			XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
+			SimulationManager::SelectAtom(firstAtom);
+
+			// Just clear the existing layout and recreate the simulation edit controls
+			layout->Clear();
+			CreateNewSimulationControls(layout);
+		}
+		);
+
+		std::shared_ptr<Text> discardButtonText = discardButton->GetLayout()->CreateControl<Text>();
+		discardButtonText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT);
+		discardButtonText->SetText(L"Discard Changes");
+
+
+		// Cancel Simulation Button
+		std::shared_ptr<Button> cancelButton = layout->CreateControl<Button>(1, 2);
+		cancelButton->SetColorTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_COLOR);
+		cancelButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
+		cancelButton->Margin(5.0f, 5.0f, 15.0f, 0.0f);
+		cancelButton->Click(
+			[weakLayout = std::weak_ptr<Layout>(layout)]() 
+		{
+			auto layout = weakLayout.lock();
+
+			// Just clear the existing layout and recreate the simulation edit controls
+			layout->Clear();
+			CreateNewSimulationControls(layout);
+		}
+		);
+
+		std::shared_ptr<Text> cancelButtonText = cancelButton->GetLayout()->CreateControl<Text>();
+		cancelButtonText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT);
+		cancelButtonText->SetText(L"Cancel");
 	}
 
 

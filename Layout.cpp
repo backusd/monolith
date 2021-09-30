@@ -594,6 +594,9 @@ void Layout::ReleaseLayout()
 	for (auto sub : m_subLayouts)
 		sub._Myfirst._Val->ReleaseLayout();
 
+	m_mouseCapturedControl = nullptr;
+	m_mouseCapturedLayout = nullptr;
+
 	// Clear all controls
 	m_controls.clear();
 

@@ -313,6 +313,41 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	atomListViewRemoveButtonGlyph->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	atomListViewRemoveButtonGlyph->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	atomListViewRemoveButtonGlyph->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	// Save Simulation Prompt
+	std::shared_ptr<TextTheme> saveSimulationPromptText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_SAVE_SIMULATION_PROMPT_TEXT, deviceResources);
+	saveSimulationPromptText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	saveSimulationPromptText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	saveSimulationPromptText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	saveSimulationPromptText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	saveSimulationPromptText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	saveSimulationPromptText->SetFontSize(14.0f);
+	saveSimulationPromptText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	saveSimulationPromptText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_FAR);
+	saveSimulationPromptText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	saveSimulationPromptText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	std::shared_ptr<ColorTheme> saveSimulationButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_COLOR, deviceResources);
+	saveSimulationButtonColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	saveSimulationButtonColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	saveSimulationButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::shared_ptr<BorderTheme> saveSimulationButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER, deviceResources);
+	saveSimulationButtonBorder->SetStrokeWidth(1.0f);
+	saveSimulationButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	std::shared_ptr<TextTheme> saveSimulationButtonGlyph = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT, deviceResources);
+	saveSimulationButtonGlyph->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	saveSimulationButtonGlyph->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	saveSimulationButtonGlyph->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	saveSimulationButtonGlyph->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	saveSimulationButtonGlyph->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	saveSimulationButtonGlyph->SetFontSize(12.0f);
+	saveSimulationButtonGlyph->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	saveSimulationButtonGlyph->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	saveSimulationButtonGlyph->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	saveSimulationButtonGlyph->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
 }
 
 std::shared_ptr<Theme> ThemeManager::GetTheme(std::string name)

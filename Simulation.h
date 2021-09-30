@@ -23,6 +23,7 @@ public:
 	void ChangeSelectedAtomType();
 
 	void RemoveAtom(std::shared_ptr<Atom> atom);
+	void RemoveAllAtoms();
 
 	void PlaySimulation() { m_paused = false; }
 	void PauseSimulation() { m_paused = true; m_elapsedTime = -1.0f; }

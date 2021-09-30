@@ -32,6 +32,7 @@ public:
 	static void ChangeSelectedAtomType();
 
 	static void RemoveAtom(std::shared_ptr<Atom> atom) { m_simulation->RemoveAtom(atom); }
+	static void RemoveAllAtoms() { m_simulation->RemoveAllAtoms(); }
 
 	static void SelectAtom(int index) { m_simulation->SelectAtom(index); }
 	static void SelectAtom(std::shared_ptr<Atom> atom) { m_simulation->SelectAtom(atom); }

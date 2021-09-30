@@ -12,55 +12,6 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	m_selectedAtomIndex(0),
 	m_deviceResources(deviceResources)
 {
-
-	// TEMPORARY SETUP ===================================
-
-	/*
-	XMFLOAT3 initPos = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT3 initVelocity = XMFLOAT3(-1.0f, 0.0f, 0.0f);
-	AddNewAtom(CreateAtom<Hydrogen>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.0f, 0.75f, 0.0f);
-	initVelocity = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	AddNewAtom(CreateAtom<Helium>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.5f, 0.0f, 0.0f);
-	initVelocity = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	AddNewAtom(CreateAtom<Hydrogen>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.5f, 0.5f, 0.0f);
-	initVelocity = XMFLOAT3(-1.0f, 1.0f, 0.0f);
-	AddNewAtom(CreateAtom<Lithium>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.5f, 0.5f, 0.5f);
-	initVelocity = XMFLOAT3(-1.0f, 1.0f, 1.0f);
-	AddNewAtom(CreateAtom<Beryllium>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.0f, 0.0f, 0.5f);
-	initVelocity = XMFLOAT3(0.0f, 1.0f, 1.0f);
-	AddNewAtom(CreateAtom<Boron>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.5f, 0.0f, 0.5f);
-	initVelocity = XMFLOAT3(1.0f, 1.0f, 0.0f);
-	AddNewAtom(CreateAtom<Carbon>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.5f, 0.5f, 0.8f);
-	initVelocity = XMFLOAT3(1.0f, 0.5f, 1.0f);
-	AddNewAtom(CreateAtom<Nitrogen>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.7f, 0.3f, 0.1f);
-	initVelocity = XMFLOAT3(0.0f, 0.5f, 1.0f);
-	AddNewAtom(CreateAtom<Oxygen>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(0.2f, 0.6f, 0.7f);
-	initVelocity = XMFLOAT3(0.0f, 0.5f, 1.0f);
-	AddNewAtom(CreateAtom<Flourine>(initPos, initVelocity));
-
-	initPos = XMFLOAT3(-0.7f, 0.2f, 0.7f);
-	initVelocity = XMFLOAT3(-1.0f, 0.5f, 1.0f);
-	AddNewAtom(CreateAtom<Neon>(initPos, initVelocity));
-	*/
-
 	m_paused = false;
 }
 
@@ -120,6 +71,11 @@ void Simulation::RemoveAtom(std::shared_ptr<Atom> atom)
 			SelectAtom(selectedAtom);
 		}
 	}
+}
+void Simulation::RemoveAllAtoms()
+{
+	m_atoms.clear();
+	m_selectedAtomIndex = -1;
 }
 
 
