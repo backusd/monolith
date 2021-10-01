@@ -33,6 +33,7 @@
 // Quick Bar
 #define THEME_QUICK_BAR_GLYPH "quick-bar-glyph"
 #define THEME_QUICK_BAR_BUTTON_COLOR "quick-bar-button-color"
+#define THEME_QUICK_BAR_TEXT "quick-bar-text"
 
 // New simulation pane themes
 #define THEME_NEW_SIMULATION_TEXT "new-simulation-text"

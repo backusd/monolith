@@ -14,7 +14,8 @@ Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_height(height),
 	m_width(width),
 	m_mouseCapturedControl(nullptr),
-	m_mouseCapturedLayout(nullptr)
+	m_mouseCapturedLayout(nullptr),
+	m_name(L"")
 {
 	// Default grid layout to one row and one column that fills the window
 	RowColDefinitions defaultDefinition;
@@ -701,6 +702,26 @@ std::shared_ptr<Control> Layout::GetChildControl(std::wstring controlName)
 		std::shared_ptr<Control> control = subLayoutTuple._Myfirst._Val->GetChildControl(controlName);
 		if (control != nullptr)
 			return control;
+	}
+
+	return nullptr;
+}
+
+std::shared_ptr<Layout> Layout::GetSubLayout(std::wstring layoutName)
+{
+	// Iterate over all sublayouts
+	std::shared_ptr<Layout> layout;
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		// If the layout name matches, just return the layout
+		layout = subLayoutTuple._Myfirst._Val;
+		if (layout->Name() == layoutName)
+			return layout;
+
+		// Layout name did not match, so pass along the call to check the sublayouts
+		layout = layout->GetSubLayout(layoutName);
+		if (layout != nullptr)
+			return layout;
 	}
 
 	return nullptr;

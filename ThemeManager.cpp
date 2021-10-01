@@ -213,6 +213,18 @@ void ThemeManager::CreateQuickBarThemes(const std::shared_ptr<DeviceResources>& 
 	quickBarButtonColorTheme->SetColorPointerOver(D2D1::ColorF(90.0f / 255.0f, 90.0f / 255.0f, 96.0f / 255.0f));
 	quickBarButtonColorTheme->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
 
+	// Text Control - Text for buttons in the quick bar that aren't glyphs
+	std::shared_ptr<TextTheme> quickBarTextTheme = ThemeManager::CreateTheme<TextTheme>(THEME_QUICK_BAR_TEXT, deviceResources);
+	quickBarTextTheme->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	quickBarTextTheme->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	quickBarTextTheme->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	quickBarTextTheme->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	quickBarTextTheme->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	quickBarTextTheme->SetFontSize(12.0f);
+	quickBarTextTheme->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	quickBarTextTheme->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	quickBarTextTheme->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	quickBarTextTheme->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 
 }
 

@@ -27,6 +27,8 @@ namespace LayoutConfiguration
 	//		Only pass the layout the controls need to be created in
 	void CreateNewSimulationControls(const std::shared_ptr<Layout> layout);
 
+	void CreateNewSimulationQuickBarControls(const std::shared_ptr<Layout> layout);
+
 	// Display prompt on right side for whether or not to save the simulation
 	void CreateSaveSimulationPromptControls(const std::shared_ptr<Layout> layout);
 

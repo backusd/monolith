@@ -89,9 +89,13 @@ public:
 	bool Render2DControls();
 	bool Render2DCapturedControl();
 
+	void Name(std::wstring name) { m_name = name; }
+	std::wstring Name() { return m_name; }
+
 	std::shared_ptr<Control> GetChildControl(unsigned int index);
 	std::shared_ptr<Control> GetChildControl(std::wstring controlName);
-
+	
+	std::shared_ptr<Layout> GetSubLayout(std::wstring layoutName);
 	std::shared_ptr<Layout> GetMouseCapturedLayout() { return m_mouseCapturedLayout; }
 
 private:
@@ -108,6 +112,9 @@ private:
 	float m_left;
 	float m_height;
 	float m_width;
+
+	// Name of the layout
+	std::wstring m_name;
 
 	// List of all controls
 	std::vector<std::shared_ptr<Control>> m_controls;

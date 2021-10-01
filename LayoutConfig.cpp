@@ -105,6 +105,12 @@ namespace LayoutConfiguration
 					playPauseButton->Click();
 				}
 
+				// Clear out the quick bar dynamic controls and add new controls
+				std::shared_ptr<Layout> dynamicQuickControlsLayout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"QuickBarDynamicControlsLayout"));
+				assert(dynamicQuickControlsLayout != nullptr);
+				CreateNewSimulationQuickBarControls(dynamicQuickControlsLayout);
+
+
 				// If there are any atoms in the existing simulation, prompt the user for
 				// if they would like to save the simulation before continuing
 				if (SimulationManager::AtomCount() > 0)
@@ -911,6 +917,31 @@ namespace LayoutConfiguration
 		);
 	}
 
+	void CreateNewSimulationQuickBarControls(const std::shared_ptr<Layout> layout)
+	{
+		RowColDefinitions columnDefs;
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Add atoms
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Add molecules
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+		layout->SetColumnDefinitions(columnDefs);
+
+		// Add Atom Button
+		std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(0, 0);
+		addAtomButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		addAtomButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		std::shared_ptr<Text> addAtomButtonText = addAtomButton->GetLayout()->CreateControl<Text>();
+		addAtomButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
+		addAtomButtonText->SetText(L"Add Atoms");
+
+		// Add Molecules Button
+		std::shared_ptr<Button> addMoleculesButton = layout->CreateControl<Button>(0, 1);
+		addMoleculesButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		addMoleculesButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		std::shared_ptr<Text> addMoleculesButtonText = addMoleculesButton->GetLayout()->CreateControl<Text>();
+		addMoleculesButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
+		addMoleculesButtonText->SetText(L"Add Molecules");
+	}
+
 	void CreateSaveSimulationPromptControls(const std::shared_ptr<Layout> layout)
 	{
 		// Create three columns that evenly divide the layout (one for each button)
@@ -1032,7 +1063,7 @@ namespace LayoutConfiguration
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 25.0f); // Open Simulation
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 25.0f); // Save Simulation
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 25.0f); // Play / Pause
-		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);   // Remainder of bar - dynamic controls will be added here
 
 		std::shared_ptr<Layout> layout = mainLayout->CreateSubLayout(1, 0);
 		layout->SetColumnDefinitions(columnDefs);
@@ -1084,6 +1115,12 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> playSimulationText = playSimulationButton->GetLayout()->CreateControl<Text>();
 		playSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
 		playSimulationText->SetText(L"\xE768");
+
+
+
+		// Create a sublayout to house additional controls that will be dynamically added/removed
+		std::shared_ptr<Layout> dynamicControlsLayout = layout->CreateSubLayout(0, 4);
+		dynamicControlsLayout->Name(L"QuickBarDynamicControlsLayout");
 	}
 
 	void CreateRightPane(const std::shared_ptr<ContentWindow>& window)
