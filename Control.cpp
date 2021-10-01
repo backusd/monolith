@@ -11,7 +11,8 @@ Control::Control(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_marginLeft(0.0f),
 	m_marginTop(0.0f),
 	m_marginRight(0.0f),
-	m_marginBottom(0.0f)
+	m_marginBottom(0.0f),
+	m_name(L"")
 {
 }
 
@@ -26,7 +27,8 @@ Control::Control(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_marginLeft(0.0f),
 	m_marginTop(0.0f),
 	m_marginRight(0.0f),
-	m_marginBottom(0.0f)
+	m_marginBottom(0.0f),
+	m_name(L"")
 {
 }
 

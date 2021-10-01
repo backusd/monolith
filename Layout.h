@@ -7,6 +7,7 @@
 #include "StepTimer.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 #include <tuple>
 
@@ -89,6 +90,7 @@ public:
 	bool Render2DCapturedControl();
 
 	std::shared_ptr<Control> GetChildControl(unsigned int index);
+	std::shared_ptr<Control> GetChildControl(std::wstring controlName);
 
 	std::shared_ptr<Layout> GetMouseCapturedLayout() { return m_mouseCapturedLayout; }
 

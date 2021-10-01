@@ -93,31 +93,34 @@ namespace LayoutConfiguration
 				auto window = weakWindow.lock();			
 
 				// Get the layout for the pane on the right
-				std::shared_ptr<Layout> layout = window->GetLayout()->GetSubLayout(2, 1);
+				std::shared_ptr<Layout> rightSideLayout = window->GetLayout()->GetSubLayout(2, 1);
+				assert(rightSideLayout != nullptr);
+				rightSideLayout->Clear();
 
-				// If the layout has not yet been created
-				if (layout == nullptr)
-					layout = window->GetLayout()->CreateSubLayout(2, 1);
-				else
-					layout->Clear();
+				// Pause the simulation by clicking the play/pause button
+				if (!SimulationManager::SimulationIsPaused())
+				{
+					std::shared_ptr<Button> playPauseButton = std::dynamic_pointer_cast<Button>(window->GetLayout()->GetChildControl(L"PlayPauseButton"));
+					assert(playPauseButton != nullptr);
+					playPauseButton->Click();
+				}
 
 				// If there are any atoms in the existing simulation, prompt the user for
 				// if they would like to save the simulation before continuing
 				if (SimulationManager::AtomCount() > 0)
 				{
-					CreateSaveSimulationPromptControls(layout);
+					CreateSaveSimulationPromptControls(rightSideLayout);
 				}
 				else
 				{
-					// Pause the simulation and add a single hydrogen atom to the simulation
-					SimulationManager::Pause();
+					// Add a single hydrogen atom to the simulation
 					XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 					XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 					std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
 					SimulationManager::SelectAtom(firstAtom);
 
 					// Create the UI controls to add/edit atoms
-					CreateNewSimulationControls(layout);
+					CreateNewSimulationControls(rightSideLayout);
 				}
 			}
 		);
@@ -1062,15 +1065,29 @@ namespace LayoutConfiguration
 		std::shared_ptr<Button> playSimulationButton = layout->CreateControl<Button>(0, 3);
 		playSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		playSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		playSimulationButton->Name(L"PlayPauseButton");
+		playSimulationButton->Click(
+			[weakButton = std::weak_ptr(playSimulationButton)]()
+		{
+			auto button = weakButton.lock();
+
+			// Switch play / pause the simualation
+			SimulationManager::SwitchPlayPause();
+
+			std::shared_ptr<Text> buttonGlyph = std::dynamic_pointer_cast<Text>(button->GetLayout()->GetChildControl(0));
+			if (SimulationManager::SimulationIsPaused())
+				buttonGlyph->SetText(L"\xE768"); // Show the play button if simulation is paused
+			else
+				buttonGlyph->SetText(L"\xE769"); // Otherwise show the pause button
+		}
+		);
 		std::shared_ptr<Text> playSimulationText = playSimulationButton->GetLayout()->CreateControl<Text>();
 		playSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
-		playSimulationText->SetText(L"\xE769");
+		playSimulationText->SetText(L"\xE768");
 	}
 
 	void CreateRightPane(const std::shared_ptr<ContentWindow>& window)
 	{
-		std::shared_ptr<Layout> mainLayout = window->GetLayout();
-
-		std::shared_ptr<Layout> rightPaneLayout = mainLayout->CreateSubLayout(2, 1);
+		std::shared_ptr<Layout> rightPaneLayout = window->GetLayout()->CreateSubLayout(2, 1);
 	}
 }

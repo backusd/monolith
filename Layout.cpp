@@ -685,3 +685,23 @@ std::shared_ptr<Control> Layout::GetChildControl(unsigned int index)
 {
 	return m_controls.size() > index ? m_controls[index] : nullptr;
 }
+
+std::shared_ptr<Control> Layout::GetChildControl(std::wstring controlName)
+{
+	// Iterate over all controls, if a name matches, return that control
+	for (std::shared_ptr<Control> control : m_controls)
+	{
+		if (control->Name() == controlName)
+			return control;
+	}
+
+	// Iterate over all sublayouts, if a sublayout returns non-nullptr, return that value
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		std::shared_ptr<Control> control = subLayoutTuple._Myfirst._Val->GetChildControl(controlName);
+		if (control != nullptr)
+			return control;
+	}
+
+	return nullptr;
+}

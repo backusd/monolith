@@ -7,6 +7,7 @@
 #include "StepTimer.h"
 
 #include <memory>
+#include <string>
 
 class Control
 {
@@ -33,6 +34,9 @@ public:
 	float MarginTop() { return m_marginTop; }
 	float MarginRight() { return m_marginRight; }
 	float MarginBottom() { return m_marginBottom; }
+
+	void Name(std::wstring name) { m_name = name; }
+	std::wstring Name() { return m_name; }
 
 	
 
@@ -73,6 +77,9 @@ protected:
 
 	// Keep pointer to the layout the control resides within
 	std::shared_ptr<Layout> m_parentLayout;
+
+	// (Unique) name for the control so it can be looked up later
+	std::wstring m_name;
 
 	int m_row;
 	int m_column;
