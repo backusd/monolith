@@ -286,7 +286,7 @@ namespace LayoutConfiguration
 
 	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window)
 	{
-		std::shared_ptr<Layout> layout = window->GetLayout()->GetSubLayout(2, 1);
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
 		// Clear the layout of any previous content
@@ -392,6 +392,8 @@ namespace LayoutConfiguration
 			}
 		);
 
+		DirectX::XMFLOAT3 selectedAtomPosition = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Position();
+
 		// Text for "Position"
 		std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(2, 0);
 		positionText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
@@ -409,6 +411,7 @@ namespace LayoutConfiguration
 		positionXSlider->SetMin(-1.0f);
 		positionXSlider->SetMax(1.0f);
 		positionXSlider->Margin(0.0f, 2.0f);
+		positionXSlider->SetValue(selectedAtomPosition.x);
 
 
 
@@ -423,6 +426,7 @@ namespace LayoutConfiguration
 		positionYSlider->SetMin(-1.0f);
 		positionYSlider->SetMax(1.0f);
 		positionYSlider->Margin(0.0f, 2.0f);
+		positionYSlider->SetValue(selectedAtomPosition.y);
 
 
 
@@ -437,6 +441,7 @@ namespace LayoutConfiguration
 		positionZSlider->SetMin(-1.0f);
 		positionZSlider->SetMax(1.0f);
 		positionZSlider->Margin(0.0f, 2.0f);
+		positionZSlider->SetValue(selectedAtomPosition.z);
 
 		// ===========================================================
 		// Now that all the position sliders have been created, we can 
@@ -464,6 +469,8 @@ namespace LayoutConfiguration
 		);
 		// ===========================================================
 
+		DirectX::XMFLOAT3 selectedAtomVelocity = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Velocity();
+
 		// Text for "Velocity"
 		std::shared_ptr<Text> velocityText = atomPositionVelocitySubLayout->CreateControl<Text>(6, 0);
 		velocityText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
@@ -481,6 +488,7 @@ namespace LayoutConfiguration
 		velocityXSlider->SetMin(-100.0f);
 		velocityXSlider->SetMax(100.0f);
 		velocityXSlider->Margin(0.0f, 2.0f);
+		velocityXSlider->SetValue(selectedAtomVelocity.x);
 
 
 		// Text for Y Velocity
@@ -494,6 +502,7 @@ namespace LayoutConfiguration
 		velocityYSlider->SetMin(-100.0f);
 		velocityYSlider->SetMax(100.0f);
 		velocityYSlider->Margin(0.0f, 2.0f);
+		velocityYSlider->SetValue(selectedAtomVelocity.y);
 
 
 		// Text for Z Velocity
@@ -507,6 +516,7 @@ namespace LayoutConfiguration
 		velocityZSlider->SetMin(-100.0f);
 		velocityZSlider->SetMax(100.0f);
 		velocityZSlider->Margin(0.0f, 2.0f);
+		velocityZSlider->SetValue(selectedAtomVelocity.z);
 
 		// ============================================================================================================
 		// ============================================================================================================
@@ -912,6 +922,58 @@ namespace LayoutConfiguration
 		}
 		);
 	}
+	void DisplayAddMoleculeControls(const std::shared_ptr<ContentWindow>& window)
+	{
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
+		assert(layout != nullptr);
+
+		// Clear the layout of any previous content
+		layout->Clear();
+
+		std::shared_ptr<Text> text = layout->CreateControl<Text>();
+		text->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		text->SetText(L"Add Molecules");
+
+
+
+
+
+	}
+	void DisplayCreateBondControls(const std::shared_ptr<ContentWindow>& window)
+	{
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
+		assert(layout != nullptr);
+
+		// Clear the layout of any previous content
+		layout->Clear();
+
+		std::shared_ptr<Text> text = layout->CreateControl<Text>();
+		text->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		text->SetText(L"Create Bonds");
+
+
+
+
+
+	}
+	void DisplayResetStateControls(const std::shared_ptr<ContentWindow>& window)
+	{
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
+		assert(layout != nullptr);
+
+		// Clear the layout of any previous content
+		layout->Clear();
+
+		std::shared_ptr<Text> text = layout->CreateControl<Text>();
+		text->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		text->SetText(L"Reset State");
+
+
+
+
+
+	}
+	
 	void DisplayNewSimulationQuickBarControls(const std::shared_ptr<ContentWindow>& window)
 	{
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"QuickBarDynamicControlsLayout"));
@@ -933,9 +995,10 @@ namespace LayoutConfiguration
 			[weakWindow = std::weak_ptr<ContentWindow>(window)]() 
 		{
 			auto window = weakWindow.lock();
+
+			// Just run the display add atoms function
+			DisplayAddAtomsControls(window);
 		});
-
-
 
 		std::shared_ptr<Text> addAtomButtonText = addAtomButton->GetLayout()->CreateControl<Text>();
 		addAtomButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
@@ -945,6 +1008,15 @@ namespace LayoutConfiguration
 		std::shared_ptr<Button> addMoleculesButton = layout->CreateControl<Button>(0, 1);
 		addMoleculesButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		addMoleculesButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		addMoleculesButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
+		{
+			auto window = weakWindow.lock();
+
+			// Just run the display add molecule function
+			DisplayAddMoleculeControls(window);
+		});
+
 		std::shared_ptr<Text> addMoleculesButtonText = addMoleculesButton->GetLayout()->CreateControl<Text>();
 		addMoleculesButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
 		addMoleculesButtonText->SetText(L"Add Molecules");
@@ -954,6 +1026,15 @@ namespace LayoutConfiguration
 		std::shared_ptr<Button> createBondButton = layout->CreateControl<Button>(0, 2);
 		createBondButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		createBondButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		createBondButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
+		{
+			auto window = weakWindow.lock();
+
+			// Just run the display add molecule function
+			DisplayCreateBondControls(window);
+		});
+
 		std::shared_ptr<Text> createBondButtonText = createBondButton->GetLayout()->CreateControl<Text>();
 		createBondButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
 		createBondButtonText->SetText(L"Create Bond");
@@ -963,13 +1044,22 @@ namespace LayoutConfiguration
 		std::shared_ptr<Button> resetStateButton = layout->CreateControl<Button>(0, 3);
 		resetStateButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		resetStateButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		resetStateButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
+		{
+			auto window = weakWindow.lock();
+
+			// Just run the display add molecule function
+			DisplayResetStateControls(window);
+		});
+
 		std::shared_ptr<Text> resetStateButtonText = resetStateButton->GetLayout()->CreateControl<Text>();
 		resetStateButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
 		resetStateButtonText->SetText(L"Reset State");
 	}
 	void DisplaySaveSimulationPromptControls(const std::shared_ptr<ContentWindow>& window)
 	{
-		std::shared_ptr<Layout> layout = window->GetLayout()->GetSubLayout(2, 1);
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
 		// Make sure the layout is cleared before creating new content
@@ -1161,6 +1251,7 @@ namespace LayoutConfiguration
 
 	void CreateRightPane(const std::shared_ptr<ContentWindow>& window)
 	{
-		std::shared_ptr<Layout> rightPaneLayout = window->GetLayout()->CreateSubLayout(2, 1);
+		std::shared_ptr<Layout> rightSideLayout = window->GetLayout()->CreateSubLayout(2, 1);
+		rightSideLayout->Name(L"RightSideLayout");
 	}
 }
