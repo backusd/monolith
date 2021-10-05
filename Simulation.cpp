@@ -12,7 +12,6 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	m_selectedAtomIndex(0),
 	m_deviceResources(deviceResources)
 {
-	m_paused = false;
 }
 
 /*

@@ -18,6 +18,10 @@ namespace LayoutConfiguration
 	// Configure the layout for the main application window
 	void ConfigureMainWindow(const std::shared_ptr<ContentWindow>& window);
 
+	// Nomenclature:
+	//		Create__  : Used to create controls/layouts that live for the life of the application
+	//		Display__ : Used tp create/display controls/layouts that are dynamically created and destroyed
+
 	void CreateMenuBar(const std::shared_ptr<ContentWindow>& window);
 	void CreateFileDropDown(const std::shared_ptr<ContentWindow>& window);
 	void CreateSimulationDropDown(const std::shared_ptr<ContentWindow>& window);
@@ -25,12 +29,12 @@ namespace LayoutConfiguration
 
 	// Display controls to create a new simulation
 	//		Only pass the layout the controls need to be created in
-	void CreateNewSimulationControls(const std::shared_ptr<Layout> layout);
+	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window);
 
-	void CreateNewSimulationQuickBarControls(const std::shared_ptr<Layout> layout);
+	void DisplayNewSimulationQuickBarControls(const std::shared_ptr<ContentWindow>& window);
 
 	// Display prompt on right side for whether or not to save the simulation
-	void CreateSaveSimulationPromptControls(const std::shared_ptr<Layout> layout);
+	void DisplaySaveSimulationPromptControls(const std::shared_ptr<ContentWindow>& window);
 
 
 

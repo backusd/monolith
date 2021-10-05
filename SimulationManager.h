@@ -3,6 +3,7 @@
 
 #include "Simulation.h"
 
+#include <functional>
 #include <memory>
 
 class SimulationManager
@@ -18,10 +19,12 @@ public:
 
 	static void Update(StepTimer const& timer) { m_simulation->Update(timer); }
 
-	static void Pause() { m_simulation->PauseSimulation(); }
+	// Pause the simulation and trigger the event - parameter = true -> simulation is playing
+	static void Pause() { m_simulation->PauseSimulation(); PlayPauseChangedEvent(false); }
 	static bool SimulationIsPaused() { return m_simulation->IsPaused(); }
 
-	static void SwitchPlayPause() { m_simulation->SwitchPlayPause(); }
+	// Switch play/pause and trigger the event - parameter = true -> simulation is playing
+	static void SwitchPlayPause() { m_simulation->SwitchPlayPause(); PlayPauseChangedEvent(!m_simulation->IsPaused()); }
 
 	static DirectX::XMFLOAT3 BoxDimensions() { return m_simulation->BoxDimensions(); }
 
@@ -47,11 +50,21 @@ public:
 
 	static void BoxDimensions(float value) { m_simulation->BoxDimensions(value); }
 
+
+	// Event setters
+	static void SetPlayPauseChangedEvent(std::function<void(bool)> function) { PlayPauseChangedEvent = function; }
+	
+
 private:
 	// Disallow creation of a SimulationManager object
 	SimulationManager() {}
 
 	static std::unique_ptr<Simulation> m_simulation;
+
+	// Events
+	// Play/Pause Simulation event - parameter = true if simulation is playing - triggered when play/pause changes
+	static std::function<void(bool)> PlayPauseChangedEvent;
+
 };
 
 template<typename T>

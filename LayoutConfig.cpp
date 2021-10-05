@@ -92,30 +92,17 @@ namespace LayoutConfiguration
 			{
 				auto window = weakWindow.lock();			
 
-				// Get the layout for the pane on the right
-				std::shared_ptr<Layout> rightSideLayout = window->GetLayout()->GetSubLayout(2, 1);
-				assert(rightSideLayout != nullptr);
-				rightSideLayout->Clear();
-
-				// Pause the simulation by clicking the play/pause button
-				if (!SimulationManager::SimulationIsPaused())
-				{
-					std::shared_ptr<Button> playPauseButton = std::dynamic_pointer_cast<Button>(window->GetLayout()->GetChildControl(L"PlayPauseButton"));
-					assert(playPauseButton != nullptr);
-					playPauseButton->Click();
-				}
+				// Pause the simulation - this will automatically update the play/pause button glyph
+				SimulationManager::Pause();
 
 				// Clear out the quick bar dynamic controls and add new controls
-				std::shared_ptr<Layout> dynamicQuickControlsLayout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"QuickBarDynamicControlsLayout"));
-				assert(dynamicQuickControlsLayout != nullptr);
-				CreateNewSimulationQuickBarControls(dynamicQuickControlsLayout);
-
+				DisplayNewSimulationQuickBarControls(window);
 
 				// If there are any atoms in the existing simulation, prompt the user for
 				// if they would like to save the simulation before continuing
 				if (SimulationManager::AtomCount() > 0)
 				{
-					CreateSaveSimulationPromptControls(rightSideLayout);
+					DisplaySaveSimulationPromptControls(window);
 				}
 				else
 				{
@@ -126,7 +113,7 @@ namespace LayoutConfiguration
 					SimulationManager::SelectAtom(firstAtom);
 
 					// Create the UI controls to add/edit atoms
-					CreateNewSimulationControls(rightSideLayout);
+					DisplayAddAtomsControls(window);
 				}
 			}
 		);
@@ -297,10 +284,17 @@ namespace LayoutConfiguration
 		atomSummaryText->SetText(L"Atom Summary");
 	}
 
-	void CreateNewSimulationControls(const std::shared_ptr<Layout> layout)
+	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		std::shared_ptr<Layout> layout = window->GetLayout()->GetSubLayout(2, 1);
+		assert(layout != nullptr);
+
+		// Clear the layout of any previous content
+		layout->Clear();
+
+
 		RowColDefinitions rowDefs;
-		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Simulation Name sublayout
+		// rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);		// Simulation Name sublayout
 		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f);		// Add Atom combo box
 		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 300.0f);	// Atom Position / Velocity
 		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);		// Add atom button
@@ -309,6 +303,7 @@ namespace LayoutConfiguration
 
 		// ============================================================================================================
 		// Sub Layout for simulation name controls
+		/*
 		std::shared_ptr<Layout> simulationNameSubLayout = layout->CreateSubLayout(0, 0);
 
 		RowColDefinitions simulationNameColumns;
@@ -325,10 +320,11 @@ namespace LayoutConfiguration
 		// Text Input for Simulation Name
 		std::shared_ptr<TextInput> simulationNameTextInput = simulationNameSubLayout->CreateControl<TextInput>(0, 1);
 		simulationNameTextInput->Margin(0.0f, 0.0f, 5.0f, 0.0f);
+		*/
 		// ============================================================================================================
 		// ============================================================================================================
 		// Sub Layout for add atom controls
-		std::shared_ptr<Layout> addAtomSubLayout = layout->CreateSubLayout(1, 0);
+		std::shared_ptr<Layout> addAtomSubLayout = layout->CreateSubLayout(0, 0);
 
 		RowColDefinitions addAtomColumns;
 		addAtomColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);
@@ -358,7 +354,7 @@ namespace LayoutConfiguration
 		// ============================================================================================================
 		// ============================================================================================================
 		// Sub Layout for editing position and velocity
-		std::shared_ptr<Layout> atomPositionVelocitySubLayout = layout->CreateSubLayout(2, 0);
+		std::shared_ptr<Layout> atomPositionVelocitySubLayout = layout->CreateSubLayout(1, 0);
 
 		RowColDefinitions positionVelocityColumns;
 		positionVelocityColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 60.0f);
@@ -515,7 +511,7 @@ namespace LayoutConfiguration
 		// ============================================================================================================
 		// ============================================================================================================
 		// Add atom button
-		std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(3, 0);
+		std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(2, 0);
 		addAtomButton->SetColorTheme(THEME_NEW_SIMULATION_ADD_BUTTON_COLOR);
 		addAtomButton->SetBorderTheme(THEME_NEW_SIMULATION_ADD_BUTTON_BORDER);
 		addAtomButton->Margin(20.0f, 5.0f);
@@ -529,7 +525,7 @@ namespace LayoutConfiguration
 		// ============================================================================================================
 		// ============================================================================================================
 		// Atom List View
-		std::shared_ptr<ListView<Atom>> atomListView = layout->CreateControl<ListView<Atom>>(4, 0);
+		std::shared_ptr<ListView<Atom>> atomListView = layout->CreateControl<ListView<Atom>>(3, 0);
 		atomListView->SetItemHeight(40.0f);
 		atomListView->SetFormatFunction(
 			[weakDeviceResources = std::weak_ptr<DeviceResources>(layout->GetDeviceResources()),
@@ -916,12 +912,16 @@ namespace LayoutConfiguration
 		}
 		);
 	}
-
-	void CreateNewSimulationQuickBarControls(const std::shared_ptr<Layout> layout)
+	void DisplayNewSimulationQuickBarControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"QuickBarDynamicControlsLayout"));
+		assert(layout != nullptr);
+
 		RowColDefinitions columnDefs;
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Add atoms
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Add molecules
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Create Bond
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Reset State
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 		layout->SetColumnDefinitions(columnDefs);
 
@@ -929,6 +929,14 @@ namespace LayoutConfiguration
 		std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(0, 0);
 		addAtomButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		addAtomButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		addAtomButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]() 
+		{
+			auto window = weakWindow.lock();
+		});
+
+
+
 		std::shared_ptr<Text> addAtomButtonText = addAtomButton->GetLayout()->CreateControl<Text>();
 		addAtomButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
 		addAtomButtonText->SetText(L"Add Atoms");
@@ -940,10 +948,33 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> addMoleculesButtonText = addMoleculesButton->GetLayout()->CreateControl<Text>();
 		addMoleculesButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
 		addMoleculesButtonText->SetText(L"Add Molecules");
-	}
 
-	void CreateSaveSimulationPromptControls(const std::shared_ptr<Layout> layout)
+
+		// Create Bond Button
+		std::shared_ptr<Button> createBondButton = layout->CreateControl<Button>(0, 2);
+		createBondButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		createBondButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		std::shared_ptr<Text> createBondButtonText = createBondButton->GetLayout()->CreateControl<Text>();
+		createBondButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
+		createBondButtonText->SetText(L"Create Bond");
+
+
+		// Reset State Button
+		std::shared_ptr<Button> resetStateButton = layout->CreateControl<Button>(0, 3);
+		resetStateButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		resetStateButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		std::shared_ptr<Text> resetStateButtonText = resetStateButton->GetLayout()->CreateControl<Text>();
+		resetStateButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
+		resetStateButtonText->SetText(L"Reset State");
+	}
+	void DisplaySaveSimulationPromptControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		std::shared_ptr<Layout> layout = window->GetLayout()->GetSubLayout(2, 1);
+		assert(layout != nullptr);
+
+		// Make sure the layout is cleared before creating new content
+		layout->Clear();
+
 		// Create three columns that evenly divide the layout (one for each button)
 		RowColDefinitions columnDefs;
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Left Column
@@ -968,9 +999,9 @@ namespace LayoutConfiguration
 		saveButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
 		saveButton->Margin(15.0f, 5.0f, 5.0f, 0.0f);
 		saveButton->Click(
-			[weakLayout = std::weak_ptr<Layout>(layout)]()
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
 		{
-			auto layout = weakLayout.lock();
+			auto window = weakWindow.lock();
 
 			// SAVE THE SIMULATION... (Assuming there are changes that need saving)
 			// ???
@@ -986,9 +1017,8 @@ namespace LayoutConfiguration
 			std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
 			SimulationManager::SelectAtom(firstAtom);
 
-			// Just clear the existing layout and recreate the simulation edit controls
-			layout->Clear();
-			CreateNewSimulationControls(layout);
+			// Display the add atoms controls
+			DisplayAddAtomsControls(window);
 		}
 		);
 
@@ -1003,9 +1033,9 @@ namespace LayoutConfiguration
 		discardButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
 		discardButton->Margin(5.0f, 5.0f, 5.0f, 0.0f);
 		discardButton->Click(
-			[weakLayout = std::weak_ptr<Layout>(layout)]()
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
 		{
-			auto layout = weakLayout.lock();
+			auto window = weakWindow.lock();
 
 			// Update the simulation to be a single hydrogen atom in the center of the simulation
 			SimulationManager::Pause();
@@ -1017,9 +1047,8 @@ namespace LayoutConfiguration
 			std::shared_ptr<Hydrogen> firstAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
 			SimulationManager::SelectAtom(firstAtom);
 
-			// Just clear the existing layout and recreate the simulation edit controls
-			layout->Clear();
-			CreateNewSimulationControls(layout);
+			// Display the add atoms controls
+			DisplayAddAtomsControls(window);
 		}
 		);
 
@@ -1034,13 +1063,12 @@ namespace LayoutConfiguration
 		cancelButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
 		cancelButton->Margin(5.0f, 5.0f, 15.0f, 0.0f);
 		cancelButton->Click(
-			[weakLayout = std::weak_ptr<Layout>(layout)]() 
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
 		{
-			auto layout = weakLayout.lock();
+			auto window = weakWindow.lock();
 
-			// Just clear the existing layout and recreate the simulation edit controls
-			layout->Clear();
-			CreateNewSimulationControls(layout);
+			// Display the add atoms controls
+			DisplayAddAtomsControls(window);
 		}
 		);
 
@@ -1097,24 +1125,32 @@ namespace LayoutConfiguration
 		playSimulationButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		playSimulationButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		playSimulationButton->Name(L"PlayPauseButton");
-		playSimulationButton->Click(
-			[weakButton = std::weak_ptr(playSimulationButton)]()
+		playSimulationButton->Click([]()
 		{
-			auto button = weakButton.lock();
-
+			// Don't capture the button here - no need to modify the glyph here because it
+			// will be modified by the SimulationManager::PlayPauseChangedEvent
+			// 
 			// Switch play / pause the simualation
 			SimulationManager::SwitchPlayPause();
-
-			std::shared_ptr<Text> buttonGlyph = std::dynamic_pointer_cast<Text>(button->GetLayout()->GetChildControl(0));
-			if (SimulationManager::SimulationIsPaused())
-				buttonGlyph->SetText(L"\xE768"); // Show the play button if simulation is paused
-			else
-				buttonGlyph->SetText(L"\xE769"); // Otherwise show the pause button
 		}
 		);
 		std::shared_ptr<Text> playSimulationText = playSimulationButton->GetLayout()->CreateControl<Text>();
 		playSimulationText->SetTextTheme(THEME_QUICK_BAR_GLYPH);
 		playSimulationText->SetText(L"\xE768");
+
+		// Update the play/pause button text in the event handler so that if the simulation is played/paused
+		// from code (as opposed to a user clicking the play/pause button) the button's text will still get updated
+		SimulationManager::SetPlayPauseChangedEvent(
+			[weakText = std::weak_ptr<Text>(playSimulationText)](bool isPlaying)
+		{
+			auto text = weakText.lock();
+
+			if (isPlaying)
+				text->SetText(L"\xE769"); // Show the pause button if the simulation is playing
+			else
+				text->SetText(L"\xE768"); // Show the play button if simulation is paused 
+		}
+		);
 
 
 
