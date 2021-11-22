@@ -290,12 +290,20 @@ void ArrowMesh::RenderCylinder(XMFLOAT3 position, XMFLOAT3 velocity, float radiu
 	XMFLOAT3 magnitude;
 	DirectX::XMStoreFloat3(&magnitude, DirectX::XMVector3Length(velocityVector));
 
+	// Compute the position on the surface of sphere
+	// This should the the center of the sphere vector plus the velocity vector scaled down to the size of the radius
+	XMVECTOR velocityVectorScaled = DirectX::XMVectorScale(DirectX::XMVector3Normalize(velocityVector), radius - 0.005f); // Take a little bit off the radius otherwise there will be a small gap
+	XMVECTOR positionVector = DirectX::XMLoadFloat3(&position);
+	XMVECTOR surfacePositionVector = DirectX::XMVectorAdd(positionVector, velocityVectorScaled);
+
+	XMFLOAT3 surfacePosition;
+	DirectX::XMStoreFloat3(&surfacePosition, surfacePositionVector);
+
 	if (magnitude.x > 0.0f)
 	{
 		m_modelMatrix = DirectX::XMMatrixScaling(m_xyScaling, m_xyScaling, magnitude.x / 100.0f) // scale down the z-stretch by 100
 			* ComputeRotationMatrix(velocity)
-			* DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-
+			* DirectX::XMMatrixTranslation(surfacePosition.x, surfacePosition.y, surfacePosition.z);
 
 		// Store model, modelviewprojection, and inversetransposemodel matrices
 		XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, m_modelMatrix);
@@ -332,6 +340,15 @@ void ArrowMesh::RenderCone(XMFLOAT3 position, XMFLOAT3 velocity, float radius, X
 	XMFLOAT3 magnitude;
 	DirectX::XMStoreFloat3(&magnitude, DirectX::XMVector3Length(velocityVector));
 
+	// Compute the position on the surface of sphere
+	// This should the the center of the sphere vector plus the velocity vector scaled down to the size of the radius
+	XMVECTOR velocityVectorScaled = DirectX::XMVectorScale(DirectX::XMVector3Normalize(velocityVector), radius - 0.005f); // Take a little bit off the radius otherwise there will be a small gap
+	XMVECTOR positionVector = DirectX::XMLoadFloat3(&position);
+	XMVECTOR surfacePositionVector = DirectX::XMVectorAdd(positionVector, velocityVectorScaled);
+
+	XMFLOAT3 surfacePosition;
+	DirectX::XMStoreFloat3(&surfacePosition, surfacePositionVector);
+
 	if (magnitude.x > 0.0f)
 	{
 		// 1. Scale the cone so it is twice as wide as the cylinder
@@ -341,7 +358,7 @@ void ArrowMesh::RenderCone(XMFLOAT3 position, XMFLOAT3 velocity, float radius, X
 		m_modelMatrix = DirectX::XMMatrixScaling(2 * m_xyScaling, 2 * m_xyScaling, 0.1f) // scale down the z-stretch by 100
 			* DirectX::XMMatrixTranslation(0.0f, 0.0f, magnitude.x / 100.0f)
 			* ComputeRotationMatrix(velocity)
-			* DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+			* DirectX::XMMatrixTranslation(surfacePosition.x, surfacePosition.y, surfacePosition.z);
 
 		// Store model, modelviewprojection, and inversetransposemodel matrices
 		XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, m_modelMatrix);
@@ -371,7 +388,7 @@ XMMATRIX ArrowMesh::ComputeRotationMatrix(XMFLOAT3 velocity)
 		if (velocity.z < 0.0f)
 			rotationMatrix = DirectX::XMMatrixRotationAxis(DirectX::XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f), DirectX::XM_PI);
 
-		// If positive z, do nothing (just use the identity matrix
+		// If positive z, do nothing (just use the identity matrix)
 	}
 	else
 	{
