@@ -360,6 +360,28 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	saveSimulationButtonGlyph->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	saveSimulationButtonGlyph->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 
+
+	// Edit Velocity Arrows Themes
+	std::shared_ptr<ColorTheme> editVelocityArrowsButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_COLOR, deviceResources);
+	editVelocityArrowsButtonColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	editVelocityArrowsButtonColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	editVelocityArrowsButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::shared_ptr<BorderTheme> editVelocityArrowsButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_BORDER, deviceResources);
+	editVelocityArrowsButtonBorder->SetStrokeWidth(1.0f);
+	editVelocityArrowsButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	std::shared_ptr<TextTheme> editVelocityArrowsButtonText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_TEXT, deviceResources);
+	editVelocityArrowsButtonText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	editVelocityArrowsButtonText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	editVelocityArrowsButtonText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	editVelocityArrowsButtonText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	editVelocityArrowsButtonText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	editVelocityArrowsButtonText->SetFontSize(14.0f);
+	editVelocityArrowsButtonText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	editVelocityArrowsButtonText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	editVelocityArrowsButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD);
+	editVelocityArrowsButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 }
 
 std::shared_ptr<Theme> ThemeManager::GetTheme(std::string name)

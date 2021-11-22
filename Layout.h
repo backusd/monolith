@@ -6,6 +6,7 @@
 #include "DeviceResources.h"
 #include "StepTimer.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -98,6 +99,9 @@ public:
 	std::shared_ptr<Layout> GetSubLayout(std::wstring layoutName);
 	std::shared_ptr<Layout> GetMouseCapturedLayout() { return m_mouseCapturedLayout; }
 
+	// Set the layout cleared event
+	void SetLayoutClearedEvent(std::function<void()> function) { LayoutClearedEvent = function; }
+
 private:
 	void UpdateLayout();
 
@@ -128,6 +132,9 @@ private:
 	// Keep a List of all sub-layouts, including the grid entry they belong to
 	std::vector<std::tuple<std::shared_ptr<Layout>, int, int>> m_subLayouts;
 
+
+	// Layout cleared event
+	std::function<void()> LayoutClearedEvent;
 };
 
 template<typename T>

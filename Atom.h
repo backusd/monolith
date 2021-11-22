@@ -40,6 +40,11 @@ public:
 	// Update
 	virtual void Update(double timeDelta, const std::vector<std::shared_ptr<Atom>>& atoms, DirectX::XMFLOAT3 boxDimensions) = 0;
 
+	// Show / hide velocity arrows
+	void ShowVelocityArrow() { m_showVelocityArrow = true; }
+	void HideVelocityArrow() { m_showVelocityArrow = false; }
+	void SwitchVelocityArrowVisibility() { m_showVelocityArrow = !m_showVelocityArrow; }
+
 	// Render
 	void Render(DirectX::XMMATRIX viewProjectionMatrix);
 	void RenderVelocityArrow(DirectX::XMMATRIX viewProjectionMatrix);
@@ -85,4 +90,6 @@ protected:
 	int				m_neutronCount;
 
 	float			m_radius;
+
+	bool			m_showVelocityArrow;
 };

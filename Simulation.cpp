@@ -9,7 +9,7 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	m_boxVisible(true),
 	m_elapsedTime(0.0f),
 	m_paused(true),
-	m_selectedAtomIndex(0),
+	// m_selectedAtomIndex(0),
 	m_deviceResources(deviceResources)
 {
 }
@@ -40,6 +40,10 @@ void Simulation::AddNewAtom(std::shared_ptr<Atom> atom)
 */
 void Simulation::RemoveAtom(std::shared_ptr<Atom> atom)
 {
+	int index = GetAtomIndex(atom);
+	if (index != -1)
+		m_atoms.erase(m_atoms.begin() + index);
+	/*
 	// Get the currently selected atom
 	std::shared_ptr<Atom> selectedAtom = m_atoms[m_selectedAtomIndex];
 
@@ -70,11 +74,12 @@ void Simulation::RemoveAtom(std::shared_ptr<Atom> atom)
 			SelectAtom(selectedAtom);
 		}
 	}
+	*/
 }
 void Simulation::RemoveAllAtoms()
 {
 	m_atoms.clear();
-	m_selectedAtomIndex = -1;
+	// m_selectedAtomIndex = -1;
 }
 
 
@@ -191,6 +196,7 @@ void Simulation::Update(StepTimer const& timer)
 	}
 }
 
+/*
 void Simulation::SelectAtom(std::shared_ptr<Atom> atom)
 {
 	m_selectedAtomIndex = -1;
@@ -203,4 +209,36 @@ void Simulation::SelectAtom(std::shared_ptr<Atom> atom)
 			break;
 		}
 	}
+}
+*/
+
+int Simulation::GetAtomIndex(std::shared_ptr<Atom> atom)
+{
+	for (size_t iii = 0; iii < m_atoms.size(); ++iii)
+	{
+		if (atom == m_atoms[iii])
+			return static_cast<int>(iii);
+	}
+
+	return -1;
+}
+
+std::shared_ptr<Atom> Simulation::GetAtomAtIndex(int index)
+{
+	if (index >= 0 && index < m_atoms.size())
+		return m_atoms[index];
+
+	return nullptr;
+}
+
+void Simulation::ShowAllVelocityArrows()
+{
+	for (std::shared_ptr<Atom> atom : m_atoms)
+		atom->ShowVelocityArrow();
+}
+
+void Simulation::HideAllVelocityArrows()
+{
+	for (std::shared_ptr<Atom> atom : m_atoms)
+		atom->HideVelocityArrow();
 }

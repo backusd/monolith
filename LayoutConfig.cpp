@@ -349,6 +349,24 @@ namespace LayoutConfiguration
 		atomComboBox->AddComboBoxItem(L"Flourine");
 		atomComboBox->AddComboBoxItem(L"Neon");
 		atomComboBox->Margin(5.0f, 10.0f);
+
+		if (SimulationManager::GetSelectedAtom() != nullptr)
+		{
+			switch (SimulationManager::GetSelectedAtom()->ElementType())
+			{
+			case Element::HYDROGEN:		atomComboBox->SelectItem(L"Hydrogen"); break;
+			case Element::HELIUM:		atomComboBox->SelectItem(L"Helium"); break;
+			case Element::LITHIUM:		atomComboBox->SelectItem(L"Lithium"); break;
+			case Element::BERYLLIUM:	atomComboBox->SelectItem(L"Beryllium"); break;
+			case Element::BORON:		atomComboBox->SelectItem(L"Boron"); break;
+			case Element::CARBON:		atomComboBox->SelectItem(L"Carbon"); break;
+			case Element::NITROGEN:		atomComboBox->SelectItem(L"Nitrogen"); break;
+			case Element::OXYGEN:		atomComboBox->SelectItem(L"Oxygen"); break;
+			case Element::FLOURINE:		atomComboBox->SelectItem(L"Flourine"); break;
+			case Element::NEON:			atomComboBox->SelectItem(L"Neon"); break;
+			}
+		}
+		
 		// atomComboBox->SelectionChanged() - defined below so it can capture the listview
 
 		// ============================================================================================================
@@ -641,47 +659,11 @@ namespace LayoutConfiguration
 					return;
 
 				// Get the index of the current atom and whether or not it was highlighted
-				int index = listView->ItemIndex(atom);
-				bool isHighlighted = listView->IsItemHighlighted(atom);
+				// int index = listView->ItemIndex(atom);
+				// bool isHighlighted = listView->IsItemHighlighted(atom);
 
 				listView->RemoveItem(atom);
 				SimulationManager::RemoveAtom(atom);
-
-				// If the atom to be deleted was the highlighted one, we must try to re-select another atom
-				if (isHighlighted)
-				{
-					// If the index is now beyond the range of the total atoms, decrement the index
-					if (index == listView->ItemCount())
-						--index;
-
-					listView->HighlightItem(index);
-					SimulationManager::SelectAtom(index);
-
-					std::shared_ptr<Atom> selectedAtom = SimulationManager::GetSelectedAtom();
-
-					// Update the position/velocity sliders						
-					pXSlider->SetValue(selectedAtom->Position().x);
-					pYSlider->SetValue(selectedAtom->Position().y);
-					pZSlider->SetValue(selectedAtom->Position().z);
-					vXSlider->SetValue(selectedAtom->Velocity().x);
-					vYSlider->SetValue(selectedAtom->Velocity().y);
-					vZSlider->SetValue(selectedAtom->Velocity().z);
-
-					// Update the atom type comboBox
-					switch (selectedAtom->ElementType())
-					{
-					case Element::HYDROGEN:		comboBox->SelectItem(L"Hydrogen"); break;
-					case Element::HELIUM:		comboBox->SelectItem(L"Helium"); break;
-					case Element::LITHIUM:		comboBox->SelectItem(L"Lithium"); break;
-					case Element::BERYLLIUM:	comboBox->SelectItem(L"Beryllium"); break;
-					case Element::BORON:		comboBox->SelectItem(L"Boron"); break;
-					case Element::CARBON:		comboBox->SelectItem(L"Carbon"); break;
-					case Element::NITROGEN:		comboBox->SelectItem(L"Nitrogen"); break;
-					case Element::OXYGEN:		comboBox->SelectItem(L"Oxygen"); break;
-					case Element::FLOURINE:		comboBox->SelectItem(L"Flourine"); break;
-					case Element::NEON:			comboBox->SelectItem(L"Neon"); break;
-					}
-				}
 			}
 			);
 
@@ -708,47 +690,10 @@ namespace LayoutConfiguration
 			}
 		);
 		atomListView->SetItemClickMethod(
-			[weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
-			weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
-			weakPZSlider = std::weak_ptr<Slider>(positionZSlider),
-			weakVXSlider = std::weak_ptr<Slider>(velocityXSlider),
-			weakVYSlider = std::weak_ptr<Slider>(velocityYSlider),
-			weakVZSlider = std::weak_ptr<Slider>(velocityZSlider),
-			weakComboBox = std::weak_ptr<ComboBox>(atomComboBox)](std::shared_ptr<Atom> atom)
-		{
-			auto pXSlider = weakPXSlider.lock();
-			auto pYSlider = weakPYSlider.lock();
-			auto pZSlider = weakPZSlider.lock();
-			auto vXSlider = weakVXSlider.lock();
-			auto vYSlider = weakVYSlider.lock();
-			auto vZSlider = weakVZSlider.lock();
-			auto comboBox = weakComboBox.lock();
-
-			SimulationManager::SelectAtom(atom);
-
-			// Update the position/velocity sliders
-			pXSlider->SetValue(atom->Position().x);
-			pYSlider->SetValue(atom->Position().y);
-			pZSlider->SetValue(atom->Position().z);
-			vXSlider->SetValue(atom->Velocity().x);
-			vYSlider->SetValue(atom->Velocity().y);
-			vZSlider->SetValue(atom->Velocity().z);
-
-			// Update the atom type comboBox
-			switch (atom->ElementType())
+			[](std::shared_ptr<Atom> atom)
 			{
-			case Element::HYDROGEN:		comboBox->SelectItem(L"Hydrogen"); break;
-			case Element::HELIUM:		comboBox->SelectItem(L"Helium"); break;
-			case Element::LITHIUM:		comboBox->SelectItem(L"Lithium"); break;
-			case Element::BERYLLIUM:	comboBox->SelectItem(L"Beryllium"); break;
-			case Element::BORON:		comboBox->SelectItem(L"Boron"); break;
-			case Element::CARBON:		comboBox->SelectItem(L"Carbon"); break;
-			case Element::NITROGEN:		comboBox->SelectItem(L"Nitrogen"); break;
-			case Element::OXYGEN:		comboBox->SelectItem(L"Oxygen"); break;
-			case Element::FLOURINE:		comboBox->SelectItem(L"Flourine"); break;
-			case Element::NEON:			comboBox->SelectItem(L"Neon"); break;
+				SimulationManager::SelectAtom(atom);
 			}
-		}
 		);
 		atomListView->SetValueChangedUpdateLayoutMethod(
 			[](std::shared_ptr<Atom> atom, std::shared_ptr<Layout> layout)
@@ -785,47 +730,21 @@ namespace LayoutConfiguration
 
 
 		addAtomButton->Click(
-			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView),
-			weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
-			weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
-			weakPZSlider = std::weak_ptr<Slider>(positionZSlider),
-			weakVXSlider = std::weak_ptr<Slider>(velocityXSlider),
-			weakVYSlider = std::weak_ptr<Slider>(velocityYSlider),
-			weakVZSlider = std::weak_ptr<Slider>(velocityZSlider),
-			weakComboBox = std::weak_ptr<ComboBox>(atomComboBox)]()
+			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)]()
 		{
 			auto listView = weakListView.lock();
-			auto pXSlider = weakPXSlider.lock();
-			auto pYSlider = weakPYSlider.lock();
-			auto pZSlider = weakPZSlider.lock();
-			auto vXSlider = weakVXSlider.lock();
-			auto vYSlider = weakVYSlider.lock();
-			auto vZSlider = weakVZSlider.lock();
-			auto comboBox = weakComboBox.lock();
 
 			// Add a new hydrogen atom to the center of the simulation and let
 			// that be the newly selected atom
 			XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 			XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-			SimulationManager::SelectAtom(SimulationManager::AddNewAtom<Hydrogen>(position, velocity));
 
-			// Update the position/velocity sliders
-			pXSlider->SetValue(0.0f);
-			pYSlider->SetValue(0.0f);
-			pZSlider->SetValue(0.0f);
-			vXSlider->SetValue(0.0f);
-			vYSlider->SetValue(0.0f);
-			vZSlider->SetValue(0.0f);
+			std::shared_ptr<Atom> newAtom = SimulationManager::AddNewAtom<Hydrogen>(position, velocity);
 
-			// Add the new atom to the list view
-			// NOTE: Must add it to the list view BEFORE updating the combobox selected item because
-			//       it will trigger an update to the listview item, which will cause an error because
-			//       it hasn't been added yet
-			listView->AddItem(SimulationManager::GetSelectedAtom());
-			listView->HighlightItem(SimulationManager::GetSelectedAtom());
+			// Add the atom to the list view BEFORE selecting it so it gets highlighted when the selection is made
+			listView->AddItem(newAtom);
 
-			// Update the Atom type combo box to display "Hydrogen"
-			comboBox->SelectItem(L"Hydrogen");
+			SimulationManager::SelectAtom(newAtom);
 		}
 		);
 
@@ -921,6 +840,101 @@ namespace LayoutConfiguration
 			listView->HighlightItem(SimulationManager::GetSelectedAtom());
 		}
 		);
+
+
+
+		// Assign the Simulation Atom click event function
+		SimulationManager::SetAtomClickedEvent(
+			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](std::shared_ptr<Atom> atom)
+		{
+			auto listView = weakListView.lock();
+
+			SimulationManager::SelectAtom(atom);
+			// listView->HighlightItem(atom);
+
+
+
+
+
+			// MUST update sliders and combobox.............
+
+		}
+		);
+
+		// Whenever the selected atom changes, update the sliders, combobox, and listview
+		SimulationManager::SetSelectedAtomChangedEvent(
+			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView),
+			weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
+			weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
+			weakPZSlider = std::weak_ptr<Slider>(positionZSlider),
+			weakVXSlider = std::weak_ptr<Slider>(velocityXSlider),
+			weakVYSlider = std::weak_ptr<Slider>(velocityYSlider),
+			weakVZSlider = std::weak_ptr<Slider>(velocityZSlider),
+			weakComboBox = std::weak_ptr<ComboBox>(atomComboBox)](std::shared_ptr<Atom> atom)
+		{
+			auto listView = weakListView.lock();
+			auto pXSlider = weakPXSlider.lock();
+			auto pYSlider = weakPYSlider.lock();
+			auto pZSlider = weakPZSlider.lock();
+			auto vXSlider = weakVXSlider.lock();
+			auto vYSlider = weakVYSlider.lock();
+			auto vZSlider = weakVZSlider.lock();
+			auto comboBox = weakComboBox.lock();
+
+			XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+			if (atom == nullptr)
+			{
+				comboBox->SelectItem(L"Hydrogen");
+			}
+			else
+			{
+				position = atom->Position();
+				velocity = atom->Velocity();
+
+				// Update the Atom type combo box to display the correct element type
+				switch (atom->ElementType())
+				{
+				case Element::HYDROGEN:		comboBox->SelectItem(L"Hydrogen"); break;
+				case Element::HELIUM:		comboBox->SelectItem(L"Helium"); break;
+				case Element::LITHIUM:		comboBox->SelectItem(L"Lithium"); break;
+				case Element::BERYLLIUM:	comboBox->SelectItem(L"Beryllium"); break;
+				case Element::BORON:		comboBox->SelectItem(L"Boron"); break;
+				case Element::CARBON:		comboBox->SelectItem(L"Carbon"); break;
+				case Element::NITROGEN:		comboBox->SelectItem(L"Nitrogen"); break;
+				case Element::OXYGEN:		comboBox->SelectItem(L"Oxygen"); break;
+				case Element::FLOURINE:		comboBox->SelectItem(L"Flourine"); break;
+				case Element::NEON:			comboBox->SelectItem(L"Neon"); break;
+				}
+			}			
+
+			// Update the position/velocity sliders
+			pXSlider->SetValue(position.x);
+			pYSlider->SetValue(position.y);
+			pZSlider->SetValue(position.z);
+			vXSlider->SetValue(velocity.x);
+			vYSlider->SetValue(velocity.y);
+			vZSlider->SetValue(velocity.z);
+
+			// Highlight the correct atom in the listview
+			listView->HighlightItem(atom);			
+		}
+		);
+
+
+
+		// Must set a layout cleared event for the right pane layout
+		// If the layout is cleared, then we must undo the SimulationManager::AtomClickEvent
+		// because the list view has been destroyed
+		layout->SetLayoutClearedEvent([]()
+			{
+				SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom) {});
+				SimulationManager::SetSelectedAtomChangedEvent([](std::shared_ptr<Atom> atom) {});
+			}
+		);
+
+
 	}
 	void DisplayAddMoleculeControls(const std::shared_ptr<ContentWindow>& window)
 	{
@@ -956,6 +970,52 @@ namespace LayoutConfiguration
 
 
 	}
+	void DisplayEditVelocityArrowsControls(const std::shared_ptr<ContentWindow>& window)
+	{
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
+		assert(layout != nullptr);
+
+		// Clear the layout of any previous content
+		layout->Clear();
+
+		RowColDefinitions rowDefs;
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);	// Show All Velocity Arrows Button
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);	// Hide All Velocity Arrows Button
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Text - "Click on atoms to show/hide velocity arrows"
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// 
+		layout->SetRowDefinitions(rowDefs);
+
+		// Show all arrows button
+		std::shared_ptr<Button> showAllArrowsButton = layout->CreateControl<Button>(0, 0);
+		showAllArrowsButton->SetColorTheme(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_COLOR);
+		showAllArrowsButton->SetBorderTheme(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_BORDER);
+		showAllArrowsButton->Margin(20.0f, 5.0f);
+		showAllArrowsButton->Click([]() {
+			SimulationManager::ShowAllVelocityArrows();
+			});
+		std::shared_ptr<Text> showAllArrowsButtonText = showAllArrowsButton->GetLayout()->CreateControl<Text>();
+		showAllArrowsButtonText->SetTextTheme(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_TEXT);
+		showAllArrowsButtonText->SetText(L"Show all velocity arrows");
+
+		// Hide all arrows button
+		std::shared_ptr<Button> hideAllArrowsButton = layout->CreateControl<Button>(1, 0);
+		hideAllArrowsButton->SetColorTheme(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_COLOR);
+		hideAllArrowsButton->SetBorderTheme(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_BORDER);
+		hideAllArrowsButton->Margin(20.0f, 5.0f);
+		hideAllArrowsButton->Click([]() {
+			SimulationManager::HideAllVelocityArrows();
+			});
+		std::shared_ptr<Text> hideAllArrowsButtonText = hideAllArrowsButton->GetLayout()->CreateControl<Text>();
+		hideAllArrowsButtonText->SetTextTheme(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_TEXT);
+		hideAllArrowsButtonText->SetText(L"Hide all velocity arrows");
+
+		// Text telling the user they can just click on atoms to show/hide arrows
+		std::shared_ptr<Text> instructionsText = layout->CreateControl<Text>(2, 0);
+		instructionsText->SetTextTheme(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_TEXT);
+		instructionsText->Margin(20, 0);
+		instructionsText->SetText(L"Click on individual atoms to show/hide velocity arrows.");
+
+	}
 	void DisplayResetStateControls(const std::shared_ptr<ContentWindow>& window)
 	{
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
@@ -973,17 +1033,31 @@ namespace LayoutConfiguration
 
 
 	}
-	
+	void DisplaySimulationPlayingControls(const std::shared_ptr<ContentWindow>& window)
+	{
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
+		assert(layout != nullptr);
+
+		// Clear the layout of any previous content
+		layout->Clear();
+
+		std::shared_ptr<Text> text = layout->CreateControl<Text>();
+		text->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		text->SetText(L"Simulation is Playing...");
+	}
+
+
 	void DisplayNewSimulationQuickBarControls(const std::shared_ptr<ContentWindow>& window)
 	{
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"QuickBarDynamicControlsLayout"));
 		assert(layout != nullptr);
 
 		RowColDefinitions columnDefs;
-		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Add atoms
-		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Add molecules
-		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Create Bond
-		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Reset State
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Add atoms
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Add molecules
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Create Bond
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Edit Velocity Arrows
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Reset State
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 		layout->SetColumnDefinitions(columnDefs);
 
@@ -995,6 +1069,9 @@ namespace LayoutConfiguration
 			[weakWindow = std::weak_ptr<ContentWindow>(window)]() 
 		{
 			auto window = weakWindow.lock();
+
+			// Pause the simulation first as it does not make sense to add an atom while the simulation is playing
+			SimulationManager::Pause();
 
 			// Just run the display add atoms function
 			DisplayAddAtomsControls(window);
@@ -1012,6 +1089,9 @@ namespace LayoutConfiguration
 			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
 		{
 			auto window = weakWindow.lock();
+
+			// Pause the simulation first as it does not make sense to add a molecule while the simulation is playing
+			SimulationManager::Pause();
 
 			// Just run the display add molecule function
 			DisplayAddMoleculeControls(window);
@@ -1031,6 +1111,9 @@ namespace LayoutConfiguration
 		{
 			auto window = weakWindow.lock();
 
+			// Pause the simulation first as it does not make sense to create a bond while the simulation is playing
+			SimulationManager::Pause();
+
 			// Just run the display add molecule function
 			DisplayCreateBondControls(window);
 		});
@@ -1040,14 +1123,43 @@ namespace LayoutConfiguration
 		createBondButtonText->SetText(L"Create Bond");
 
 
+		// Edit Velocity Arrows
+		std::shared_ptr<Button> editVelocityArrowsButton = layout->CreateControl<Button>(0, 3);
+		editVelocityArrowsButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		editVelocityArrowsButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		editVelocityArrowsButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
+		{
+			auto window = weakWindow.lock();
+
+			// Pause the simulation first as it will be generally easier to visualize which atoms get velocity arrows
+			SimulationManager::Pause();
+
+			// Just run the display add molecule function
+			DisplayEditVelocityArrowsControls(window);
+
+			// Modify the Atom Clicked event to show/hide velocity arrows
+			SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom) {
+				atom->SwitchVelocityArrowVisibility();
+				});
+		});
+
+		std::shared_ptr<Text> editVelocityArrowsButtonText = editVelocityArrowsButton->GetLayout()->CreateControl<Text>();
+		editVelocityArrowsButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
+		editVelocityArrowsButtonText->SetText(L"Edit Velocity Arrows");
+
+
 		// Reset State Button
-		std::shared_ptr<Button> resetStateButton = layout->CreateControl<Button>(0, 3);
+		std::shared_ptr<Button> resetStateButton = layout->CreateControl<Button>(0, 4);
 		resetStateButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		resetStateButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		resetStateButton->Click(
 			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
 		{
 			auto window = weakWindow.lock();
+
+			// Pause the simulation first as it does not make sense to add an atom while the simulation is playing
+			SimulationManager::Pause();
 
 			// Just run the display add molecule function
 			DisplayResetStateControls(window);
@@ -1231,14 +1343,26 @@ namespace LayoutConfiguration
 		// Update the play/pause button text in the event handler so that if the simulation is played/paused
 		// from code (as opposed to a user clicking the play/pause button) the button's text will still get updated
 		SimulationManager::SetPlayPauseChangedEvent(
-			[weakText = std::weak_ptr<Text>(playSimulationText)](bool isPlaying)
+			[weakText   = std::weak_ptr<Text>(playSimulationText),
+			 weakWindow = std::weak_ptr<ContentWindow>(window)](bool isPlaying)
 		{
 			auto text = weakText.lock();
+			auto window = weakWindow.lock();
 
 			if (isPlaying)
+			{
 				text->SetText(L"\xE769"); // Show the pause button if the simulation is playing
+
+				// if the simulation begins playing, then populate the IsPlaying menu
+				DisplaySimulationPlayingControls(window);
+			}
 			else
-				text->SetText(L"\xE768"); // Show the play button if simulation is paused 
+			{
+				text->SetText(L"\xE768"); // Show the play button if simulation is paused
+
+				// if the simulation gets paused, populate the add atoms controls
+				DisplayAddAtomsControls(window);
+			}
 		}
 		);
 

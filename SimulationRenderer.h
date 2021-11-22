@@ -67,8 +67,6 @@ private:
 	CD3D11_VIEWPORT m_viewport;
 
 	// Picking parameters
-	std::shared_ptr<Atom> m_atomHoveredOver;
-
 	DirectX::XMFLOAT4X4 m_projection;
 	DirectX::XMFLOAT4X4 m_view;
 	DirectX::XMFLOAT4X4 m_inverseView;

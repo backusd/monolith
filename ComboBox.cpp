@@ -12,7 +12,8 @@ ComboBox::ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_dropDownItemHeight(30.0f),
 	m_dropDownWidth(100.0f),
 	m_dropDownItemCount(0),
-	m_mainText(nullptr)
+	m_mainText(nullptr),
+	SelectionChangedMethod([](std::wstring) {})
 {
 	SetBackgroundTheme(THEME_DEFAULT_COMBO_BOX_BACKGROUND_COLOR);
 	SetBorderTheme(THEME_DEFAULT_COMBO_BOX_BORDER_COLOR);

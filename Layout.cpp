@@ -15,7 +15,8 @@ Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_width(width),
 	m_mouseCapturedControl(nullptr),
 	m_mouseCapturedLayout(nullptr),
-	m_name(L"")
+	m_name(L""),
+	LayoutClearedEvent([]() {})
 {
 	// Default grid layout to one row and one column that fills the window
 	RowColDefinitions defaultDefinition;
@@ -220,6 +221,9 @@ void Layout::Clear()
 
 	SetRowDefinitions(defaultDefinition);
 	SetColumnDefinitions(defaultDefinition);
+
+	// Trigger the layout cleared event
+	LayoutClearedEvent();
 }
 
 /*

@@ -20,7 +20,6 @@ SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& d
 SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& deviceResources,
 									   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
-	m_atomHoveredOver(nullptr),
 	m_velocityArrowMaterial(nullptr)
 {
 	// Create resources that will not change on window resizing and not device dependent
@@ -506,10 +505,12 @@ bool SimulationRenderer::Render3D()
 	MaterialProperties* hoverAtomMaterialPropertiesOLD;
 	MaterialProperties* hoverAtomMaterialPropertiesNEW;
 
+	std::shared_ptr<Atom> atomHoveredOver = SimulationManager::AtomHoveredOver();
+
 	for (std::shared_ptr<Atom> atom : atoms)
 	{
 		// If the atom is the atom that is hovered over, then we need to adjust its color directly
-		if (atom == m_atomHoveredOver)
+		if (atom == atomHoveredOver)
 		{
 			hoverAtomMaterialPropertiesOLD = m_materialProperties[atom->ElementType()];
 
@@ -593,6 +594,9 @@ OnMessageResult SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mo
 
 	m_moveLookController->OnLButtonDown(_x, _y);
 
+	// Inform the simulation manager in case we are clicking on an atom
+	SimulationManager::SimulationClickDown();
+
 	// There are no subcontrols or layouts, so we can just create the result directly
 	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
 }
@@ -603,6 +607,9 @@ OnMessageResult SimulationRenderer::OnLButtonUp(std::shared_ptr<MouseState> mous
 	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
 
 	m_moveLookController->OnLButtonUp(_x, _y);
+
+	// Inform the simulation manager in case we are clicking on an atom
+	SimulationManager::SimulationClickUp();
 
 	// There are no subcontrols or layouts, so we can just create the result directly
 	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
@@ -628,8 +635,8 @@ OnMessageResult SimulationRenderer::OnMouseMove(std::shared_ptr<MouseState> mous
 
 	m_moveLookController->OnMouseMove(_x, _y);
 
-	// if the LButton is not down and the simulation is paused -> perform picking
-	if (!m_moveLookController->LButtonIsDown() && SimulationManager::SimulationIsPaused())
+	// if the simulation is paused -> perform picking
+	if (SimulationManager::SimulationIsPaused())
 		PerformPicking(_x, _y);
 
 	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
@@ -709,7 +716,8 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 
 	float shortestDistance = FLT_MAX; // Set initial to the maximum possible float value
 	float distance = FLT_MAX;
-	m_atomHoveredOver = nullptr;
+	
+	std::shared_ptr<Atom> atomHoveredOver = nullptr;
 
 	for (std::shared_ptr<Atom> atom : atoms)
 	{
@@ -744,11 +752,20 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 		{
 			if (distance < shortestDistance)
 			{
-				m_atomHoveredOver = atom;
+				//m_atomHoveredOver = atom;
+				atomHoveredOver = atom;
 				shortestDistance = distance;
 			}
 		}
 	}
+
+	// Perform cylinder/bond checking 
+	//
+	// ...
+	// ... (set atomHoveredOver = nullptr if found a better cylinder)
+
+	// Inform the SimulationManager - CAN be nullptr
+	SimulationManager::AtomHoveredOver(atomHoveredOver);
 }
 
 bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance)
@@ -792,5 +809,4 @@ bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDire
 
 	return true;
 }
-
 

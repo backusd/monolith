@@ -11,7 +11,8 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 	m_neutronCount(element),
 	m_radius(Constants::AtomicRadii[element]),
 	m_sphereMesh(nullptr),
-	m_arrowMesh(nullptr)
+	m_arrowMesh(nullptr),
+	m_showVelocityArrow(false)
 {
 	// Populate the electrons
 	for (int iii = 0; iii < element; ++iii)
@@ -25,7 +26,8 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 	m_neutronCount(neutronCount),
 	m_radius(Constants::AtomicRadii[element]),
 	m_sphereMesh(nullptr),
-	m_arrowMesh(nullptr)
+	m_arrowMesh(nullptr),
+	m_showVelocityArrow(false)
 {
 	// Populate the electrons
 	for (int iii = 0; iii < electronCount; ++iii)
@@ -39,7 +41,8 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 	m_neutronCount(neutronCount),
 	m_radius(radius),
 	m_sphereMesh(nullptr),
-	m_arrowMesh(nullptr)
+	m_arrowMesh(nullptr),
+	m_showVelocityArrow(false)
 {
 	// Populate the electrons
 	for (int iii = 0; iii < electronCount; ++iii)
@@ -54,7 +57,8 @@ void Atom::Render(XMMATRIX viewProjectionMatrix)
 
 void Atom::RenderVelocityArrow(XMMATRIX viewProjectionMatrix)
 {
-	m_arrowMesh->Render(m_position, m_velocity, m_radius, viewProjectionMatrix);
+	if (m_showVelocityArrow)
+		m_arrowMesh->Render(m_position, m_velocity, m_radius, viewProjectionMatrix);
 }
 
 std::wstring Atom::Name()

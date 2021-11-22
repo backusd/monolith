@@ -31,8 +31,10 @@ namespace LayoutConfiguration
 	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window);
 	void DisplayAddMoleculeControls(const std::shared_ptr<ContentWindow>& window);
 	void DisplayCreateBondControls(const std::shared_ptr<ContentWindow>& window);
+	void DisplayEditVelocityArrowsControls(const std::shared_ptr<ContentWindow>& window);
 	void DisplayResetStateControls(const std::shared_ptr<ContentWindow>& window);
 	void DisplayNewSimulationQuickBarControls(const std::shared_ptr<ContentWindow>& window);
+	void DisplaySimulationPlayingControls(const std::shared_ptr<ContentWindow>& window);
 
 	// Display prompt on right side for whether or not to save the simulation
 	void DisplaySaveSimulationPromptControls(const std::shared_ptr<ContentWindow>& window);
