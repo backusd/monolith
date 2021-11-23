@@ -591,8 +591,10 @@ OnMessageResult SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mo
 {
 	float _x = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->X()));
 	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
-
-	m_moveLookController->OnLButtonDown(_x, _y);
+	
+	// Make sure the move look controller is only updated when the user state allows it
+	if (SimulationManager::GetUserState() != UserState::EDIT_BONDS)
+		m_moveLookController->OnLButtonDown(_x, _y);
 
 	// Inform the simulation manager in case we are clicking on an atom
 	SimulationManager::SimulationClickDown();
@@ -752,7 +754,6 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 		{
 			if (distance < shortestDistance)
 			{
-				//m_atomHoveredOver = atom;
 				atomHoveredOver = atom;
 				shortestDistance = distance;
 			}

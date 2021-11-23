@@ -286,6 +286,10 @@ namespace LayoutConfiguration
 
 	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		// Make sure the simulation is just in VIEW mode
+		SimulationManager::SetUserState(UserState::VIEW);
+
+
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
@@ -938,6 +942,10 @@ namespace LayoutConfiguration
 	}
 	void DisplayAddMoleculeControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		// Make sure the simulation is just in VIEW mode
+		SimulationManager::SetUserState(UserState::VIEW);
+
+
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
@@ -955,15 +963,23 @@ namespace LayoutConfiguration
 	}
 	void DisplayCreateBondControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		// Make sure the simulation is just in EDIT_BONDS mode
+		SimulationManager::SetUserState(UserState::EDIT_BONDS);
+
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
 		// Clear the layout of any previous content
 		layout->Clear();
 
-		std::shared_ptr<Text> text = layout->CreateControl<Text>();
-		text->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		text->SetText(L"Create Bonds");
+		RowColDefinitions rowDefs;
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 70.0f);	// Instructions text
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// 
+		layout->SetRowDefinitions(rowDefs);
+
+		std::shared_ptr<Text> instructions = layout->CreateControl<Text>(0, 0);
+		instructions->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_INSTRUCTIONS_TEXT);
+		instructions->SetText(L"To create a bond, click on an atom and drag to another atom. To edit, click on a bond.");
 
 
 
@@ -972,6 +988,10 @@ namespace LayoutConfiguration
 	}
 	void DisplayEditVelocityArrowsControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		// Make sure the simulation is just in VIEW mode
+		SimulationManager::SetUserState(UserState::VIEW);
+
+
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
@@ -1018,6 +1038,10 @@ namespace LayoutConfiguration
 	}
 	void DisplayResetStateControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		// Make sure the simulation is just in VIEW mode
+		SimulationManager::SetUserState(UserState::VIEW);
+
+
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
@@ -1035,6 +1059,10 @@ namespace LayoutConfiguration
 	}
 	void DisplaySimulationPlayingControls(const std::shared_ptr<ContentWindow>& window)
 	{
+		// Make sure the simulation is just in VIEW mode
+		SimulationManager::SetUserState(UserState::VIEW);
+
+
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 

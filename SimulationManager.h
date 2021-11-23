@@ -6,6 +6,16 @@
 #include <functional>
 #include <memory>
 
+
+// Enumeration to track what state the user is in
+enum class UserState
+{
+	VIEW,		// User is just viewing the simulation (mouse is used for dragging/spinning the simulation)
+	EDIT_BONDS	// User is creating new bonds (mouse is used to drag a new bond between two atoms)
+};
+
+
+
 class SimulationManager
 {
 public:
@@ -59,6 +69,8 @@ public:
 	static void ShowAllVelocityArrows() { m_simulation->ShowAllVelocityArrows(); }
 	static void HideAllVelocityArrows() { m_simulation->HideAllVelocityArrows(); }
 
+	static void SetUserState(UserState state) { m_userState = state; }
+	static UserState GetUserState() { return m_userState; }
 
 	// Event setters
 	static void SetPlayPauseChangedEvent(std::function<void(bool)> function) { PlayPauseChangedEvent = function; }
@@ -67,10 +79,11 @@ public:
 	static void SetSelectedAtomChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { SelectedAtomChangedEvent = function; }
 
 
-
 private:
 	// Disallow creation of a SimulationManager object
 	SimulationManager() {}
+
+	static UserState m_userState;
 
 	static std::unique_ptr<Simulation> m_simulation;
 
@@ -81,6 +94,10 @@ private:
 	static std::shared_ptr<Atom> m_atomHoveredOver;
 	static std::shared_ptr<Atom> m_atomBeingClicked;
 
+	// Additional data to track which atoms the user is creating bonds for
+	static std::shared_ptr<Atom> m_bondAtom1;
+	static std::shared_ptr<Atom> m_bondAtom2;
+	static std::shared_ptr<Bond> m_newBond;
 
 
 

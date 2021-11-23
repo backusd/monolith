@@ -1,10 +1,15 @@
 #include "SimulationManager.h"
 
+UserState SimulationManager::m_userState = UserState::VIEW;
+
 std::unique_ptr<Simulation> SimulationManager::m_simulation = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_selectedAtom = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomHoveredOver = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomBeingClicked = nullptr;
 
+std::shared_ptr<Atom> SimulationManager::m_bondAtom1 = nullptr;
+std::shared_ptr<Atom> SimulationManager::m_bondAtom2 = nullptr;
+std::shared_ptr<Bond> SimulationManager::m_newBond = nullptr;
 
 std::function<void(bool)> SimulationManager::PlayPauseChangedEvent = [](bool value) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomHoveredOverChangedEvent = [](std::shared_ptr<Atom> atom) {};
@@ -26,11 +31,23 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 
 void SimulationManager::SimulationClickDown()
 {
-	// On the down click, we simply want to keep track of what atom is being clicked
-	// If the user is just grabbing the simulation to rotate it, the mouse will likely
-	// be moved off the atom and therefore will not actually click the atom when the mouse
-	// is released
-	m_atomBeingClicked = m_atomHoveredOver;
+	switch (m_userState)
+	{
+	case UserState::VIEW:
+		// On the down click, we simply want to keep track of what atom is being clicked
+		// If the user is just grabbing the simulation to rotate it, the mouse will likely
+		// be moved off the atom and therefore will not actually click the atom when the mouse
+		// is released
+		m_atomBeingClicked = m_atomHoveredOver;
+		break;
+
+	case UserState::EDIT_BONDS:
+		// If the user state is EDIT_BONDS, then the down click needs to signal a new bond is being made
+		m_bondAtom1 = m_atomHoveredOver;
+		m_bondAtom2 = nullptr;
+		m_newBond = nullptr;
+		break;
+	}
 }
 void SimulationManager::SimulationClickUp()
 {
@@ -83,4 +100,17 @@ void SimulationManager::RemoveAtom(std::shared_ptr<Atom> atom)
 	}
 
 	m_simulation->RemoveAtom(atom); 
+}
+
+void SimulationManager::SetUserState(UserState state) 
+{ 
+	m_userState = state; 
+
+	// whenever there is a state change, make sure we null each atom pointer
+	m_selectedAtom = nullptr;
+	m_atomHoveredOver = nullptr;
+	m_atomBeingClicked = nullptr;
+	m_bondAtom1 = nullptr;
+	m_bondAtom2 = nullptr;
+	m_newBond = nullptr;
 }
