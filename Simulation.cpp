@@ -90,6 +90,30 @@ std::shared_ptr<Bond> Simulation::CreateBond(const std::shared_ptr<Atom>& atom1,
 	return bond;
 }
 
+void Simulation::DeleteBond(const std::shared_ptr<Bond>& bond)
+{
+	// Remove the bond pointers from the atoms
+	bond->Atom1()->RemoveBond(bond);
+	bond->Atom2()->RemoveBond(bond);
+
+	// Remove the atom pointers from the bond
+	bond->DeleteBonds();
+
+	// Erase the bond from the list of bonds
+	int bondIndex = -1;
+	for (unsigned int iii = 0; iii < m_bonds.size(); ++iii)
+	{
+		if (m_bonds[iii] == bond)
+		{
+			bondIndex = iii;
+			break;
+		}
+	}
+
+	if (bondIndex != -1)
+		m_bonds.erase(m_bonds.begin() + bondIndex);
+}
+
 
 
 void Simulation::StartRecording()

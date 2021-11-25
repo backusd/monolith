@@ -8,8 +8,8 @@ std::shared_ptr<Atom> SimulationManager::m_atomHoveredOver = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomBeingClicked = nullptr;
 
 std::shared_ptr<Atom> SimulationManager::m_bondAtom1 = nullptr;
-// std::shared_ptr<Atom> SimulationManager::m_bondAtom2 = nullptr;
 std::shared_ptr<Bond> SimulationManager::m_newBond = nullptr;
+bool SimulationManager::m_bondAlreadyExisted = false;
 
 std::function<void(bool)> SimulationManager::PlayPauseChangedEvent = [](bool value) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomHoveredOverChangedEvent = [](std::shared_ptr<Atom> atom) {};
@@ -45,26 +45,18 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 		if (m_bondAtom1 != nullptr)
 		{
 			// m_atomHoveredOver is nullptr then we are not hovering over an atom
-			if (m_atomHoveredOver == nullptr)
+			// AND check if we are hovering over the original atom 
+			if (m_atomHoveredOver == nullptr || m_atomHoveredOver == m_bondAtom1)
 			{
-				// if the bond is not nullptr, then it needs to be deleted
+				// if the bond is not nullptr, then we must update m_newBond
 				if (m_newBond != nullptr)
 				{
-					int iii = 0;
+					// if the bond did not previously exist, delete it
+					if (!m_bondAlreadyExisted)
+						SimulationManager::DeleteBond(m_newBond);
 
-
-
-				}
-			} // check if we are hovering over the original atom 
-			else if (m_atomHoveredOver == m_bondAtom1)
-			{
-				// if the bond is not nullptr, then it needs to be deleted
-				if (m_newBond != nullptr)
-				{
-					int iii = 0;
-
-
-
+					// Stop tracking the bond being created
+					m_newBond = nullptr;
 				}
 			} // we are hovering over a different atom
 			else
@@ -75,30 +67,45 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 					// if a bond already exists between m_bondAtom1 and m_atomHoveredOver, just load that bond info
 					if (m_bondAtom1->HasBondWithAtom(m_atomHoveredOver))
 					{
-						int i = 1;
+						m_newBond = m_bondAtom1->GetBondWithAtom(m_atomHoveredOver);
+						m_bondAlreadyExisted = true;
 					}
 					else
 					{
 						// Create a new bond 
 						m_newBond = SimulationManager::CreateBond(m_bondAtom1, m_atomHoveredOver);
+						m_bondAlreadyExisted = false;
 					}
 				}
 				else
 				{
-					// check to make sure m_newBond is between m_bondAtom1 and m_atomHoveredOver
+					// if the bond does not include the atom being hovered over, then we need to update the bond
+					if (!m_newBond->IncludesAtom(m_atomHoveredOver))
+					{
+						// if the bond did not previously exist, delete it
+						if (!m_bondAlreadyExisted)
+							SimulationManager::DeleteBond(m_newBond);
 
-					int iii = 0;
+						// Clear the current bond
+						m_newBond = nullptr;
 
-
-
-
-
+						// check if there is already a bond between m_bondAtom1 and m_atomHoveredOver
+						if (m_bondAtom1->HasBondWithAtom(m_atomHoveredOver))
+						{
+							m_newBond = m_bondAtom1->GetBondWithAtom(m_atomHoveredOver);
+							m_bondAlreadyExisted = true;
+						}
+						else
+						{
+							// Create a new bond 
+							m_newBond = SimulationManager::CreateBond(m_bondAtom1, m_atomHoveredOver);
+							m_bondAlreadyExisted = false;
+						}
+					}
 				}
 			}
 		}
 
-		// Reset the atom variables
-		// m_bondAtom1 = m_atomHoveredOver;
 		break;
 	}
 }
@@ -118,6 +125,7 @@ void SimulationManager::SimulationClickDown()
 	case UserState::EDIT_BONDS:
 		// If the user state is EDIT_BONDS, then the down click needs to signal a new bond is being made
 		m_bondAtom1 = m_atomHoveredOver;
+		m_bondAlreadyExisted = false;
 		m_newBond = nullptr;
 		break;
 	}
@@ -127,11 +135,10 @@ void SimulationManager::SimulationClickUp()
 	switch (m_userState)
 	{
 	case UserState::EDIT_BONDS:		
-		// Reset m_bondAtom1 to be the atom that is currently hovered over
-		m_bondAtom1 = m_atomHoveredOver;
-
-		// Reset m_newBond to be nullptr - don't need to it to be populated
+		// Reset variables
+		m_bondAtom1 = nullptr;
 		m_newBond = nullptr;
+		m_bondAlreadyExisted = false;
 
 		break;
 

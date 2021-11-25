@@ -44,7 +44,7 @@ public:
 	static DirectX::XMFLOAT3 BoxDimensions() { return m_simulation->BoxDimensions(); }
 
 	static std::shared_ptr<Bond> CreateBond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2) { return m_simulation->CreateBond(atom1, atom2); }
-
+	static void DeleteBond(const std::shared_ptr<Bond>& bond) { m_simulation->DeleteBond(bond); }
 
 	template<typename T>
 	static std::shared_ptr<T> AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
@@ -105,6 +105,7 @@ private:
 	// Additional data to track which atoms the user is creating bonds for
 	static std::shared_ptr<Atom> m_bondAtom1;
 	static std::shared_ptr<Bond> m_newBond;
+	static bool m_bondAlreadyExisted;
 
 
 

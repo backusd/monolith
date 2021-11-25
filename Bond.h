@@ -24,6 +24,9 @@ public:
 
 	void SwitchAtom(const std::shared_ptr<Atom>& oldAtom, const std::shared_ptr<Atom>& newAtom);
 
+	std::shared_ptr<Atom> Atom1() { return m_atom1; }
+	std::shared_ptr<Atom> Atom2() { return m_atom2; }
+
 private:
 	std::shared_ptr<Atom> m_atom1;
 	std::shared_ptr<Atom> m_atom2;

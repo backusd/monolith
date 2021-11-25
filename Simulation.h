@@ -36,6 +36,7 @@ public:
 	void RemoveAllAtoms();
 
 	std::shared_ptr<Bond> CreateBond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2);
+	void DeleteBond(const std::shared_ptr<Bond>& bond);
 
 	void PlaySimulation() { m_paused = false; }
 	void PauseSimulation() { m_paused = true; m_elapsedTime = -1.0f; }

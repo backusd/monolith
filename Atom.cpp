@@ -86,6 +86,17 @@ bool Atom::HasBondWithAtom(const std::shared_ptr<Atom>& atom)
 	return false;
 }
 
+std::shared_ptr<Bond> Atom::GetBondWithAtom(const std::shared_ptr<Atom>& atom)
+{
+	for (std::shared_ptr<Bond> bond : m_bonds)
+	{
+		if (bond->IncludesAtom(atom))
+			return bond;
+	}
+
+	return  nullptr;
+}
+
 /*
 void Atom::AddBond(std::vector<std::shared_ptr<Bond>> bonds)
 {
@@ -93,3 +104,19 @@ void Atom::AddBond(std::vector<std::shared_ptr<Bond>> bonds)
 		m_bonds.push_back(bond);
 }
 */
+
+void Atom::RemoveBond(const std::shared_ptr<Bond>& bond)
+{
+	int bondIndex = -1;
+	for (unsigned int iii = 0; iii < m_bonds.size(); ++iii)
+	{
+		if (m_bonds[iii] == bond)
+		{
+			bondIndex = iii;
+			break;
+		}
+	}
+
+	if (bondIndex != -1)
+		m_bonds.erase(m_bonds.begin() + bondIndex);
+}

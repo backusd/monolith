@@ -68,6 +68,7 @@ public:
 	std::vector<std::shared_ptr<Bond>> Bonds() { return m_bonds; }
 
 	bool HasBondWithAtom(const std::shared_ptr<Atom>& atom);
+	std::shared_ptr<Bond> GetBondWithAtom(const std::shared_ptr<Atom>& atom);
 
 	// Set
 	void Velocity(DirectX::XMFLOAT3 velocity) { m_velocity = velocity; }
@@ -83,6 +84,8 @@ public:
 
 	//void AddBond(std::vector<std::shared_ptr<Bond>> bonds);
 	void AddBond(const std::shared_ptr<Bond>& bond) { m_bonds.push_back(bond); }
+	void RemoveBond(const std::shared_ptr<Bond>& bond);
+
 
 protected:
 
