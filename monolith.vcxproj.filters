@@ -79,6 +79,12 @@
     <Filter Include="Source Files\Simulation\Atoms">
       <UniqueIdentifier>{98e49151-f390-48bd-ba94-dc67e041537d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Simulation\Bonds">
+      <UniqueIdentifier>{ba9de108-a8fe-464b-91a1-c5d73e83f694}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulation\Bonds">
+      <UniqueIdentifier>{31cd1d48-e539-4db8-8078-a631ecafbe8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -227,6 +233,12 @@
     </ClCompile>
     <ClCompile Include="ListView.cpp">
       <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="Bond.cpp">
+      <Filter>Source Files\Simulation\Bonds</Filter>
+    </ClCompile>
+    <ClCompile Include="CylinderMesh.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -406,6 +418,12 @@
     </ClInclude>
     <ClInclude Include="ListView.h">
       <Filter>Header Files\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Bond.h">
+      <Filter>Header Files\Simulation\Bonds</Filter>
+    </ClInclude>
+    <ClInclude Include="CylinderMesh.h">
+      <Filter>Header Files\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

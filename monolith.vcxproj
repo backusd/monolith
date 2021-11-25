@@ -169,6 +169,7 @@
     <ClCompile Include="ArrowMesh.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="Beryllium.cpp" />
+    <ClCompile Include="Bond.cpp" />
     <ClCompile Include="BorderTheme.cpp" />
     <ClCompile Include="Boron.cpp" />
     <ClCompile Include="Button.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="ColorTheme.cpp" />
     <ClCompile Include="ComboBox.cpp" />
     <ClCompile Include="Control.cpp" />
+    <ClCompile Include="CylinderMesh.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
     <ClCompile Include="ContentWindow.cpp" />
     <ClCompile Include="DropDown.cpp" />
@@ -220,6 +222,7 @@
     <ClInclude Include="ArrowMesh.h" />
     <ClInclude Include="Atom.h" />
     <ClInclude Include="Beryllium.h" />
+    <ClInclude Include="Bond.h" />
     <ClInclude Include="BorderTheme.h" />
     <ClInclude Include="Boron.h" />
     <ClInclude Include="Button.h" />
@@ -228,6 +231,7 @@
     <ClInclude Include="ComboBox.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Control.h" />
+    <ClInclude Include="CylinderMesh.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="DirectXHelper.h" />
     <ClInclude Include="ContentWindow.h" />

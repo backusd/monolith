@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 
+#include "Bond.h"
 #include "Constants.h"
 #include "DeviceResources.h"
 #include "Electron.h"
@@ -64,6 +65,10 @@ public:
 
 	std::wstring Name();
 
+	std::vector<std::shared_ptr<Bond>> Bonds() { return m_bonds; }
+
+	bool HasBondWithAtom(const std::shared_ptr<Atom>& atom);
+
 	// Set
 	void Velocity(DirectX::XMFLOAT3 velocity) { m_velocity = velocity; }
 	void SetSphereMesh(const std::shared_ptr<SphereMesh>& mesh) { m_sphereMesh = mesh; }
@@ -76,6 +81,9 @@ public:
 	void SetVelocityY(float velocityY) { m_velocity.y = velocityY; }
 	void SetVelocityZ(float velocityZ) { m_velocity.z = velocityZ; }
 
+	//void AddBond(std::vector<std::shared_ptr<Bond>> bonds);
+	void AddBond(const std::shared_ptr<Bond>& bond) { m_bonds.push_back(bond); }
+
 protected:
 
 	std::shared_ptr<SphereMesh> m_sphereMesh;
@@ -86,6 +94,8 @@ protected:
 
 	Element								   m_element;
 	std::vector<std::shared_ptr<Electron>> m_electrons;
+
+	std::vector<std::shared_ptr<Bond>>	m_bonds;
 
 	int				m_neutronCount;
 

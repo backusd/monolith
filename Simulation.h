@@ -2,6 +2,7 @@
 #include "pch.h"
 
 #include "Atom.h"
+#include "Bond.h"
 #include "Elements.h"
 #include "MeshManager.h"
 #include "StepTimer.h"
@@ -16,6 +17,15 @@ class Simulation
 public:
 	Simulation(const std::shared_ptr<DeviceResources>& deviceResources);
 
+	void DestroyBonds()
+	{
+		for (std::shared_ptr<Bond> bond : m_bonds)
+			bond->DeleteBonds();
+
+		while (m_bonds.size() > 0)
+			m_bonds.erase(m_bonds.begin());
+	}
+
 	template<typename T>
 	std::shared_ptr<T> AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
 
@@ -24,6 +34,8 @@ public:
 
 	void RemoveAtom(std::shared_ptr<Atom> atom);
 	void RemoveAllAtoms();
+
+	std::shared_ptr<Bond> CreateBond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2);
 
 	void PlaySimulation() { m_paused = false; }
 	void PauseSimulation() { m_paused = true; m_elapsedTime = -1.0f; }
@@ -61,6 +73,8 @@ public:
 	std::vector<std::shared_ptr<Atom>> Atoms() { return m_atoms; }
 	unsigned int AtomCount() { return static_cast<unsigned int>(m_atoms.size()); }
 
+	std::vector<std::shared_ptr<Bond>> Bonds() { return m_bonds; }
+
 	DirectX::XMFLOAT3	BoxDimensions() { return m_boxDimensions; }
 
 	bool		BoxVisible() { return m_boxVisible; }
@@ -75,6 +89,8 @@ public:
 
 	void ElapsedTime(float time) { m_elapsedTime = time; }
 
+
+
 private:
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
@@ -88,7 +104,10 @@ private:
 
 	// Atoms
 	std::vector<std::shared_ptr<Atom>> m_atoms;			// List of Atoms active in the simulation
-	//int m_selectedAtomIndex;							// Index of atom that is selected
+	
+	// Keep separate list of bonds so they can be rendered without having to go through the atoms
+	std::vector<std::shared_ptr<Bond>> m_bonds;
+
 
 	// State
 	bool m_paused;
@@ -137,10 +156,24 @@ std::shared_ptr<Atom> Simulation::ChangeAtomType(std::shared_ptr<Atom> atom)
 	// Get position and velocity of current selected atom
 	DirectX::XMFLOAT3 position = atom->Position();
 	DirectX::XMFLOAT3 velocity = atom->Velocity();
+	std::vector<std::shared_ptr<Bond>> existingBonds = atom->Bonds();
 
 	// Remove the selected atom
 	m_atoms.erase(m_atoms.begin() + selectedAtomIndex);
 
+	// Must re-assign bonds to the new atom
+	std::shared_ptr<T> newAtom = AddNewAtom<T>(position, velocity);
+	//newAtom->AddBond(existingBonds);
+
+	for (std::shared_ptr<Bond> bond : existingBonds)
+	{
+		// Update the atom to point at the new bond
+		newAtom->AddBond(bond);
+
+		// Update the bond to point at the new atom
+		bond->SwitchAtom(atom, newAtom);
+	}
+
 	// Add the new atom and return it
-	return AddNewAtom<T>(position, velocity);
+	return newAtom;
 }

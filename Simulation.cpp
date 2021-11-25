@@ -9,7 +9,6 @@ Simulation::Simulation(const std::shared_ptr<DeviceResources>& deviceResources) 
 	m_boxVisible(true),
 	m_elapsedTime(0.0f),
 	m_paused(true),
-	// m_selectedAtomIndex(0),
 	m_deviceResources(deviceResources)
 {
 }
@@ -81,6 +80,16 @@ void Simulation::RemoveAllAtoms()
 	m_atoms.clear();
 	// m_selectedAtomIndex = -1;
 }
+
+std::shared_ptr<Bond> Simulation::CreateBond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2)
+{
+	std::shared_ptr<Bond> bond = std::make_shared<Bond>(atom1, atom2);
+	m_bonds.push_back(bond);
+	atom1->AddBond(bond);
+	atom2->AddBond(bond);
+	return bond;
+}
+
 
 
 void Simulation::StartRecording()

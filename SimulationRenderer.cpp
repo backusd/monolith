@@ -554,6 +554,15 @@ bool SimulationRenderer::Render3D()
 		atom->RenderVelocityArrow(viewProjectionMatrix);
 	}
 
+
+	// Draw Bonds ===========================================================================
+	std::vector<std::shared_ptr<Bond>> bonds = SimulationManager::Bonds();
+	for (std::shared_ptr<Bond> bond : bonds)
+	{
+		bond->Render(viewProjectionMatrix);
+	}
+
+
 	// Draw Box =============================================================================
 	UINT stride = sizeof(VertexPositionNormal);
 	UINT offset = 0;

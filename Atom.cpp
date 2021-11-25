@@ -74,3 +74,22 @@ std::wstring Atom::Name()
 
 	return w;
 }
+
+bool Atom::HasBondWithAtom(const std::shared_ptr<Atom>& atom)
+{
+	for (std::shared_ptr<Bond> bond : m_bonds)
+	{
+		if (bond->IncludesAtom(atom))
+			return true;
+	}
+
+	return false;
+}
+
+/*
+void Atom::AddBond(std::vector<std::shared_ptr<Bond>> bonds)
+{
+	for (std::shared_ptr<Bond> bond : bonds)
+		m_bonds.push_back(bond);
+}
+*/

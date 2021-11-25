@@ -45,6 +45,9 @@ int App::Run()
 		// process all messages pending, but to not block for new messages
 		if (const auto ecode = WindowManager::ProcessMessages())
 		{
+			// Have to manually clear out pointers for the bonds
+			SimulationManager::DestroyBonds();
+
 			// if return optional has value, means we're quitting so return exit code
 			return *ecode;
 		}

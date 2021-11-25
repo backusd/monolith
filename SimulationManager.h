@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 
+#include "Bond.h"
 #include "Simulation.h"
 
 #include <functional>
@@ -24,8 +25,12 @@ public:
 		m_simulation = std::make_unique<Simulation>(deviceResources);
 	}
 
+	static void DestroyBonds() { m_simulation->DestroyBonds(); }
+
 	static std::vector<std::shared_ptr<Atom>> Atoms() { return m_simulation->Atoms(); }
 	static unsigned int AtomCount() { return m_simulation->AtomCount(); }
+
+	static std::vector<std::shared_ptr<Bond>> Bonds() { return m_simulation->Bonds(); }
 
 	static void Update(StepTimer const& timer) { m_simulation->Update(timer); }
 
@@ -37,6 +42,9 @@ public:
 	static void SwitchPlayPause() { m_simulation->SwitchPlayPause(); PlayPauseChangedEvent(!m_simulation->IsPaused()); }
 
 	static DirectX::XMFLOAT3 BoxDimensions() { return m_simulation->BoxDimensions(); }
+
+	static std::shared_ptr<Bond> CreateBond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2) { return m_simulation->CreateBond(atom1, atom2); }
+
 
 	template<typename T>
 	static std::shared_ptr<T> AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
@@ -69,7 +77,7 @@ public:
 	static void ShowAllVelocityArrows() { m_simulation->ShowAllVelocityArrows(); }
 	static void HideAllVelocityArrows() { m_simulation->HideAllVelocityArrows(); }
 
-	static void SetUserState(UserState state) { m_userState = state; }
+	static void SetUserState(UserState state);
 	static UserState GetUserState() { return m_userState; }
 
 	// Event setters
@@ -96,7 +104,6 @@ private:
 
 	// Additional data to track which atoms the user is creating bonds for
 	static std::shared_ptr<Atom> m_bondAtom1;
-	static std::shared_ptr<Atom> m_bondAtom2;
 	static std::shared_ptr<Bond> m_newBond;
 
 
@@ -122,5 +129,9 @@ std::shared_ptr<T> SimulationManager::AddNewAtom(DirectX::XMFLOAT3 position, Dir
 template<typename T>
 void SimulationManager::ChangeSelectedAtomType()
 {
+	// Only change the type if it differs
+	if (typeid(*m_selectedAtom) == typeid(T))
+		return;
+
 	m_selectedAtom = m_simulation->ChangeAtomType<T>(m_selectedAtom);
 }

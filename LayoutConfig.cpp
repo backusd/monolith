@@ -306,26 +306,6 @@ namespace LayoutConfiguration
 		layout->SetRowDefinitions(rowDefs);
 
 		// ============================================================================================================
-		// Sub Layout for simulation name controls
-		/*
-		std::shared_ptr<Layout> simulationNameSubLayout = layout->CreateSubLayout(0, 0);
-
-		RowColDefinitions simulationNameColumns;
-		simulationNameColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);
-		simulationNameColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
-		simulationNameSubLayout->SetColumnDefinitions(simulationNameColumns);
-
-		// Text for Simulation Name
-		std::shared_ptr<Text> simulationNameText = simulationNameSubLayout->CreateControl<Text>(0, 0);
-		simulationNameText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		simulationNameText->SetText(L"Simulation Name:");
-		simulationNameText->Margin(5.0f, 0.0f);
-
-		// Text Input for Simulation Name
-		std::shared_ptr<TextInput> simulationNameTextInput = simulationNameSubLayout->CreateControl<TextInput>(0, 1);
-		simulationNameTextInput->Margin(0.0f, 0.0f, 5.0f, 0.0f);
-		*/
-		// ============================================================================================================
 		// ============================================================================================================
 		// Sub Layout for add atom controls
 		std::shared_ptr<Layout> addAtomSubLayout = layout->CreateSubLayout(0, 0);
