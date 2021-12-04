@@ -954,16 +954,279 @@ namespace LayoutConfiguration
 
 		RowColDefinitions rowDefs;
 		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 70.0f);	// Instructions text
-		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// 
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// Sublayout for selected bond info
 		layout->SetRowDefinitions(rowDefs);
 
 		std::shared_ptr<Text> instructions = layout->CreateControl<Text>(0, 0);
 		instructions->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_INSTRUCTIONS_TEXT);
 		instructions->SetText(L"To create a bond, click on an atom and drag to another atom. To edit, click on a bond.");
 
+		std::shared_ptr<Layout> bondInfoLayout = layout->CreateSubLayout(1, 0);
 
 
 
+
+		SimulationManager::SetSelectedBondChangedEvent(
+			[weakLayout = std::weak_ptr<Layout>(bondInfoLayout)](std::shared_ptr<Bond> bond) 
+			{
+				auto layout = weakLayout.lock();
+				layout->Clear();
+
+				float rowHeight = 40.0f;
+
+				RowColDefinitions rowDefs;
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Bond"
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Length: "
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Equilibrium Length: "
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight); // "Spring Constant: "
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Atom 1"
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 1 element type
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 1 position
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 1 velocity
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 1 charge
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Atom 2
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 2 element type
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 2 position
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 2 velocity
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// Atom 2 charge
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		//
+				layout->SetRowDefinitions(rowDefs);
+
+				// Bond Header ===================================================================
+				std::shared_ptr<Text> bondText = layout->CreateControl<Text>(0, 0);
+
+				if (bond == nullptr)
+				{
+					bondText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_INSTRUCTIONS_TEXT);
+					bondText->SetText(L"No bond selected");
+					return;
+				}
+				
+				bondText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				bondText->Margin(20.0f, 0.0f, 0.0f, 0.0f);
+				bondText->SetText(L"Bond");
+				
+				// Bond Length ===================================================================
+				std::shared_ptr<Layout> bondLengthSublayout = layout->CreateSubLayout(1, 0);
+				RowColDefinitions bondLengthSublayoutColumnDefs;
+				bondLengthSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// "Length:"
+				bondLengthSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// value
+				bondLengthSublayout->SetColumnDefinitions(bondLengthSublayoutColumnDefs);
+
+				std::shared_ptr<Text> bondLengthText = bondLengthSublayout->CreateControl<Text>(0, 0);
+				bondLengthText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				bondLengthText->Margin(20.0f, 0.0f, 0.0f, 0.0f);
+				bondLengthText->SetText(L"Length:");
+
+				std::shared_ptr<Text> bondLengthValue = bondLengthSublayout->CreateControl<Text>(0, 1);
+				bondLengthValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				bondLengthValue->SetText(std::to_wstring(bond->BondLength()));
+
+				// Equilibrium Length ============================================================
+				std::shared_ptr<Layout> equilibriumLengthSublayout = layout->CreateSubLayout(2, 0);
+				RowColDefinitions equilibriumLengthSublayoutColumnDefs;
+				equilibriumLengthSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// "Equilibrium Length:"
+				equilibriumLengthSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// value
+				equilibriumLengthSublayout->SetColumnDefinitions(equilibriumLengthSublayoutColumnDefs);
+
+				std::shared_ptr<Text> equilibriumLengthText = equilibriumLengthSublayout->CreateControl<Text>(0, 0);
+				equilibriumLengthText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				equilibriumLengthText->Margin(20.0f, 0.0f, 0.0f, 0.0f);
+				equilibriumLengthText->SetText(L"Equilibrium Length:");
+
+				std::shared_ptr<Text> equilibriumLengthValue = equilibriumLengthSublayout->CreateControl<Text>(0, 1);
+				equilibriumLengthValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				//equilibriumLengthValue->SetText(std::to_wstring(bond->EquilibriumLength()));
+				equilibriumLengthValue->SetText(L"Not implemented");
+
+				// Spring Constant ===============================================================
+				std::shared_ptr<Layout> springConstantSublayout = layout->CreateSubLayout(3, 0);
+				RowColDefinitions springConstantSublayoutColumnDefs;
+				springConstantSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// "Spring Constant:"
+				springConstantSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// value
+				springConstantSublayout->SetColumnDefinitions(springConstantSublayoutColumnDefs);
+
+				std::shared_ptr<Text> springConstantText = springConstantSublayout->CreateControl<Text>(0, 0);
+				springConstantText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				springConstantText->Margin(20.0f, 0.0f, 0.0f, 0.0f);
+				springConstantText->SetText(L"Spring Constant:");
+
+				std::shared_ptr<Text> springConstantValue = springConstantSublayout->CreateControl<Text>(0, 1);
+				springConstantValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				springConstantValue->SetText(std::to_wstring(bond->SpringConstant()));
+
+				// Atom 1 Header =================================================================
+				std::shared_ptr<Text> atom1HeaderText = layout->CreateControl<Text>(4, 0);
+				atom1HeaderText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom1HeaderText->Margin(20.0f, 0.0f, 0.0f, 0.0f);
+				atom1HeaderText->SetText(L"Atom 1:");
+
+				// Atom 1 Element type ===========================================================
+				std::shared_ptr<Layout> atom1ElementTypeSublayout = layout->CreateSubLayout(5, 0);
+				RowColDefinitions atom1ElementTypeSublayoutColumnDefs;
+				atom1ElementTypeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Element type
+				atom1ElementTypeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Select Button
+				atom1ElementTypeSublayout->SetColumnDefinitions(atom1ElementTypeSublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom1ElementTypeText = atom1ElementTypeSublayout->CreateControl<Text>(0, 0);
+				atom1ElementTypeText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom1ElementTypeText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom1ElementTypeText->SetText(ElementStrings[bond->Atom1()->ElementType()]);
+
+				std::shared_ptr<Button> atom1ElementSelectButton = atom1ElementTypeSublayout->CreateControl<Button>(0, 1);
+				atom1ElementSelectButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
+				atom1ElementSelectButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
+				atom1ElementSelectButton->Margin(10.0f, 10.0f);
+
+				std::shared_ptr<Layout> atom1ElementSelectButtonLayout = atom1ElementSelectButton->GetLayout();
+				std::shared_ptr<Text> atom1SelectButtonText = atom1ElementSelectButtonLayout->CreateControl<Text>(0, 0);
+				atom1SelectButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
+				atom1SelectButtonText->SetText(L"Select");
+
+				// Atom 1 position ===============================================================
+				std::shared_ptr<Layout> atom1PositionSublayout = layout->CreateSubLayout(6, 0);
+				RowColDefinitions atom1PositionSublayoutColumnDefs;
+				atom1PositionSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 150.0f);	// "Position:"
+				atom1PositionSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// value
+				atom1PositionSublayout->SetColumnDefinitions(atom1PositionSublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom1PositionText = atom1PositionSublayout->CreateControl<Text>(0, 0);
+				atom1PositionText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom1PositionText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom1PositionText->SetText(L"Position:");
+
+				std::shared_ptr<Text> atom1PositionValue = atom1PositionSublayout->CreateControl<Text>(0, 1);
+				atom1PositionValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				XMFLOAT3 atom1Position = bond->Atom1()->Position();
+				std::ostringstream atom1PositionOSS;
+				atom1PositionOSS.precision(3);
+				atom1PositionOSS << std::fixed << "(" << atom1Position.x << ", " << atom1Position.y << ", " << atom1Position.z << ")";
+				atom1PositionValue->SetText(atom1PositionOSS.str());
+
+				// Atom 1 velocity ===============================================================
+				std::shared_ptr<Layout> atom1VelocitySublayout = layout->CreateSubLayout(7, 0);
+				RowColDefinitions atom1VelocitySublayoutColumnDefs;
+				atom1VelocitySublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 150.0f);	// "Velocity:"
+				atom1VelocitySublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// value
+				atom1VelocitySublayout->SetColumnDefinitions(atom1VelocitySublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom1VelocityText = atom1VelocitySublayout->CreateControl<Text>(0, 0);
+				atom1VelocityText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom1VelocityText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom1VelocityText->SetText(L"Velocity:");
+
+				std::shared_ptr<Text> atom1VelocityValue = atom1VelocitySublayout->CreateControl<Text>(0, 1);
+				atom1VelocityValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				XMFLOAT3 atom1Velocity = bond->Atom1()->Velocity();
+				std::ostringstream atom1VelocityOSS;
+				atom1VelocityOSS.precision(3);
+				atom1VelocityOSS << std::fixed << "(" << atom1Velocity.x << ", " << atom1Velocity.y << ", " << atom1Velocity.z << ")";
+				atom1VelocityValue->SetText(atom1VelocityOSS.str());
+
+				// Atom 1 charge =================================================================
+				std::shared_ptr<Layout> atom1ChargeSublayout = layout->CreateSubLayout(8, 0);
+				RowColDefinitions atom1ChargeSublayoutColumnDefs;
+				atom1ChargeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// "Charge:"
+				atom1ChargeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// value
+				atom1ChargeSublayout->SetColumnDefinitions(atom1ChargeSublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom1ChargeText = atom1ChargeSublayout->CreateControl<Text>(0, 0);
+				atom1ChargeText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom1ChargeText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom1ChargeText->SetText(L"Charge:");
+
+				std::shared_ptr<Text> atom1ChargeValue = atom1ChargeSublayout->CreateControl<Text>(0, 1);
+				atom1ChargeValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom1ChargeValue->SetText(std::to_wstring(bond->Atom1()->Charge()));
+
+				// Atom 2 Header =================================================================
+				std::shared_ptr<Text> atom2HeaderText = layout->CreateControl<Text>(9, 0);
+				atom2HeaderText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom2HeaderText->Margin(20.0f, 0.0f, 0.0f, 0.0f);
+				atom2HeaderText->SetText(L"Atom 2:");
+
+				// Atom 2 Element type ===========================================================
+				std::shared_ptr<Layout> atom2ElementTypeSublayout = layout->CreateSubLayout(10, 0);
+				RowColDefinitions atom2ElementTypeSublayoutColumnDefs;
+				atom2ElementTypeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Element type
+				atom2ElementTypeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Select Button
+				atom2ElementTypeSublayout->SetColumnDefinitions(atom2ElementTypeSublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom2ElementTypeText = atom2ElementTypeSublayout->CreateControl<Text>(0, 0);
+				atom2ElementTypeText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom2ElementTypeText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom2ElementTypeText->SetText(ElementStrings[bond->Atom2()->ElementType()]);
+
+				std::shared_ptr<Button> atom2ElementSelectButton = atom2ElementTypeSublayout->CreateControl<Button>(0, 1);
+				atom2ElementSelectButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
+				atom2ElementSelectButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
+				atom2ElementSelectButton->Margin(10.0f, 10.0f);
+
+				std::shared_ptr<Layout> atom2ElementSelectButtonLayout = atom2ElementSelectButton->GetLayout();
+				std::shared_ptr<Text> atom2SelectButtonText = atom2ElementSelectButtonLayout->CreateControl<Text>(0, 0);
+				atom2SelectButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
+				atom2SelectButtonText->SetText(L"Select");
+
+				// Atom 2 position ===============================================================
+				std::shared_ptr<Layout> atom2PositionSublayout = layout->CreateSubLayout(11, 0);
+				RowColDefinitions atom2PositionSublayoutColumnDefs;
+				atom2PositionSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 150.0f);	// "Position:"
+				atom2PositionSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// value
+				atom2PositionSublayout->SetColumnDefinitions(atom2PositionSublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom2PositionText = atom2PositionSublayout->CreateControl<Text>(0, 0);
+				atom2PositionText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom2PositionText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom2PositionText->SetText(L"Position:");
+
+				std::shared_ptr<Text> atom2PositionValue = atom2PositionSublayout->CreateControl<Text>(0, 1);
+				atom2PositionValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				XMFLOAT3 atom2Position = bond->Atom2()->Position();
+				std::ostringstream atom2PositionOSS;
+				atom2PositionOSS.precision(3);
+				atom2PositionOSS << std::fixed << "(" << atom2Position.x << ", " << atom2Position.y << ", " << atom2Position.z << ")";
+				atom2PositionValue->SetText(atom2PositionOSS.str());
+
+				// Atom 2 velocity ===============================================================
+				std::shared_ptr<Layout> atom2VelocitySublayout = layout->CreateSubLayout(12, 0);
+				RowColDefinitions atom2VelocitySublayoutColumnDefs;
+				atom2VelocitySublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 150.0f);	// "Velocity:"
+				atom2VelocitySublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// value
+				atom2VelocitySublayout->SetColumnDefinitions(atom2VelocitySublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom2VelocityText = atom2VelocitySublayout->CreateControl<Text>(0, 0);
+				atom2VelocityText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom2VelocityText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom2VelocityText->SetText(L"Velocity:");
+
+				std::shared_ptr<Text> atom2VelocityValue = atom2VelocitySublayout->CreateControl<Text>(0, 1);
+				atom2VelocityValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				XMFLOAT3 atom2Velocity = bond->Atom2()->Velocity();
+				std::ostringstream atom2VelocityOSS;
+				atom2VelocityOSS.precision(3);
+				atom2VelocityOSS << std::fixed << "(" << atom2Velocity.x << ", " << atom2Velocity.y << ", " << atom2Velocity.z << ")";
+				atom2VelocityValue->SetText(atom2VelocityOSS.str());
+
+				// Atom 2 charge =================================================================
+				std::shared_ptr<Layout> atom2ChargeSublayout = layout->CreateSubLayout(13, 0);
+				RowColDefinitions atom2ChargeSublayoutColumnDefs;
+				atom2ChargeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// "Charge:"
+				atom2ChargeSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// value
+				atom2ChargeSublayout->SetColumnDefinitions(atom2ChargeSublayoutColumnDefs);
+
+				std::shared_ptr<Text> atom2ChargeText = atom2ChargeSublayout->CreateControl<Text>(0, 0);
+				atom2ChargeText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom2ChargeText->Margin(50.0f, 0.0f, 0.0f, 0.0f);
+				atom2ChargeText->SetText(L"Charge:");
+
+				std::shared_ptr<Text> atom2ChargeValue = atom2ChargeSublayout->CreateControl<Text>(0, 1);
+				atom2ChargeValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atom2ChargeValue->SetText(std::to_wstring(bond->Atom2()->Charge()));
+
+
+
+			}
+		);
 
 	}
 	void DisplayEditVelocityArrowsControls(const std::shared_ptr<ContentWindow>& window)

@@ -85,7 +85,7 @@ public:
 	static void SetAtomHoveredOverChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomHoveredOverChangedEvent = function; }
 	static void SetAtomClickedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomClickedEvent = function; }
 	static void SetSelectedAtomChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { SelectedAtomChangedEvent = function; }
-
+	static void SetSelectedBondChangedEvent(std::function<void(std::shared_ptr<Bond>)> function) { SelectedBondChangedEvent = function; }
 
 private:
 	// Disallow creation of a SimulationManager object
@@ -116,6 +116,7 @@ private:
 	static std::function<void(std::shared_ptr<Atom>)> AtomHoveredOverChangedEvent;
 	static std::function<void(std::shared_ptr<Atom>)> AtomClickedEvent;
 	static std::function<void(std::shared_ptr<Atom>)> SelectedAtomChangedEvent;
+	static std::function<void(std::shared_ptr<Bond>)> SelectedBondChangedEvent;
 
 
 

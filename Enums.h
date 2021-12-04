@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 
 enum Element
 {
@@ -14,4 +15,18 @@ enum Element
 	OXYGEN = 8,
 	FLOURINE = 9,
 	NEON = 10
+};
+
+static const std::wstring ElementStrings[] = {
+	L"Invalid",
+	L"Hydrogen",
+	L"Helium",
+	L"Lithium",
+	L"Beryllium",
+	L"Boron",
+	L"Carbon",
+	L"Nitrogen",
+	L"Oxygen",
+	L"Flourine",
+	L"Neon"
 };

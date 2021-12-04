@@ -55,6 +55,11 @@
 #define THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT "new-simulation-save-simulation-button-text"
 
 #define THEME_NEW_SIMULATION_CREATE_BONDS_INSTRUCTIONS_TEXT "new-simulation-create-bonds-instructions-text"
+#define THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT "new-simulation-create-bonds-headers-text"
+#define THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR "new-simulation-create-bonds-select-atom-button-color"
+#define THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER "new-simulation-create-bonds-select-atom-button-border"
+#define THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT "new-simulation-create-bonds-select-atom-button-text"
+
 
 #define THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_COLOR "new-simulation-edit-velocity-arrows-button-color"
 #define THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_BORDER "new-simulation-edit-velocity-arrows-button-border"

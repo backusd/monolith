@@ -15,7 +15,7 @@ std::function<void(bool)> SimulationManager::PlayPauseChangedEvent = [](bool val
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomHoveredOverChangedEvent = [](std::shared_ptr<Atom> atom) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomClickedEvent = [](std::shared_ptr<Atom> atom) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::SelectedAtomChangedEvent = [](std::shared_ptr<Atom> atom) {};
-
+std::function<void(std::shared_ptr<Bond>)> SimulationManager::SelectedBondChangedEvent = [](std::shared_ptr<Bond> bond) {};
 
 
 
@@ -57,6 +57,7 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 
 					// Stop tracking the bond being created
 					m_newBond = nullptr;
+					SelectedBondChangedEvent(m_newBond);
 				}
 			} // we are hovering over a different atom
 			else
@@ -68,7 +69,7 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 					if (m_bondAtom1->HasBondWithAtom(m_atomHoveredOver))
 					{
 						m_newBond = m_bondAtom1->GetBondWithAtom(m_atomHoveredOver);
-						m_bondAlreadyExisted = true;
+						m_bondAlreadyExisted = true;						
 					}
 					else
 					{
@@ -76,6 +77,8 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 						m_newBond = SimulationManager::CreateBond(m_bondAtom1, m_atomHoveredOver);
 						m_bondAlreadyExisted = false;
 					}
+
+					SelectedBondChangedEvent(m_newBond);
 				}
 				else
 				{
@@ -101,6 +104,8 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 							m_newBond = SimulationManager::CreateBond(m_bondAtom1, m_atomHoveredOver);
 							m_bondAlreadyExisted = false;
 						}
+
+						SelectedBondChangedEvent(m_newBond);
 					}
 				}
 			}

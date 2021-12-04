@@ -3,6 +3,7 @@
 
 using DirectX::XMFLOAT3;
 using DirectX::XMMATRIX;
+using DirectX::XMVECTOR;
 
 
 Bond::Bond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2) :
@@ -32,4 +33,16 @@ void Bond::SwitchAtom(const std::shared_ptr<Atom>& oldAtom, const std::shared_pt
 
 	if (m_atom2 == oldAtom)
 		m_atom2 = newAtom;
+}
+
+float Bond::BondLength()
+{
+	XMFLOAT3 p1 = m_atom1->Position();
+	XMFLOAT3 p2 = m_atom2->Position();
+	XMVECTOR p1Vector = DirectX::XMLoadFloat3(&p1);
+	XMVECTOR p2Vector = DirectX::XMLoadFloat3(&p2);
+	XMVECTOR differenceVector = DirectX::XMVectorSubtract(p2Vector, p1Vector);
+	XMFLOAT3 magnitude;
+	DirectX::XMStoreFloat3(&magnitude, DirectX::XMVector3Length(differenceVector));
+	return magnitude.x;
 }

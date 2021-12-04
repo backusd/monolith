@@ -374,6 +374,38 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	createBondsInstructionsText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD);
 	createBondsInstructionsText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 
+	std::shared_ptr<TextTheme> createBondsHeadersText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT, deviceResources);
+	createBondsHeadersText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	createBondsHeadersText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	createBondsHeadersText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	createBondsHeadersText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	createBondsHeadersText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	createBondsHeadersText->SetFontSize(14.0f);
+	createBondsHeadersText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING);
+	createBondsHeadersText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	createBondsHeadersText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD);
+	createBondsHeadersText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+	std::shared_ptr<ColorTheme> createBondsSelectAtomButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR, deviceResources);
+	createBondsSelectAtomButtonColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	createBondsSelectAtomButtonColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	createBondsSelectAtomButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::shared_ptr<BorderTheme> createBondsSelectAtomButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER, deviceResources);
+	createBondsSelectAtomButtonBorder->SetStrokeWidth(1.0f);
+	createBondsSelectAtomButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	std::shared_ptr<TextTheme> createBondsSelectAtomButtonText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT, deviceResources);
+	createBondsSelectAtomButtonText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	createBondsSelectAtomButtonText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	createBondsSelectAtomButtonText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	createBondsSelectAtomButtonText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	createBondsSelectAtomButtonText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	createBondsSelectAtomButtonText->SetFontSize(14.0f);
+	createBondsSelectAtomButtonText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	createBondsSelectAtomButtonText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	createBondsSelectAtomButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD);
+	createBondsSelectAtomButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 
 	// Edit Velocity Arrows Themes
 	std::shared_ptr<ColorTheme> editVelocityArrowsButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_COLOR, deviceResources);
