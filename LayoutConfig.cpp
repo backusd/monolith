@@ -647,6 +647,8 @@ namespace LayoutConfiguration
 				// bool isHighlighted = listView->IsItemHighlighted(atom);
 
 				listView->RemoveItem(atom);
+
+				// Removing the atom from the simulation will also delete any bonds associated with the atom
 				SimulationManager::RemoveAtom(atom);
 			}
 			);

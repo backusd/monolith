@@ -194,6 +194,7 @@ void SimulationManager::RemoveAtom(std::shared_ptr<Atom> atom)
 		SelectedAtomChangedEvent(m_selectedAtom);
 	}
 
+	// Removing the atom from the simulation will also delete all bonds to the atom
 	m_simulation->RemoveAtom(atom); 
 }
 

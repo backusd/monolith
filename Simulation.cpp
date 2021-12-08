@@ -39,6 +39,13 @@ void Simulation::AddNewAtom(std::shared_ptr<Atom> atom)
 */
 void Simulation::RemoveAtom(std::shared_ptr<Atom> atom)
 {
+	// first, delete all bonds associated with the atom
+	for (std::shared_ptr<Bond> bond : atom->Bonds())
+	{
+		this->DeleteBond(bond);
+	}
+
+	// second, erase the atom from the vector of atoms
 	int index = GetAtomIndex(atom);
 	if (index != -1)
 		m_atoms.erase(m_atoms.begin() + index);
