@@ -20,8 +20,9 @@ public:
 
 	virtual ~Control() {}
 
-	void Row(int row) { m_row = row; }
-	void Column(int col) { m_column = col; }
+	// Call OnLayoutResize when updating row/column to make sure the control resizes if necessary
+	void Row(int row) { m_row = row; OnLayoutResize(); }
+	void Column(int col) { m_column = col; OnLayoutResize(); }
 
 	void RowSpan(int rowSpan) { m_rowSpan = rowSpan; }
 	void ColumnSpan(int colSpan) { m_columnSpan = colSpan; }

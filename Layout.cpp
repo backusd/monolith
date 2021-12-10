@@ -153,6 +153,9 @@ void Layout::UpdateLayout()
 			break;
 		}
 	}
+
+	// Now update any existing sublayouts
+	UpdateSubLayouts();
 }
 
 std::shared_ptr<Layout> Layout::CreateSubLayout(int rowIndex, int columnIndex)
@@ -207,6 +210,25 @@ void Layout::SetSubLayout(std::shared_ptr<Layout> layout, int rowIndex, int colu
 	m_subLayouts.push_back(
 		std::tuple<std::shared_ptr<Layout>, int, int>(layout, rowIndex, columnIndex)
 	);
+}
+void Layout::UpdateSubLayouts()
+{
+	float top, left, height, width;
+	int rowIndex, columnIndex;
+	std::shared_ptr<Layout> subLayout;
+	for (std::tuple<std::shared_ptr<Layout>, int, int> tup : m_subLayouts)
+	{
+		subLayout = tup._Myfirst._Val;
+		rowIndex = tup._Get_rest()._Myfirst._Val;
+		columnIndex = tup._Get_rest()._Get_rest()._Myfirst._Val;
+
+		top = m_rows[rowIndex].Top();
+		left = m_columns[columnIndex].Left();
+		height = m_rows[rowIndex].Height();
+		width = m_columns[columnIndex].Width();
+
+		subLayout->OnResize(top, left, height, width);
+	}
 }
 
 

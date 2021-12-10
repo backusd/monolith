@@ -48,6 +48,7 @@ public:
 	std::shared_ptr<Layout> GetSubLayout(int rowIndex, int columnIndex);
 	std::shared_ptr<Layout> CreateSubLayout(int rowIndex, int columnIndex);
 	void SetSubLayout(std::shared_ptr<Layout> layout, int rowIndex, int columnIndex);
+	void UpdateSubLayouts();
 
 	template<typename T>
 	std::shared_ptr<T> CreateControl();

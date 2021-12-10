@@ -36,7 +36,27 @@ public:
 
 
 	// Set the format function
-	void SetFormatFunction(std::function<std::shared_ptr<Layout>(std::shared_ptr<T>, bool)> function) { FormatAddedItem = function; }
+	void SetFormatFunction(std::function<std::shared_ptr<Layout>(std::shared_ptr<T>, bool)> function) 
+	{
+		FormatAddedItem = function;
+
+		// if the item count is greater than 0, re-format all of the items
+		if (ItemCount() > 0)
+		{
+			// First, clear all existing layouts
+			m_itemLayouts.clear();
+
+			// Second, add each item back with the new format
+			for (unsigned int iii = 0; iii < m_items.size(); ++iii)
+			{
+				// Add the layout to the list of layouts (make sure to highlight the selected item)
+				m_itemLayouts.push_back(this->FormatAddedItem(m_items[iii], iii == m_highlightedItemIndex));
+			}
+			
+			// Update the sublayouts list
+			this->UpdateSubLayouts();
+		}
+	}
 
 	// Set the value changed update layout method
 	void SetValueChangedUpdateLayoutMethod(std::function<void(std::shared_ptr<T>, std::shared_ptr<Layout>)> function) { ValueChangedUpdateLayoutMethod = function; }

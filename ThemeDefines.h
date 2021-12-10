@@ -22,6 +22,13 @@
 #define THEME_DEFAULT_LINE_COLOR "default-line-color"
 #define THEME_DEFAULT_SLIDER_RECT_COLOR "default-slider-rect-color"
 
+#define THEME_DEFAULT_TABBED_PANE_TAB_SELECTED_COLOR "default-tabbed-pane-selected-color"
+#define THEME_DEFAULT_TABBED_PANE_TAB_UNSELECTED_COLOR "default-tabbed-pane-unselected-color"
+#define THEME_DEFAULT_TABBED_PANE_TAB_SELECTED_BORDER "default-tabbed-pane-selected-border"
+#define THEME_DEFAULT_TABBED_PANE_TAB_UNSELECTED_BORDER "default-tabbed-pane-unselected-border"
+#define THEME_DEFAULT_TABBED_PANE_PANE_COLOR "default-tabbed-pane-pane-color"
+#define THEME_DEFAULT_TABBED_PANE_PANE_BORDER "default-tabbed-pane-pane-border"
+
 // Menu Bar
 #define THEME_MENU_BAR_TEXT "menu-bar-text"
 #define THEME_MENU_BAR_BUTTON_COLOR "menu-bar-button-color"
@@ -36,6 +43,8 @@
 #define THEME_QUICK_BAR_TEXT "quick-bar-text"
 
 // New simulation pane themes
+#define THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR "new-simulation-backdrop-button-color"
+#define THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER "new-simulation-backdrop-button-border"
 #define THEME_NEW_SIMULATION_TEXT "new-simulation-text"
 #define THEME_NEW_SIMULATION_ADD_BUTTON_COLOR "new-simulation-add-button-color"
 #define THEME_NEW_SIMULATION_ADD_BUTTON_BORDER "new-simulation-add-button-border"

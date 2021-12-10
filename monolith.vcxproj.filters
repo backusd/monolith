@@ -240,6 +240,9 @@
     <ClCompile Include="CylinderMesh.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="TabbedPane.cpp">
+      <Filter>Source Files\UI\Controls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -424,6 +427,9 @@
     </ClInclude>
     <ClInclude Include="CylinderMesh.h">
       <Filter>Header Files\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbedPane.h">
+      <Filter>Header Files\UI\Controls</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

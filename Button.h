@@ -40,6 +40,9 @@ public:
 	void SetColorTheme(std::string name) {  m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
 	void SetBorderTheme(std::string name) { m_borderTheme = std::static_pointer_cast<BorderTheme>(ThemeManager::GetTheme(name)); }
 
+	void SetColorTheme(std::shared_ptr<ColorTheme> theme) { m_colorTheme = theme; }
+	void SetBorderTheme(std::shared_ptr<BorderTheme> theme) { m_borderTheme = theme; }
+
 	std::shared_ptr<Layout> GetLayout() { return m_buttonLayout; }
 
 private:

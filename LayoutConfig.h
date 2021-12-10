@@ -6,6 +6,7 @@
 #include "Button.h"
 #include "ColorTheme.h"
 #include "DropDown.h"
+#include "TabbedPane.h"
 #include "ThemeDefines.h"
 #include "Text.h"
 #include "SimulationRenderer.h"
