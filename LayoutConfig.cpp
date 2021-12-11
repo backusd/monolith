@@ -314,7 +314,8 @@ namespace LayoutConfiguration
 
 		std::shared_ptr<TabbedPane> selectedAtomControlsTabbedPane = layout->CreateControl<TabbedPane>(1, 0);
 		selectedAtomControlsTabbedPane->SetNumberOfTabs(2);
-		selectedAtomControlsTabbedPane->Margin(5.0f);
+		selectedAtomControlsTabbedPane->Margin(5.0f, 0.0f, 5.0f, 5.0f);
+		selectedAtomControlsTabbedPane->SetTabRowHeight(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 20.0f);
 
 		// Tab 1
 		std::shared_ptr<Layout> selectedAtomControlsTab1 = selectedAtomControlsTabbedPane->GetTabLayout(0);

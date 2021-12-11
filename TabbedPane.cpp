@@ -165,18 +165,79 @@ bool TabbedPane::Render2D()
 
 	context->SetTransform(m_deviceResources->OrientationTransform2D());
 
+	// Just get the lower pane (exclude the tabs)
 	D2D1_RECT_F rect = m_mainLayout->GetRect(
+		1,
 		0,
-		0,
-		m_mainLayout->RowCount(),
+		m_mainLayout->RowCount() - 1,
 		m_mainLayout->ColumnCount()
 	);
 
 	context->FillRectangle(rect, m_panesColorTheme->GetBrush(m_mouseOverDownState));
 
+	D2D1_POINT_2F bottomLeft, topLeft, topRight, bottomRight;
+	bottomLeft.x = rect.left;
+	bottomLeft.y = rect.bottom;
+
+	topLeft.x = rect.left;
+	topLeft.y = rect.top;
+
+	topRight.x = rect.right;
+	topRight.y = rect.top;
+
+	bottomRight.x = rect.right;
+	bottomRight.y = rect.bottom;
+
 	// if the border theme is not nullptr and stroke width > 0, draw the border
-	if (m_panesBorderTheme != nullptr && m_panesBorderTheme->GetStrokeWidth() > 0.0f)
-		context->DrawRectangle(rect, m_panesBorderTheme->GetBrush(m_mouseOverDownState), m_panesBorderTheme->GetStrokeWidth());
+	if (m_panesBorderTheme != nullptr)
+	{
+		if (m_panesBorderTheme->GetStrokeWidthLeft() > 0.0f)
+		{
+			context->DrawLine(
+				bottomLeft,
+				topLeft,
+				m_panesBorderTheme->GetBrush(m_mouseOverDownState),
+				m_panesBorderTheme->GetStrokeWidthLeft(),
+				m_panesBorderTheme->GetStrokeStyle()
+			);
+		}
+
+		if (m_panesBorderTheme->GetStrokeWidthTop() > 0.0f)
+		{
+			context->DrawLine(
+				topLeft,
+				topRight,
+				m_panesBorderTheme->GetBrush(m_mouseOverDownState),
+				m_panesBorderTheme->GetStrokeWidthTop(),
+				m_panesBorderTheme->GetStrokeStyle()
+			);
+		}
+
+		if (m_panesBorderTheme->GetStrokeWidthRight() > 0.0f)
+		{
+			context->DrawLine(
+				topRight,
+				bottomRight,
+				m_panesBorderTheme->GetBrush(m_mouseOverDownState),
+				m_panesBorderTheme->GetStrokeWidthRight(),
+				m_panesBorderTheme->GetStrokeStyle()
+			);
+		}
+
+		if (m_panesBorderTheme->GetStrokeWidthBottom() > 0.0f)
+		{
+			context->DrawLine(
+				bottomRight,
+				bottomLeft,
+				m_panesBorderTheme->GetBrush(m_mouseOverDownState),
+				m_panesBorderTheme->GetStrokeWidthBottom(),
+				m_panesBorderTheme->GetStrokeStyle()
+			);
+		}
+	}
+
+
+
 
 	// Now draw the tabs and the pane
 	m_tabSubLayout->Render2DControls();
@@ -293,4 +354,14 @@ void TabbedPane::Resize()
 	m_mainLayout->OnResize(rect);
 
 	// Don't worry about resizing the non-selected panes - they will be appropriately sized upon being selected
+}
+
+void TabbedPane::SetTabRowHeight(ROW_COL_TYPE rowType, float value)
+{
+	m_tabRowType = rowType;
+	m_tabRowValue = value;
+
+	UpdateMainRows();
+
+	
 }

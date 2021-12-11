@@ -48,6 +48,8 @@ public:
 	void SetNumberOfTabs(int numberOfTabs);
 	void SelectTab(unsigned int index);
 
+	void SetTabRowHeight(ROW_COL_TYPE rowType, float value);
+
 	std::shared_ptr<Layout> GetTabLayout(int index) { return m_tabs[index]->GetLayout(); }
 	std::shared_ptr<Layout> GetPaneLayout(int index) { return m_panes[index]; }
 

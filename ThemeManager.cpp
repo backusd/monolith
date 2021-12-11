@@ -164,8 +164,21 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 
 	// Tabbed Pane - Pane border
 	std::shared_ptr<BorderTheme> tabbedPanePaneBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_TABBED_PANE_PANE_BORDER, deviceResources);
-	tabbedPaneUnselectedTabBorder->SetStrokeWidth(1.0f);
-	tabbedPaneUnselectedTabBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::Pink));
+	tabbedPanePaneBorder->SetStrokeWidth(1.0f);
+	tabbedPanePaneBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::Pink));
+	
+	float dashes[] = { 1.0f, 2.0f, 2.0f, 3.0f, 2.0f, 2.0f };
+	tabbedPanePaneBorder->SetStrokeStyle(
+		dashes,
+		ARRAYSIZE(dashes),
+		D2D1_CAP_STYLE_FLAT,
+		D2D1_CAP_STYLE_FLAT,
+		D2D1_CAP_STYLE_ROUND,
+		D2D1_LINE_JOIN_MITER,
+		10.0f,
+		D2D1_DASH_STYLE_CUSTOM,
+		0.0f
+	);
 }
 
 void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)

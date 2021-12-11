@@ -46,9 +46,66 @@ bool Button::Render2D()
 
 	context->FillRectangle(rect, m_colorTheme->GetBrush(m_mouseOverDownState));
 
+	D2D1_POINT_2F bottomLeft, topLeft, topRight, bottomRight;
+	bottomLeft.x = rect.left;
+	bottomLeft.y = rect.bottom;
+	
+	topLeft.x = rect.left;
+	topLeft.y = rect.top;
+
+	topRight.x = rect.right;
+	topRight.y = rect.top;
+
+	bottomRight.x = rect.right;
+	bottomRight.y = rect.bottom;
+
 	// if the border theme is not nullptr and stroke width > 0, draw the border
-	if (m_borderTheme != nullptr && m_borderTheme->GetStrokeWidth() > 0.0f)
-		context->DrawRectangle(rect, m_borderTheme->GetBrush(m_mouseOverDownState), m_borderTheme->GetStrokeWidth());
+	if (m_borderTheme != nullptr)
+	{
+		if (m_borderTheme->GetStrokeWidthLeft() > 0.0f)
+		{
+			context->DrawLine(
+				bottomLeft,
+				topLeft,
+				m_borderTheme->GetBrush(m_mouseOverDownState),
+				m_borderTheme->GetStrokeWidthLeft(),
+				m_borderTheme->GetStrokeStyle()
+			);
+		}
+
+		if (m_borderTheme->GetStrokeWidthTop() > 0.0f)
+		{
+			context->DrawLine(
+				topLeft,
+				topRight,
+				m_borderTheme->GetBrush(m_mouseOverDownState),
+				m_borderTheme->GetStrokeWidthTop(),
+				m_borderTheme->GetStrokeStyle()
+			);
+		}
+
+		if (m_borderTheme->GetStrokeWidthRight() > 0.0f)
+		{
+			context->DrawLine(
+				topRight,
+				bottomRight,
+				m_borderTheme->GetBrush(m_mouseOverDownState),
+				m_borderTheme->GetStrokeWidthRight(),
+				m_borderTheme->GetStrokeStyle()
+			);
+		}
+
+		if (m_borderTheme->GetStrokeWidthBottom() > 0.0f)
+		{
+			context->DrawLine(
+				bottomRight,
+				bottomLeft,
+				m_borderTheme->GetBrush(m_mouseOverDownState),
+				m_borderTheme->GetStrokeWidthBottom(),
+				m_borderTheme->GetStrokeStyle()
+			);
+		}
+	}
 
 	// Now paint the layout and child controls
 	m_buttonLayout->Render2DControls();
