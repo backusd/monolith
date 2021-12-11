@@ -59,7 +59,9 @@ bool Slider::Render2D()
 	context->DrawLine(
 		D2D1::Point2F(rightRect.left + 5.0f, y),  // 5.0f padding
 		D2D1::Point2F(rightRect.right - 5.0f, y), // 5.0f padding
-		m_lineTheme->GetBrush()
+		m_lineTheme->GetBrush(),
+		m_lineTheme->GetStrokeWidth(),
+		m_lineTheme->GetStrokeStyle()
 	);
 
 	// Draw the slider box
