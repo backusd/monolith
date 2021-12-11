@@ -136,49 +136,32 @@ void ThemeManager::CreateDefaultThemes(const std::shared_ptr<DeviceResources>& d
 
 	// Tabbed Pane - Tab selected color
 	std::shared_ptr<ColorTheme> tabbedPaneSelectedTabColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TABBED_PANE_TAB_SELECTED_COLOR, deviceResources);
-	tabbedPaneSelectedTabColor->SetColor(D2D1::ColorF(D2D1::ColorF::Blue));
-	tabbedPaneSelectedTabColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::LightBlue));
-	tabbedPaneSelectedTabColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::DarkBlue));
+	tabbedPaneSelectedTabColor->SetAllColors(D2D1::ColorF(25.0f / 255.0f, 25.0f / 255.0f, 28.0f / 255.0f));
 
 	// Tabbed Pane - Tab unselected color
 	std::shared_ptr<ColorTheme> tabbedPaneUnselectedTabColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TABBED_PANE_TAB_UNSELECTED_COLOR, deviceResources);
-	tabbedPaneUnselectedTabColor->SetColor(D2D1::ColorF(D2D1::ColorF::Green));
-	tabbedPaneUnselectedTabColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::LightGreen));
-	tabbedPaneUnselectedTabColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::DarkGreen));
+	tabbedPaneUnselectedTabColor->SetColor(D2D1::ColorF(55.0f / 255.0f, 55.0f / 255.0f, 58.0f / 255.0f));
+	tabbedPaneUnselectedTabColor->SetColorPointerOver(D2D1::ColorF(75.0f / 255.0f, 75.0f / 255.0f, 78.0f / 255.0f));
+	tabbedPaneUnselectedTabColor->SetColorPointerDown(D2D1::ColorF(95.0f / 255.0f, 95.0f / 255.0f, 98.0f / 255.0f));
 
 	// Tabbed Pane - Tab selected border
 	std::shared_ptr<BorderTheme> tabbedPaneSelectedTabBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_TABBED_PANE_TAB_SELECTED_BORDER, deviceResources);
-	tabbedPaneSelectedTabBorder->SetStrokeWidth(1.0f);
-	tabbedPaneSelectedTabBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::Purple));
+	tabbedPaneSelectedTabBorder->SetStrokeWidth(1.5f, 1.5f, 1.5f, 0.5f);
+	tabbedPaneSelectedTabBorder->SetAllColors(D2D1::ColorF(85.0f / 255.0f, 85.0f / 255.0f, 88.0f / 255.0f));
 
 	// Tabbed Pane - Tab unselected border
 	std::shared_ptr<BorderTheme> tabbedPaneUnselectedTabBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_TABBED_PANE_TAB_UNSELECTED_BORDER, deviceResources);
-	tabbedPaneUnselectedTabBorder->SetStrokeWidth(1.0f);
-	tabbedPaneUnselectedTabBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+	tabbedPaneUnselectedTabBorder->SetStrokeWidth(1.5f, 1.5f, 1.5f, 0.5f);
+	tabbedPaneUnselectedTabBorder->SetAllColors(D2D1::ColorF(85.0f / 255.0f, 85.0f / 255.0f, 88.0f / 255.0f));
 
 	// Tabbed Pane - Pane color
 	std::shared_ptr<ColorTheme> tabbedPanePaneColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TABBED_PANE_PANE_COLOR, deviceResources);
-	tabbedPanePaneColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
-	tabbedPanePaneColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::LightGray));
-	tabbedPanePaneColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	tabbedPanePaneColor->SetAllColors(D2D1::ColorF(25.0f / 255.0f, 25.0f / 255.0f, 28.0f / 255.0f));
 
 	// Tabbed Pane - Pane border
 	std::shared_ptr<BorderTheme> tabbedPanePaneBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_TABBED_PANE_PANE_BORDER, deviceResources);
-	tabbedPanePaneBorder->SetStrokeWidth(1.0f);
-	tabbedPanePaneBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::Pink));
-	
-	float dashes[] = { 1.0f, 2.0f, 2.0f, 3.0f, 2.0f, 2.0f };
-	tabbedPanePaneBorder->SetStrokeStyle(
-		dashes,
-		ARRAYSIZE(dashes),
-		D2D1_CAP_STYLE_FLAT,
-		D2D1_CAP_STYLE_FLAT,
-		D2D1_CAP_STYLE_ROUND,
-		D2D1_LINE_JOIN_MITER,
-		10.0f,
-		D2D1_DASH_STYLE_CUSTOM,
-		0.0f
-	);
+	tabbedPanePaneBorder->SetStrokeWidth(1.5f, 0.0f, 1.5f, 1.5f);
+	tabbedPanePaneBorder->SetAllColors(D2D1::ColorF(85.0f / 255.0f, 85.0f / 255.0f, 88.0f / 255.0f));
 }
 
 void ThemeManager::CreateMenuBarThemes(const std::shared_ptr<DeviceResources>& deviceResources)

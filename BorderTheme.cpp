@@ -59,6 +59,22 @@ void BorderTheme::SetColorPointerDown(D2D1_COLOR_F color)
 	context->CreateSolidColorBrush(color, m_colorPointerDown.ReleaseAndGetAddressOf());
 }
 
+
+/* Example Usage ==================================================
+
+float dashes[] = { 1.0f, 2.0f, 2.0f, 3.0f, 2.0f, 2.0f };
+tabbedPanePaneBorder->SetStrokeStyle(
+		dashes,
+		ARRAYSIZE(dashes),
+		D2D1_CAP_STYLE_FLAT,
+		D2D1_CAP_STYLE_FLAT,
+		D2D1_CAP_STYLE_ROUND,
+		D2D1_LINE_JOIN_MITER,
+		10.0f,
+		D2D1_DASH_STYLE_CUSTOM,
+		0.0f
+	);
+*/
 void BorderTheme::SetStrokeStyle(
 	const float* dashes,
 	UINT32 dashesCount,

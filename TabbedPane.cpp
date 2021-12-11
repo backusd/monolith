@@ -127,7 +127,14 @@ void TabbedPane::SetNumberOfTabs(int numberOfTabs)
 
 void TabbedPane::SelectTab(unsigned int index)
 {
+	// Set the unselected color to the current selected tab
+	m_tabs[m_selectedTabIndex]->SetColorTheme(m_tabUnselectedColorTheme);
+
+	// Update the index
 	m_selectedTabIndex = index;
+
+	// Set the newly selected tab's color
+	m_tabs[m_selectedTabIndex]->SetColorTheme(m_tabSelectedColorTheme);
 
 	// clear the sublayouts
 	m_mainLayout->ClearSubLayouts();
