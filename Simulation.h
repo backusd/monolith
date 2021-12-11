@@ -76,6 +76,8 @@ public:
 
 	std::vector<std::shared_ptr<Bond>> Bonds() { return m_bonds; }
 
+	float BoxDimensionsMinimum();
+	void ExpandBoxDimensionsIfNecessary();
 	DirectX::XMFLOAT3	BoxDimensions() { return m_boxDimensions; }
 
 	bool		BoxVisible() { return m_boxVisible; }

@@ -284,6 +284,54 @@ namespace LayoutConfiguration
 		atomSummaryText->SetText(L"Atom Summary");
 	}
 
+	void DisplaySimulationDetailsControls(const std::shared_ptr<ContentWindow>& window)
+	{
+		// Make sure the simulation is just in VIEW mode
+		SimulationManager::SetUserState(UserState::VIEW);
+
+		// Get the right side layout
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
+		assert(layout != nullptr);
+
+		// Clear the layout of any existing content
+		layout->Clear();
+
+		// Create a single button so we can color the backdrop
+		std::shared_ptr<Button> backdropButton = layout->CreateControl<Button>(0, 0);
+		backdropButton->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR);
+		backdropButton->SetBorderTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER);
+		backdropButton->Margin(5.0f, 0.0f, 5.0f, 5.0f);
+
+		// Get the layout for the backdrop button
+		std::shared_ptr<Layout> backdropLayout = backdropButton->GetLayout();
+
+		RowColDefinitions rowDefs;
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions:
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions Slider
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Everything else
+		backdropLayout->SetRowDefinitions(rowDefs);
+
+		// Text for "Box Dimensions"
+		std::shared_ptr<Text> boxDimensionsText = backdropLayout->CreateControl<Text>(0, 0);
+		boxDimensionsText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		boxDimensionsText->SetText(L"Box Dimensions");
+		boxDimensionsText->Margin(5.0f, 0.0f);
+
+		// Box Dimension Slider
+		std::shared_ptr<Slider> boxDimensionSlider = backdropLayout->CreateControl<Slider>(1, 0);
+		boxDimensionSlider->SetMin(SimulationManager::BoxDimensionsMinimum() * 2); // multiply by 2 so that 
+		boxDimensionSlider->SetMax(100.0f);
+		boxDimensionSlider->Margin(10.0f, 2.0f);
+		boxDimensionSlider->SetValue(SimulationManager::BoxDimensions().x);
+		boxDimensionSlider->ValueChanged(
+			[](float value)
+			{
+				SimulationManager::BoxDimensions(value);
+			}
+		);
+
+		
+	}
 	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window)
 	{
 		// Make sure the simulation is just in VIEW mode
@@ -309,18 +357,6 @@ namespace LayoutConfiguration
 		topBackdropButton->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR);
 		topBackdropButton->SetBorderTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER);
 		topBackdropButton->Margin(5.0f, 0.0f, 5.0f, 5.0f);
-
-
-
-		
-
-		//std::shared_ptr<Button> bottomBackdropButton = layout->CreateControl<Button>(1, 0);
-		//bottomBackdropButton->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR);
-		//bottomBackdropButton->SetBorderTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER);
-		//bottomBackdropButton->Margin(5.0f, 0.0f, 5.0f, 5.0f);
-
-
-
 
 		// Top Section ================================================================================
 		// Create "Add Atom Button" and atoms listview in the top backdrop
@@ -488,8 +524,6 @@ namespace LayoutConfiguration
 		atomPositionVelocitySubLayout->SetColumnDefinitions(positionVelocityColumns);
 
 		RowColDefinitions positionVelocityRows;
-		//positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions:
-		//positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions Slider
 		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position:
 		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position X
 		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position Y
@@ -500,27 +534,13 @@ namespace LayoutConfiguration
 		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity Z
 		atomPositionVelocitySubLayout->SetRowDefinitions(positionVelocityRows);
 
-		/*
-		// Text for "Box Dimensions"
-		std::shared_ptr<Text> boxDimensionsText = atomPositionVelocitySubLayout->CreateControl<Text>(0, 0, 1, 2);
-		boxDimensionsText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		boxDimensionsText->SetText(L"Box Dimensions");
-		boxDimensionsText->Margin(5.0f, 0.0f);
-
-		// Box Dimension Slider
-		std::shared_ptr<Slider> boxDimensionSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 0, 1, 2);
-		boxDimensionSlider->SetMin(2.0f);
-		boxDimensionSlider->SetMax(100.0f);
-		boxDimensionSlider->Margin(10.0f, 2.0f);
-		boxDimensionSlider->ValueChanged(
-			[](float value)
-			{
-				SimulationManager::BoxDimensions(value);
-			}
-		);
-		*/
-
 		DirectX::XMFLOAT3 selectedAtomPosition = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Position();
+		float selectedAtomRadius = SimulationManager::GetSelectedAtom() == nullptr ? 0.0f : SimulationManager::GetSelectedAtom()->Radius();
+
+		DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
+		float xMax = (boxDims.x / 2.0f) - selectedAtomRadius; // Remove the radius so that the atom cannot go outside the simulation
+		float yMax = (boxDims.y / 2.0f) - selectedAtomRadius;
+		float zMax = (boxDims.z / 2.0f) - selectedAtomRadius;
 
 		// Text for "Position"
 		std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(0, 0);
@@ -536,8 +556,8 @@ namespace LayoutConfiguration
 
 		// Slider for X Position
 		std::shared_ptr<Slider> positionXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 1);
-		positionXSlider->SetMin(-1.0f);
-		positionXSlider->SetMax(1.0f);
+		positionXSlider->SetMin(-xMax);
+		positionXSlider->SetMax(xMax);
 		positionXSlider->Margin(0.0f, 2.0f);
 		positionXSlider->SetValue(selectedAtomPosition.x);
 
@@ -549,8 +569,8 @@ namespace LayoutConfiguration
 
 		// Slider for Y Position
 		std::shared_ptr<Slider> positionYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(2, 1);
-		positionYSlider->SetMin(-1.0f);
-		positionYSlider->SetMax(1.0f);
+		positionYSlider->SetMin(-yMax);
+		positionYSlider->SetMax(yMax);
 		positionYSlider->Margin(0.0f, 2.0f);
 		positionYSlider->SetValue(selectedAtomPosition.y);
 
@@ -562,34 +582,10 @@ namespace LayoutConfiguration
 
 		// Slider for Z Position
 		std::shared_ptr<Slider> positionZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(3, 1);
-		positionZSlider->SetMin(-1.0f);
-		positionZSlider->SetMax(1.0f);
+		positionZSlider->SetMin(-zMax);
+		positionZSlider->SetMax(zMax);
 		positionZSlider->Margin(0.0f, 2.0f);
 		positionZSlider->SetValue(selectedAtomPosition.z);
-
-		/*
-		// Now that all the position sliders have been created, we can 
-		// reference them in the lambda for the box dimension slider
-		boxDimensionSlider->ValueChanged(
-			[weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
-			weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
-			weakPZSlider = std::weak_ptr<Slider>(positionZSlider)](float value)
-		{
-			auto pXSlider = weakPXSlider.lock();
-			auto pYSlider = weakPYSlider.lock();
-			auto pZSlider = weakPZSlider.lock();
-
-			SimulationManager::BoxDimensions(value);
-			float half = value / 2.0f;
-			pXSlider->SetMin(-half);
-			pXSlider->SetMax(half);
-			pYSlider->SetMin(-half);
-			pYSlider->SetMax(half);
-			pZSlider->SetMin(-half);
-			pZSlider->SetMax(half);
-		}
-		);
-		*/
 
 		DirectX::XMFLOAT3 selectedAtomVelocity = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Velocity();
 
@@ -832,9 +828,22 @@ namespace LayoutConfiguration
 		);
 
 		atomTypeComboBox->SelectionChanged(
-			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](std::wstring value)
+			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView),
+			weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
+			weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
+			weakPZSlider = std::weak_ptr<Slider>(positionZSlider),
+			weakVXSlider = std::weak_ptr<Slider>(velocityXSlider),
+			weakVYSlider = std::weak_ptr<Slider>(velocityYSlider),
+			weakVZSlider = std::weak_ptr<Slider>(velocityZSlider)](std::wstring value)
 		{
+			auto pXSlider = weakPXSlider.lock();
+			auto pYSlider = weakPYSlider.lock();
+			auto pZSlider = weakPZSlider.lock();
+			auto vXSlider = weakVXSlider.lock();
+			auto vYSlider = weakVYSlider.lock();
+			auto vZSlider = weakVZSlider.lock();
 			auto listView = weakListView.lock();
+
 			int index = listView->ItemIndex(SimulationManager::GetSelectedAtom());
 
 			if (value == L"Hydrogen")
@@ -866,6 +875,26 @@ namespace LayoutConfiguration
 
 			// Must make to re-select the new atom
 			listView->HighlightItem(SimulationManager::GetSelectedAtom());
+
+			// If the newly created atom has a larger radius than the previous atom type, 
+			// then it may be possible that atom is now outside the simulation bounds slightly
+			// In this case, expand the simulation box to fully include the new atom
+			SimulationManager::ExpandBoxDimensionsIfNecessary();
+
+			// Need to update the slider mni/max values to account for the new atom's radius
+			DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
+			float radius = SimulationManager::GetSelectedAtom()->Radius();
+			float xMax = (boxDims.x / 2.0f) - radius; // Remove the radius so that the atom cannot go outside the simulation
+			float yMax = (boxDims.y / 2.0f) - radius;
+			float zMax = (boxDims.z / 2.0f) - radius;
+
+			// Slider for X Position
+			pXSlider->SetMin(-xMax);
+			pXSlider->SetMax(xMax);
+			pYSlider->SetMin(-yMax);
+			pYSlider->SetMax(yMax);
+			pZSlider->SetMin(-zMax);
+			pZSlider->SetMax(zMax);
 		}
 		);
 
@@ -911,6 +940,7 @@ namespace LayoutConfiguration
 
 			XMFLOAT3 position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 			XMFLOAT3 velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+			float radius = 0.0f;
 
 			if (atom == nullptr)
 			{
@@ -920,6 +950,7 @@ namespace LayoutConfiguration
 			{
 				position = atom->Position();
 				velocity = atom->Velocity();
+				radius = atom->Radius();
 
 				// Update the Atom type combo box to display the correct element type
 				comboBox->SelectItem(ElementStrings[atom->ElementType()]);
@@ -932,6 +963,20 @@ namespace LayoutConfiguration
 			vXSlider->SetValue(velocity.x);
 			vYSlider->SetValue(velocity.y);
 			vZSlider->SetValue(velocity.z);
+
+			// Also need to update the slide mni/max values to account for the new atom's radius
+			DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
+			float xMax = (boxDims.x / 2.0f) - radius; // Remove the radius so that the atom cannot go outside the simulation
+			float yMax = (boxDims.y / 2.0f) - radius;
+			float zMax = (boxDims.z / 2.0f) - radius;
+
+			// Slider for X Position
+			pXSlider->SetMin(-xMax);
+			pXSlider->SetMax(xMax);
+			pYSlider->SetMin(-yMax);
+			pYSlider->SetMax(yMax);
+			pZSlider->SetMin(-zMax);
+			pZSlider->SetMax(zMax);
 
 			// Highlight the correct atom in the listview
 			listView->HighlightItem(atom);
@@ -950,7 +995,6 @@ namespace LayoutConfiguration
 			}
 		);
 	}
-	
 	void DisplayAddMoleculeControls(const std::shared_ptr<ContentWindow>& window)
 	{
 		// Make sure the simulation is just in VIEW mode
@@ -1355,6 +1399,7 @@ namespace LayoutConfiguration
 		assert(layout != nullptr);
 
 		RowColDefinitions columnDefs;
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Simulation Details
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Add atoms
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Add molecules
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 110.0f);	// Create Bond
@@ -1363,28 +1408,50 @@ namespace LayoutConfiguration
 		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);
 		layout->SetColumnDefinitions(columnDefs);
 
+		// Simulation Details Button
+		std::shared_ptr<Button> simulationDetailsButton = layout->CreateControl<Button>(0, 0);
+		simulationDetailsButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
+		simulationDetailsButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
+		simulationDetailsButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window)]()
+			{
+				auto window = weakWindow.lock();
+
+				// Pause the simulation first as it does not make sense to add an atom while the simulation is playing
+				SimulationManager::Pause();
+
+				// Just run the display add atoms function
+				DisplaySimulationDetailsControls(window);
+			}
+		);
+
+		std::shared_ptr<Text> simulationDetailsButtonText = simulationDetailsButton->GetLayout()->CreateControl<Text>();
+		simulationDetailsButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
+		simulationDetailsButtonText->SetText(L"Simulation Details");
+
 		// Add Atom Button
-		std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(0, 0);
+		std::shared_ptr<Button> addAtomButton = layout->CreateControl<Button>(0, 1);
 		addAtomButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		addAtomButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		addAtomButton->Click(
 			[weakWindow = std::weak_ptr<ContentWindow>(window)]() 
-		{
-			auto window = weakWindow.lock();
+			{
+				auto window = weakWindow.lock();
 
-			// Pause the simulation first as it does not make sense to add an atom while the simulation is playing
-			SimulationManager::Pause();
+				// Pause the simulation first as it does not make sense to add an atom while the simulation is playing
+				SimulationManager::Pause();
 
-			// Just run the display add atoms function
-			DisplayAddAtomsControls(window);
-		});
+				// Just run the display add atoms function
+				DisplayAddAtomsControls(window);
+			}
+		);
 
 		std::shared_ptr<Text> addAtomButtonText = addAtomButton->GetLayout()->CreateControl<Text>();
 		addAtomButtonText->SetTextTheme(THEME_QUICK_BAR_TEXT);
 		addAtomButtonText->SetText(L"Add Atoms");
 
 		// Add Molecules Button
-		std::shared_ptr<Button> addMoleculesButton = layout->CreateControl<Button>(0, 1);
+		std::shared_ptr<Button> addMoleculesButton = layout->CreateControl<Button>(0, 2);
 		addMoleculesButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		addMoleculesButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		addMoleculesButton->Click(
@@ -1405,7 +1472,7 @@ namespace LayoutConfiguration
 
 
 		// Create Bond Button
-		std::shared_ptr<Button> createBondButton = layout->CreateControl<Button>(0, 2);
+		std::shared_ptr<Button> createBondButton = layout->CreateControl<Button>(0, 3);
 		createBondButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		createBondButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		createBondButton->Click(
@@ -1426,7 +1493,7 @@ namespace LayoutConfiguration
 
 
 		// Edit Velocity Arrows
-		std::shared_ptr<Button> editVelocityArrowsButton = layout->CreateControl<Button>(0, 3);
+		std::shared_ptr<Button> editVelocityArrowsButton = layout->CreateControl<Button>(0, 4);
 		editVelocityArrowsButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		editVelocityArrowsButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		editVelocityArrowsButton->Click(
@@ -1452,7 +1519,7 @@ namespace LayoutConfiguration
 
 
 		// Reset State Button
-		std::shared_ptr<Button> resetStateButton = layout->CreateControl<Button>(0, 4);
+		std::shared_ptr<Button> resetStateButton = layout->CreateControl<Button>(0, 5);
 		resetStateButton->SetColorTheme(THEME_QUICK_BAR_BUTTON_COLOR);
 		resetStateButton->SetBorderTheme(THEME_MENU_BAR_BUTTON_BORDER);
 		resetStateButton->Click(

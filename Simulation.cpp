@@ -121,6 +121,29 @@ void Simulation::DeleteBond(const std::shared_ptr<Bond>& bond)
 		m_bonds.erase(m_bonds.begin() + bondIndex);
 }
 
+float Simulation::BoxDimensionsMinimum()
+{
+	// Compute the atom+radius that is the furthest along an axis (so the simulation box can
+	// not be less than this value)
+	float max = 1.0f; // Default should be 1, so we are never less than this
+
+	for (std::shared_ptr<Atom> atom : m_atoms)
+	{
+		max = std::max(std::abs(atom->Position().x) + atom->Radius(), max);
+		max = std::max(std::abs(atom->Position().y) + atom->Radius(), max);
+		max = std::max(std::abs(atom->Position().z) + atom->Radius(), max);
+	}
+
+	return max;
+}
+
+void Simulation::ExpandBoxDimensionsIfNecessary()
+{
+	// Set the box dimensions to the maximum of the existing dimensions vs.
+	// the furthest atom's radius
+	BoxDimensions(std::max(BoxDimensionsMinimum() * 2, m_boxDimensions.x));
+}
+
 
 
 void Simulation::StartRecording()

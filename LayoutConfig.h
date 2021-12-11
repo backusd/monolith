@@ -29,6 +29,7 @@ namespace LayoutConfiguration
 	void CreateViewDropDown(const std::shared_ptr<ContentWindow>& window);
 
 	// Display controls to create a new simulation
+	void DisplaySimulationDetailsControls(const std::shared_ptr<ContentWindow>& window);
 	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window);
 	void DisplayAddMoleculeControls(const std::shared_ptr<ContentWindow>& window);
 	void DisplayCreateBondControls(const std::shared_ptr<ContentWindow>& window);

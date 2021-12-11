@@ -67,6 +67,9 @@ public:
 	static void SelectedAtomVelocityZ(float velocityZ) { if (m_selectedAtom != nullptr) m_selectedAtom->SetVelocityZ(velocityZ); }
 
 	static void BoxDimensions(float value) { m_simulation->BoxDimensions(value); }
+	static void ExpandBoxDimensionsIfNecessary() { m_simulation->ExpandBoxDimensionsIfNecessary(); }
+	static float BoxDimensionsMinimum() { return m_simulation->BoxDimensionsMinimum(); }
+
 
 	static void AtomHoveredOver(std::shared_ptr<Atom> atom);
 	static std::shared_ptr<Atom> AtomHoveredOver() { return m_atomHoveredOver; }
