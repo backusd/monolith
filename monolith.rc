@@ -52,7 +52,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON2               ICON                    "C:\\Users\\backu\\Downloads\\m1_g9x_icon.ico"
+WATER_MOLECULE          ICON                    "water-molecule-2c.ico"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////

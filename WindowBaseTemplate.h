@@ -50,7 +50,7 @@ WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* nam
 	wc.cbWndExtra = 0;
 	wc.hInstance = m_hInst;
 	wc.hIcon = static_cast<HICON>(LoadImage(
-		m_hInst, MAKEINTRESOURCE(IDI_ICON2),
+		m_hInst, MAKEINTRESOURCE(WATER_MOLECULE),
 		IMAGE_ICON, 32, 32, 0
 	));
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -58,7 +58,7 @@ WindowBaseTemplate<T>::WindowBaseTemplate(int width, int height, const char* nam
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = wndBaseClassName;
 	wc.hIconSm = static_cast<HICON>(LoadImage(
-		m_hInst, MAKEINTRESOURCE(IDI_ICON2),
+		m_hInst, MAKEINTRESOURCE(WATER_MOLECULE),
 		IMAGE_ICON, 16, 16, 0
 	));
 	RegisterClassEx(&wc);

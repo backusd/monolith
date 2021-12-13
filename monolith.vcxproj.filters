@@ -446,6 +446,9 @@
     <Image Include="..\..\..\Downloads\m1_g9x_icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="water-molecule-2c.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
