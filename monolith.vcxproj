@@ -289,7 +289,6 @@
     <ResourceCompile Include="monolith.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\..\Downloads\m1_g9x_icon.ico" />
     <Image Include="water-molecule-2c.ico" />
   </ItemGroup>
   <ItemGroup>

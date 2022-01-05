@@ -16,6 +16,11 @@ Layout::Layout(const std::shared_ptr<DeviceResources>& deviceResources,
 	m_mouseCapturedControl(nullptr),
 	m_mouseCapturedLayout(nullptr),
 	m_name(L""),
+	m_colorTheme(nullptr),
+	m_colorMarginLeft(0.0f),
+	m_colorMarginRight(0.0f),
+	m_colorMarginTop(0.0f),
+	m_colorMarginBottom(0.0f),
 	LayoutClearedEvent([]() {})
 {
 	// Default grid layout to one row and one column that fills the window
@@ -673,6 +678,23 @@ bool Layout::Render3DControls()
 
 bool Layout::Render2DControls()
 {
+	// if the layout background color is not nullptr, then render it
+	if (m_colorTheme != nullptr)
+	{
+		ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+
+		context->SetTransform(m_deviceResources->OrientationTransform2D());
+
+		D2D1_RECT_F rect = D2D1::RectF(
+			m_left + m_colorMarginLeft,
+			m_top + m_colorMarginTop,
+			m_left + m_width - m_colorMarginRight,
+			m_top + m_height - m_colorMarginBottom);
+
+		// Just fill the layout with the default color (don't allow layouts to change color)
+		context->FillRectangle(rect, m_colorTheme->GetBrush(MouseOverDown::NONE));
+	}
+
 	// Pass the Render call along to each child control
 	// ONLY 2D rendering controls should react to this - other controls
 	// should NOT override Control::Render2D

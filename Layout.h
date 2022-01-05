@@ -1,5 +1,7 @@
 #pragma once
 #include "pch.h"
+#include "ColorTheme.h"
+#include "ThemeManager.h"
 #include "RowCol.h"
 #include "MouseState.h"
 #include "OnMessageResult.h"
@@ -100,6 +102,12 @@ public:
 	std::shared_ptr<Layout> GetSubLayout(std::wstring layoutName);
 	std::shared_ptr<Layout> GetMouseCapturedLayout() { return m_mouseCapturedLayout; }
 
+
+	// Color Theme functions
+	void SetColorTheme(std::string name) { m_colorTheme = std::static_pointer_cast<ColorTheme>(ThemeManager::GetTheme(name)); }
+	void SetColorTheme(std::shared_ptr<ColorTheme> theme) { m_colorTheme = theme; }
+	void SetBackgroundColorMargins(float left, float top, float right, float bottom) { m_colorMarginLeft = left; m_colorMarginTop = top; m_colorMarginRight = right; m_colorMarginBottom = bottom; }
+
 	// Set the layout cleared event
 	void SetLayoutClearedEvent(std::function<void()> function) { LayoutClearedEvent = function; }
 
@@ -133,6 +141,12 @@ private:
 	// Keep a List of all sub-layouts, including the grid entry they belong to
 	std::vector<std::tuple<std::shared_ptr<Layout>, int, int>> m_subLayouts;
 
+	// Color theme for if the layout needs to paint itself (optional - default is to not draw anything)
+	std::shared_ptr<ColorTheme>  m_colorTheme;
+	float m_colorMarginLeft;
+	float m_colorMarginRight;
+	float m_colorMarginTop;
+	float m_colorMarginBottom;
 
 	// Layout cleared event
 	std::function<void()> LayoutClearedEvent;

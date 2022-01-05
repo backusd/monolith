@@ -259,15 +259,9 @@ void ThemeManager::CreateQuickBarThemes(const std::shared_ptr<DeviceResources>& 
 
 void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResources>& deviceResources)
 {
-	// Backdrop color
-	std::shared_ptr<ColorTheme> backdropButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR, deviceResources);
-	backdropButtonColor->SetColor(D2D1::ColorF(25.0f / 255.0f, 25.0f / 255.0f, 28.0f / 255.0f));
-	backdropButtonColor->SetColorPointerOver(D2D1::ColorF(25.0f / 255.0f, 25.0f / 255.0f, 28.0f / 255.0f));
-	backdropButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
-
-	std::shared_ptr<BorderTheme> backdropButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER, deviceResources);
-	backdropButtonBorder->SetStrokeWidth(0.75f);
-	backdropButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::Gray));
+	// Backdrop color (Only the NONE state color will be used)
+	std::shared_ptr<ColorTheme> backdropColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_BACKDROP_COLOR, deviceResources);
+	backdropColor->SetAllColors(D2D1::ColorF(25.0f / 255.0f, 25.0f / 255.0f, 28.0f / 255.0f));
 
 	// Basic text
 	std::shared_ptr<TextTheme> textTheme = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_TEXT, deviceResources);
@@ -468,6 +462,39 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	editVelocityArrowsButtonText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	editVelocityArrowsButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD);
 	editVelocityArrowsButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
+
+
+	// Tab Button - Tab selected color
+	std::shared_ptr<ColorTheme> tabButtonSelectedColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_COLOR, deviceResources);
+	tabButtonSelectedColor->SetAllColors(D2D1::ColorF(25.0f / 255.0f, 25.0f / 255.0f, 28.0f / 255.0f));
+
+	// Tab Button - Tab unselected color
+	std::shared_ptr<ColorTheme> tabButtonUnselectedColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_COLOR, deviceResources);
+	tabButtonUnselectedColor->SetColor(D2D1::ColorF(55.0f / 255.0f, 55.0f / 255.0f, 58.0f / 255.0f));
+	tabButtonUnselectedColor->SetColorPointerOver(D2D1::ColorF(75.0f / 255.0f, 75.0f / 255.0f, 78.0f / 255.0f));
+	tabButtonUnselectedColor->SetColorPointerDown(D2D1::ColorF(95.0f / 255.0f, 95.0f / 255.0f, 98.0f / 255.0f));
+
+	// Tab Button - Tab selected border
+	std::shared_ptr<BorderTheme> tabButtonSelectedBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_BORDER, deviceResources);
+	tabButtonSelectedBorder->SetStrokeWidth(1.5f, 1.5f, 1.5f, 0.5f);
+	tabButtonSelectedBorder->SetAllColors(D2D1::ColorF(85.0f / 255.0f, 85.0f / 255.0f, 88.0f / 255.0f));
+
+	// Tab Button - Tab unselected border
+	std::shared_ptr<BorderTheme> tabButtonUnselectedBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_BORDER, deviceResources);
+	tabButtonUnselectedBorder->SetStrokeWidth(1.5f, 1.5f, 1.5f, 0.5f);
+	tabButtonUnselectedBorder->SetAllColors(D2D1::ColorF(85.0f / 255.0f, 85.0f / 255.0f, 88.0f / 255.0f));
+
+	/*
+	// Tabbed Pane - Pane color
+	std::shared_ptr<ColorTheme> tabbedPanePaneColor = ThemeManager::CreateTheme<ColorTheme>(THEME_DEFAULT_TABBED_PANE_PANE_COLOR, deviceResources);
+	tabbedPanePaneColor->SetAllColors(D2D1::ColorF(25.0f / 255.0f, 25.0f / 255.0f, 28.0f / 255.0f));
+
+	// Tabbed Pane - Pane border
+	std::shared_ptr<BorderTheme> tabbedPanePaneBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_DEFAULT_TABBED_PANE_PANE_BORDER, deviceResources);
+	tabbedPanePaneBorder->SetStrokeWidth(1.5f, 0.0f, 1.5f, 1.5f);
+	tabbedPanePaneBorder->SetAllColors(D2D1::ColorF(85.0f / 255.0f, 85.0f / 255.0f, 88.0f / 255.0f));
+	*/
 }
 
 std::shared_ptr<Theme> ThemeManager::GetTheme(std::string name)

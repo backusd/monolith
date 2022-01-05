@@ -296,15 +296,13 @@ namespace LayoutConfiguration
 		// Clear the layout of any existing content
 		layout->Clear();
 
-		// Create a single button so we can color the backdrop
-		std::shared_ptr<Button> backdropButton = layout->CreateControl<Button>(0, 0);
-		backdropButton->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR);
-		backdropButton->SetBorderTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER);
-		backdropButton->Margin(5.0f, 0.0f, 5.0f, 5.0f);
 
-		// Get the layout for the backdrop button
-		std::shared_ptr<Layout> backdropLayout = backdropButton->GetLayout();
+		std::shared_ptr<Layout> backdropLayout = layout->CreateSubLayout(0, 0);
 
+		// color the backdrop layout taking into account margins
+		backdropLayout->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_COLOR);
+		backdropLayout->SetBackgroundColorMargins(5.0f, 0.0f, 5.0f, 5.0f);
+		
 		RowColDefinitions rowDefs;
 		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions:
 		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Box Dimensions Slider
@@ -315,7 +313,7 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> boxDimensionsText = backdropLayout->CreateControl<Text>(0, 0);
 		boxDimensionsText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 		boxDimensionsText->SetText(L"Box Dimensions");
-		boxDimensionsText->Margin(5.0f, 0.0f);
+		boxDimensionsText->Margin(10.0f, 0.0f);
 
 		// Box Dimension Slider
 		std::shared_ptr<Slider> boxDimensionSlider = backdropLayout->CreateControl<Slider>(1, 0);
@@ -332,6 +330,7 @@ namespace LayoutConfiguration
 
 		
 	}
+	
 	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window)
 	{
 		// Make sure the simulation is just in VIEW mode
@@ -349,18 +348,18 @@ namespace LayoutConfiguration
 		// Bottom button will house the all other controls for editing the "Selected Atom"
 		// We use buttons simply to be able to color the background - there will be no click functionality
 		RowColDefinitions rowDefs;
-		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Top Button
-		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 340.0f);	// TabbedPane w/ selected atom info
-		layout->SetRowDefinitions(rowDefs);
-
-		std::shared_ptr<Button> topBackdropButton = layout->CreateControl<Button>(0, 0);
-		topBackdropButton->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR);
-		topBackdropButton->SetBorderTheme(THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER);
-		topBackdropButton->Margin(5.0f, 0.0f, 5.0f, 5.0f);
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Top Section - List view of atoms
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 335.0f);	// Bottom Section - Tabbed layouts with info for the selected atom
+		layout->SetRowDefinitions(rowDefs);		
 
 		// Top Section ================================================================================
+		std::shared_ptr<Layout> topLayout = layout->CreateSubLayout(0, 0);
+
+		// color the top layout taking into account margins
+		topLayout->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_COLOR);
+		topLayout->SetBackgroundColorMargins(5.0f, 0.0f, 5.0f, 5.0f);
+
 		// Create "Add Atom Button" and atoms listview in the top backdrop
-		std::shared_ptr<Layout> topLayout = topBackdropButton->GetLayout();
 		RowColDefinitions topRowDefs;
 		topRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);		// Add atom button
 		topRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// atoms listview
@@ -371,6 +370,7 @@ namespace LayoutConfiguration
 		addAtomButton->SetColorTheme(THEME_NEW_SIMULATION_ADD_BUTTON_COLOR);
 		addAtomButton->SetBorderTheme(THEME_NEW_SIMULATION_ADD_BUTTON_BORDER);
 		addAtomButton->Margin(20.0f, 5.0f);
+		// addAtomButton->Click() defined below so it can capture the listview
 		std::shared_ptr<Layout> addAtomButtonLayout = addAtomButton->GetLayout();
 		std::shared_ptr<Text> addAtomButtonText = addAtomButtonLayout->CreateControl<Text>();
 		addAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
@@ -379,6 +379,7 @@ namespace LayoutConfiguration
 		// Atom ListView
 		std::shared_ptr<ListView<Atom>> atomListView = topLayout->CreateControl<ListView<Atom>>(1, 0);
 		atomListView->SetItemHeight(40.0f);
+		atomListView->Name(L"AtomListView");
 		atomListView->SetHighlightItemLayoutMethod(
 			[](std::shared_ptr<Layout> layout)
 			{
@@ -433,7 +434,6 @@ namespace LayoutConfiguration
 		// Highlight the selected atom
 		atomListView->HighlightItem(SimulationManager::GetSelectedAtom());
 		// atomListView->SetFormatFunction() - defined below after the sliders and combobox are created
-
 		
 
 		// addAtomButton->Click method defined here so we can capture the listview
@@ -459,202 +459,105 @@ namespace LayoutConfiguration
 		// END Top Section ================================================================================
 		// 
 		// Bottom Section =================================================================================
-		// TabbedPane to hold different details about the selected atom
-		std::shared_ptr<TabbedPane> selectedAtomControlsTabbedPane = layout->CreateControl<TabbedPane>(1, 0);
-		selectedAtomControlsTabbedPane->SetNumberOfTabs(2);
-		selectedAtomControlsTabbedPane->Margin(5.0f, 0.0f, 5.0f, 5.0f);
-		selectedAtomControlsTabbedPane->SetTabRowHeight(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 20.0f);
-
-		// Tab 1: Atom Info (Atom Type / Position / Velocity)
-		std::shared_ptr<Layout> selectedAtomControlsTab1 = selectedAtomControlsTabbedPane->GetTabLayout(0);
-		std::shared_ptr<Text> selectedAtomControlsTab1Text = selectedAtomControlsTab1->CreateControl<Text>();
-		selectedAtomControlsTab1Text->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
-		selectedAtomControlsTab1Text->SetText(L"Atom Info");
-
-		// Tab 2: Bond Info
-		std::shared_ptr<Layout> selectedAtomControlsTab2 = selectedAtomControlsTabbedPane->GetTabLayout(1);
-		std::shared_ptr<Text> selectedAtomControlsTab2Text = selectedAtomControlsTab2->CreateControl<Text>();
-		selectedAtomControlsTab2Text->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
-		selectedAtomControlsTab2Text->SetText(L"Bond Info");
-
-		// Pane 1: Atom Info (Atom Type / Position / Velocity)
-		std::shared_ptr<Layout> selectedAtomControlsPane1 = selectedAtomControlsTabbedPane->GetPaneLayout(0);
-
+		
+		// Create a sublayout in the bottom section that will be split into two other sublayouts
+		// 1: An upper row that will hold button tabs
+		// 2: A lower row that will hold content
+		std::shared_ptr<Layout> bottomLayout = layout->CreateSubLayout(1, 0);
 		RowColDefinitions bottomLayoutRowDefs;
-		bottomLayoutRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 60.0f);		// Atom Type combo box
-		bottomLayoutRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 250.0f);	// Atom Position / Velocity Sliders
-		selectedAtomControlsPane1->SetRowDefinitions(bottomLayoutRowDefs);
+		bottomLayoutRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 20.0f);	// Tab Buttons for changing out the bottom layout
+		bottomLayoutRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// Layout with info about the selected atom
+		bottomLayout->SetRowDefinitions(bottomLayoutRowDefs);
 
-		// Sublayout for atom type combobox
-		std::shared_ptr<Layout> atomTypeSubLayout = selectedAtomControlsPane1->CreateSubLayout(0, 0);
-		RowColDefinitions atomTypeSublayoutColumns;
-		atomTypeSublayoutColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 80.0f);	// Text "Element:"
-		atomTypeSublayoutColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Combobox with types
-		atomTypeSubLayout->SetColumnDefinitions(atomTypeSublayoutColumns);
+		// color the bottom layout taking into account margins
+		bottomLayout->SetColorTheme(THEME_NEW_SIMULATION_BACKDROP_COLOR);
+		bottomLayout->SetBackgroundColorMargins(5.0f, 0.0f, 5.0f, 5.0f);
 
-		// Text "Element:"
-		std::shared_ptr<Text> atomTypeHeaderText = atomTypeSubLayout->CreateControl<Text>(0, 0);
-		atomTypeHeaderText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		atomTypeHeaderText->SetText(L"Element:");
-		atomTypeHeaderText->Margin(5.0f, 0.0f);
+		// Format tabs row into columns for the buttons
+		std::shared_ptr<Layout> buttonTabsLayout = bottomLayout->CreateSubLayout(0, 0);
+		RowColDefinitions tabColumnDefs;
+		tabColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// "Atom Info" Button
+		tabColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// "Bond Info" Button
+		buttonTabsLayout->SetColumnDefinitions(tabColumnDefs);
 
-		// Combobox with elements
-		std::shared_ptr<ComboBox> atomTypeComboBox = atomTypeSubLayout->CreateControl<ComboBox>(0, 1);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::HYDROGEN]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::HELIUM]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::LITHIUM]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::BERYLLIUM]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::BORON]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::CARBON]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::NITROGEN]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::OXYGEN]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::FLOURINE]);
-		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::NEON]);
-		atomTypeComboBox->Margin(0.0f, 11.0f, 10.0f, 10.0f);
+		// Tab 1: Atom Info Button
+		std::shared_ptr<Button> atomInfoButton = buttonTabsLayout->CreateControl<Button>(0, 0);
+		atomInfoButton->SetColorTheme(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_COLOR);
+		atomInfoButton->SetBorderTheme(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_BORDER);
+		atomInfoButton->Margin(5.0f, 0.0f, 0.0f, 0.0f);
+		// atomInfoButton->Click() defined below so that it can capture the bondInfoButton
+		std::shared_ptr<Text> atomInfoButtonText = atomInfoButton->GetLayout()->CreateControl<Text>();
+		atomInfoButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
+		atomInfoButtonText->SetText(L"Atom Info");
 
-		if (SimulationManager::GetSelectedAtom() != nullptr)
-			atomTypeComboBox->SelectItem(ElementStrings[SimulationManager::GetSelectedAtom()->ElementType()]);
+		// Tab 2: Bond Info Button
+		std::shared_ptr<Button> bondInfoButton = buttonTabsLayout->CreateControl<Button>(0, 1);
+		bondInfoButton->SetColorTheme(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_COLOR);
+		bondInfoButton->SetBorderTheme(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_BORDER);
+		bondInfoButton->Margin(0.0f, 0.0f, 5.0f, 0.0f);
+		bondInfoButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window),
+			weakAtomInfoButton = std::weak_ptr<Button>(atomInfoButton),
+			weakBondInfoButton = std::weak_ptr<Button>(bondInfoButton)]()
+			{
+				auto window = weakWindow.lock();
+				auto atomInfoButton = weakAtomInfoButton.lock();
+				auto bondInfoButton = weakBondInfoButton.lock();
 
-		// Sub Layout for editing position and velocity
-		std::shared_ptr<Layout> atomPositionVelocitySubLayout = selectedAtomControlsPane1->CreateSubLayout(1, 0);
+				// Set the Unselected color theme for the atom info button
+				atomInfoButton->SetColorTheme(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_COLOR);
+				atomInfoButton->SetBorderTheme(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_BORDER);
 
-		RowColDefinitions positionVelocityColumns;
-		positionVelocityColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 60.0f); // Header Text
-		positionVelocityColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// Slider control
-		atomPositionVelocitySubLayout->SetColumnDefinitions(positionVelocityColumns);
+				// Set the Selected color theme for the bond info button
+				bondInfoButton->SetColorTheme(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_COLOR);
+				bondInfoButton->SetBorderTheme(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_BORDER);				
 
-		RowColDefinitions positionVelocityRows;
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position:
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position X
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position Y
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Position Z
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f); // Velocity:
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity X
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity Y
-		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Velocity Z
-		atomPositionVelocitySubLayout->SetRowDefinitions(positionVelocityRows);
+				DisplayAddAtomsControlsBondInfoButtonClick(window);
+			}
+		);
+		std::shared_ptr<Text> bondInfoButtonText = bondInfoButton->GetLayout()->CreateControl<Text>();
+		bondInfoButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
+		bondInfoButtonText->SetText(L"Bond Info");
 
-		DirectX::XMFLOAT3 selectedAtomPosition = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Position();
-		float selectedAtomRadius = SimulationManager::GetSelectedAtom() == nullptr ? 0.0f : SimulationManager::GetSelectedAtom()->Radius();
+		// Define click function here so it can capture the bondInfoButton
+		atomInfoButton->Click(
+			[weakWindow = std::weak_ptr<ContentWindow>(window),
+			weakAtomInfoButton = std::weak_ptr<Button>(atomInfoButton),
+			weakBondInfoButton = std::weak_ptr<Button>(bondInfoButton)]()
+			{
+				auto window = weakWindow.lock();
+				auto atomInfoButton = weakAtomInfoButton.lock();
+				auto bondInfoButton = weakBondInfoButton.lock();
 
-		DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
-		float xMax = (boxDims.x / 2.0f) - selectedAtomRadius; // Remove the radius so that the atom cannot go outside the simulation
-		float yMax = (boxDims.y / 2.0f) - selectedAtomRadius;
-		float zMax = (boxDims.z / 2.0f) - selectedAtomRadius;
+				// Set the Selected color theme for the atom info button
+				atomInfoButton->SetColorTheme(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_COLOR);
+				atomInfoButton->SetBorderTheme(THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_BORDER);
 
-		// Text for "Position"
-		std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(0, 0);
-		positionText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		positionText->SetText(L"Position");
-		positionText->Margin(5.0f, 0.0f);
+				// Set the Unselected color theme for the bond info button
+				bondInfoButton->SetColorTheme(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_COLOR);
+				bondInfoButton->SetBorderTheme(THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_BORDER);
 
-		// Text for X Position
-		std::shared_ptr<Text> positionXText = atomPositionVelocitySubLayout->CreateControl<Text>(1, 0);
-		positionXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		positionXText->SetText(L"X:");
-		positionXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
-
-		// Slider for X Position
-		std::shared_ptr<Slider> positionXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 1);
-		positionXSlider->SetMin(-xMax);
-		positionXSlider->SetMax(xMax);
-		positionXSlider->Margin(0.0f, 2.0f);
-		positionXSlider->SetValue(selectedAtomPosition.x);
-
-		// Text for Y Position
-		std::shared_ptr<Text> positionYText = atomPositionVelocitySubLayout->CreateControl<Text>(2, 0);
-		positionYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		positionYText->SetText(L"Y:");
-		positionYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
-
-		// Slider for Y Position
-		std::shared_ptr<Slider> positionYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(2, 1);
-		positionYSlider->SetMin(-yMax);
-		positionYSlider->SetMax(yMax);
-		positionYSlider->Margin(0.0f, 2.0f);
-		positionYSlider->SetValue(selectedAtomPosition.y);
-
-		// Text for Z Position
-		std::shared_ptr<Text> positionZText = atomPositionVelocitySubLayout->CreateControl<Text>(3, 0);
-		positionZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		positionZText->SetText(L"Z:");
-		positionZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
-
-		// Slider for Z Position
-		std::shared_ptr<Slider> positionZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(3, 1);
-		positionZSlider->SetMin(-zMax);
-		positionZSlider->SetMax(zMax);
-		positionZSlider->Margin(0.0f, 2.0f);
-		positionZSlider->SetValue(selectedAtomPosition.z);
-
-		DirectX::XMFLOAT3 selectedAtomVelocity = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Velocity();
-
-		// Text for "Velocity"
-		std::shared_ptr<Text> velocityText = atomPositionVelocitySubLayout->CreateControl<Text>(4, 0);
-		velocityText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		velocityText->SetText(L"Velocity");
-		velocityText->Margin(5.0f, 10.0f, 5.0f, 0.0f);
-
-		// Text for X Velocity
-		std::shared_ptr<Text> velocityXText = atomPositionVelocitySubLayout->CreateControl<Text>(5, 0);
-		velocityXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		velocityXText->SetText(L"X:");
-		velocityXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
-
-		// Slider for X Velocity
-		std::shared_ptr<Slider> velocityXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(5, 1);
-		velocityXSlider->SetMin(-100.0f);
-		velocityXSlider->SetMax(100.0f);
-		velocityXSlider->Margin(0.0f, 2.0f);
-		velocityXSlider->SetValue(selectedAtomVelocity.x);
-
-		// Text for Y Velocity
-		std::shared_ptr<Text> velocityYText = atomPositionVelocitySubLayout->CreateControl<Text>(6, 0);
-		velocityYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		velocityYText->SetText(L"Y:");
-		velocityYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
-
-		// Slider for Y Velocity
-		std::shared_ptr<Slider> velocityYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(6, 1);
-		velocityYSlider->SetMin(-100.0f);
-		velocityYSlider->SetMax(100.0f);
-		velocityYSlider->Margin(0.0f, 2.0f);
-		velocityYSlider->SetValue(selectedAtomVelocity.y);
-
-		// Text for Z Velocity
-		std::shared_ptr<Text> velocityZText = atomPositionVelocitySubLayout->CreateControl<Text>(7, 0);
-		velocityZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
-		velocityZText->SetText(L"Z:");
-		velocityZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
-
-		// Slider for Z Velocity
-		std::shared_ptr<Slider> velocityZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(7, 1);
-		velocityZSlider->SetMin(-100.0f);
-		velocityZSlider->SetMax(100.0f);
-		velocityZSlider->Margin(0.0f, 2.0f);
-		velocityZSlider->SetValue(selectedAtomVelocity.z);
+				DisplayAddAtomsControlsAtomInfoButtonClick(window);
+			}
+		);
 
 
-		// Pane 2: Bond Info
-		std::shared_ptr<Layout> selectedAtomControlsPane2 = selectedAtomControlsTabbedPane->GetPaneLayout(1);
-		std::shared_ptr<Text> selectedAtomControlsPane2Text = selectedAtomControlsPane2->CreateControl<Text>();
-		selectedAtomControlsPane2Text->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
-		selectedAtomControlsPane2Text->SetText(L"Bond Info");
+		// Create a sublayout for the content and add a name so it can be looked up in other functions
+		std::shared_ptr<Layout> bottomContentLayout = bottomLayout->CreateSubLayout(1, 0);
+		bottomContentLayout->Name(L"AddAtomsControlsBottomContentLayout");
+		
+		// Now that the button has been added, go ahead and display the first tab content
+		DisplayAddAtomsControlsAtomInfoButtonClick(window);
 
-		// END Bottom Section =============================================================================
-		//
-		// Set callback functions for Top Section that rely on Bottom Section Controls ====================
+
+
+
+
+
 
 		atomListView->SetFormatFunction(
 			[weakDeviceResources = std::weak_ptr<DeviceResources>(layout->GetDeviceResources()),
-			weakListView = std::weak_ptr<ListView<Atom>>(atomListView),
-			weakPXSlider = std::weak_ptr<Slider>(positionXSlider),
-			weakPYSlider = std::weak_ptr<Slider>(positionYSlider),
-			weakPZSlider = std::weak_ptr<Slider>(positionZSlider),
-			weakVXSlider = std::weak_ptr<Slider>(velocityXSlider),
-			weakVYSlider = std::weak_ptr<Slider>(velocityYSlider),
-			weakVZSlider = std::weak_ptr<Slider>(velocityZSlider),
-			weakComboBox = std::weak_ptr<ComboBox>(atomTypeComboBox)](std::shared_ptr<Atom> atom, bool highlighted)
+			weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](std::shared_ptr<Atom> atom, bool highlighted)
 		{
 			auto deviceResources = weakDeviceResources.lock();
 			auto listView = weakListView.lock();
@@ -725,24 +628,10 @@ namespace LayoutConfiguration
 
 			removeButton->Click(
 				[weakListView = std::weak_ptr<ListView<Atom>>(listView),
-				weakAtom = std::weak_ptr<Atom>(atom),
-				weakPXSlider,
-				weakPYSlider,
-				weakPZSlider,
-				weakVXSlider,
-				weakVYSlider,
-				weakVZSlider,
-				weakComboBox]()
+				weakAtom = std::weak_ptr<Atom>(atom)]()
 			{
 				auto listView = weakListView.lock();
 				auto atom = weakAtom.lock();
-				auto pXSlider = weakPXSlider.lock();
-				auto pYSlider = weakPYSlider.lock();
-				auto pZSlider = weakPZSlider.lock();
-				auto vXSlider = weakVXSlider.lock();
-				auto vYSlider = weakVYSlider.lock();
-				auto vZSlider = weakVZSlider.lock();
-				auto comboBox = weakComboBox.lock();
 
 				// Do not allow deleting of the last item
 				if (listView->ItemCount() == 1)
@@ -768,63 +657,241 @@ namespace LayoutConfiguration
 		}
 		);
 
-		// END Set callback functions for Top Section that rely on Bottom Section Controls ====================
-		//
+		// Must set a layout cleared event for the right pane layout
+		// If the layout is cleared, then we must undo the SimulationManager::AtomClickEvent
+		// because the list view has been destroyed
+		layout->SetLayoutClearedEvent([]()
+			{
+				SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom) {});
+				SimulationManager::SetSelectedAtomChangedEvent([](std::shared_ptr<Atom> atom) {});
+			}
+		);
+	}
+	void DisplayAddAtomsControlsAtomInfoButtonClick(const std::shared_ptr<ContentWindow>& window)
+	{
+		std::shared_ptr<Layout> mainLayout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"AddAtomsControlsBottomContentLayout"));
+		assert(mainLayout != nullptr);
+		mainLayout->Clear();
+
+		// Create rows for the main layout
+		RowColDefinitions bottomLayoutRowDefs;
+		bottomLayoutRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f);		// Atom Type combo box
+		//bottomLayoutRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 250.0f);	// Atom Position / Velocity Sliders
+		bottomLayoutRowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// Atom Position / Velocity Sliders
+		mainLayout->SetRowDefinitions(bottomLayoutRowDefs);
+
+		// Sublayout for atom type combobox
+		std::shared_ptr<Layout> atomTypeSubLayout = mainLayout->CreateSubLayout(0, 0);
+		RowColDefinitions atomTypeSublayoutColumns;
+		atomTypeSublayoutColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 80.0f);	// Text "Element:"
+		atomTypeSublayoutColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Combobox with types
+		atomTypeSubLayout->SetColumnDefinitions(atomTypeSublayoutColumns);
+
+		// Text "Element:"
+		std::shared_ptr<Text> atomTypeHeaderText = atomTypeSubLayout->CreateControl<Text>(0, 0);
+		atomTypeHeaderText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		atomTypeHeaderText->SetText(L"Element:");
+		atomTypeHeaderText->Margin(10.0f, 0.0f);
+
+		// Combobox with elements
+		std::shared_ptr<ComboBox> atomTypeComboBox = atomTypeSubLayout->CreateControl<ComboBox>(0, 1);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::HYDROGEN]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::HELIUM]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::LITHIUM]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::BERYLLIUM]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::BORON]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::CARBON]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::NITROGEN]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::OXYGEN]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::FLOURINE]);
+		atomTypeComboBox->AddComboBoxItem(ElementStrings[Element::NEON]);
+		atomTypeComboBox->Margin(0.0f, 11.0f, 15.0f, 10.0f);
+
+		if (SimulationManager::GetSelectedAtom() != nullptr)
+			atomTypeComboBox->SelectItem(ElementStrings[SimulationManager::GetSelectedAtom()->ElementType()]);
+
+
+		// Sub Layout for editing position and velocity
+		std::shared_ptr<Layout> atomPositionVelocitySubLayout = mainLayout->CreateSubLayout(1, 0);
+
+		RowColDefinitions positionVelocityColumns;
+		positionVelocityColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 65.0f); // Header Text
+		positionVelocityColumns.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// Slider control
+		atomPositionVelocitySubLayout->SetColumnDefinitions(positionVelocityColumns);
+
+		RowColDefinitions positionVelocityRows;
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);	// Position:
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Position X
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Position Y
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Position Z
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 40.0f);	// Velocity:
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Velocity X
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Velocity Y
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Velocity Z
+		positionVelocityRows.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 10.0f);		// Padding
+		atomPositionVelocitySubLayout->SetRowDefinitions(positionVelocityRows);
+
+		DirectX::XMFLOAT3 selectedAtomPosition = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Position();
+		float selectedAtomRadius = SimulationManager::GetSelectedAtom() == nullptr ? 0.0f : SimulationManager::GetSelectedAtom()->Radius();
+
+		DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
+		float xMax = (boxDims.x / 2.0f) - selectedAtomRadius; // Remove the radius so that the atom cannot go outside the simulation
+		float yMax = (boxDims.y / 2.0f) - selectedAtomRadius;
+		float zMax = (boxDims.z / 2.0f) - selectedAtomRadius;
+
+		// Text for "Position"
+		std::shared_ptr<Text> positionText = atomPositionVelocitySubLayout->CreateControl<Text>(0, 0);
+		positionText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		positionText->SetText(L"Position");
+		positionText->Margin(10.0f, 0.0f);
+
+		// Text for X Position
+		std::shared_ptr<Text> positionXText = atomPositionVelocitySubLayout->CreateControl<Text>(1, 0);
+		positionXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		positionXText->SetText(L"X:");
+		positionXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+		// Slider for X Position
+		std::shared_ptr<Slider> positionXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(1, 1);
+		positionXSlider->SetMin(-xMax);
+		positionXSlider->SetMax(xMax);
+		positionXSlider->Margin(0.0f, 2.0f, 5.0f, 2.0f);
+		positionXSlider->SetValue(selectedAtomPosition.x);
+
+		// Text for Y Position
+		std::shared_ptr<Text> positionYText = atomPositionVelocitySubLayout->CreateControl<Text>(2, 0);
+		positionYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		positionYText->SetText(L"Y:");
+		positionYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+		// Slider for Y Position
+		std::shared_ptr<Slider> positionYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(2, 1);
+		positionYSlider->SetMin(-yMax);
+		positionYSlider->SetMax(yMax);
+		positionYSlider->Margin(0.0f, 2.0f, 5.0f, 2.0f);
+		positionYSlider->SetValue(selectedAtomPosition.y);
+
+		// Text for Z Position
+		std::shared_ptr<Text> positionZText = atomPositionVelocitySubLayout->CreateControl<Text>(3, 0);
+		positionZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		positionZText->SetText(L"Z:");
+		positionZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+		// Slider for Z Position
+		std::shared_ptr<Slider> positionZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(3, 1);
+		positionZSlider->SetMin(-zMax);
+		positionZSlider->SetMax(zMax);
+		positionZSlider->Margin(0.0f, 2.0f, 5.0f, 2.0f);
+		positionZSlider->SetValue(selectedAtomPosition.z);
+
+		DirectX::XMFLOAT3 selectedAtomVelocity = SimulationManager::GetSelectedAtom() == nullptr ? XMFLOAT3(0.0f, 0.0f, 0.0f) : SimulationManager::GetSelectedAtom()->Velocity();
+
+		// Text for "Velocity"
+		std::shared_ptr<Text> velocityText = atomPositionVelocitySubLayout->CreateControl<Text>(4, 0);
+		velocityText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		velocityText->SetText(L"Velocity");
+		velocityText->Margin(5.0f, 10.0f, 5.0f, 0.0f);
+
+		// Text for X Velocity
+		std::shared_ptr<Text> velocityXText = atomPositionVelocitySubLayout->CreateControl<Text>(5, 0);
+		velocityXText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		velocityXText->SetText(L"X:");
+		velocityXText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+		// Slider for X Velocity
+		std::shared_ptr<Slider> velocityXSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(5, 1);
+		velocityXSlider->SetMin(-100.0f);
+		velocityXSlider->SetMax(100.0f);
+		velocityXSlider->Margin(0.0f, 2.0f, 5.0f, 2.0f);
+		velocityXSlider->SetValue(selectedAtomVelocity.x);
+
+		// Text for Y Velocity
+		std::shared_ptr<Text> velocityYText = atomPositionVelocitySubLayout->CreateControl<Text>(6, 0);
+		velocityYText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		velocityYText->SetText(L"Y:");
+		velocityYText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+		// Slider for Y Velocity
+		std::shared_ptr<Slider> velocityYSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(6, 1);
+		velocityYSlider->SetMin(-100.0f);
+		velocityYSlider->SetMax(100.0f);
+		velocityYSlider->Margin(0.0f, 2.0f, 5.0f, 2.0f);
+		velocityYSlider->SetValue(selectedAtomVelocity.y);
+
+		// Text for Z Velocity
+		std::shared_ptr<Text> velocityZText = atomPositionVelocitySubLayout->CreateControl<Text>(7, 0);
+		velocityZText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
+		velocityZText->SetText(L"Z:");
+		velocityZText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+
+		// Slider for Z Velocity
+		std::shared_ptr<Slider> velocityZSlider = atomPositionVelocitySubLayout->CreateControl<Slider>(7, 1);
+		velocityZSlider->SetMin(-100.0f);
+		velocityZSlider->SetMax(100.0f);
+		velocityZSlider->Margin(0.0f, 2.0f, 5.0f, 2.0f);
+		velocityZSlider->SetValue(selectedAtomVelocity.z);
+
+
+
+		// Look up the atom list view
+		std::shared_ptr<ListView<Atom>> atomListView = std::dynamic_pointer_cast<ListView<Atom>>(window->GetLayout()->GetChildControl(L"AtomListView"));
+		assert(atomListView != nullptr);
+
 		// Set callback functions for Bottom Section that rely on Top Section Controls ====================
 
 		positionXSlider->ValueChanged(
 			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
-			{
-				SimulationManager::SelectedAtomPositionX(value);
+		{
+			SimulationManager::SelectedAtomPositionX(value);
 
-				auto listView = weakListView.lock();
-				listView->ItemChanged(SimulationManager::GetSelectedAtom());
-			}
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
 		);
 		positionYSlider->ValueChanged(
 			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
-			{
-				SimulationManager::SelectedAtomPositionY(value);
+		{
+			SimulationManager::SelectedAtomPositionY(value);
 
-				auto listView = weakListView.lock();
-				listView->ItemChanged(SimulationManager::GetSelectedAtom());
-			}
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
 		);
 		positionZSlider->ValueChanged(
 			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
-			{
-				SimulationManager::SelectedAtomPositionZ(value);
+		{
+			SimulationManager::SelectedAtomPositionZ(value);
 
-				auto listView = weakListView.lock();
-				listView->ItemChanged(SimulationManager::GetSelectedAtom());
-			}
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
 		);
 		velocityXSlider->ValueChanged(
 			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
-			{
-				SimulationManager::SelectedAtomVelocityX(value);
+		{
+			SimulationManager::SelectedAtomVelocityX(value);
 
-				auto listView = weakListView.lock();
-				listView->ItemChanged(SimulationManager::GetSelectedAtom());
-			}
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
 		);
 		velocityYSlider->ValueChanged(
 			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
-			{
-				SimulationManager::SelectedAtomVelocityY(value);
+		{
+			SimulationManager::SelectedAtomVelocityY(value);
 
-				auto listView = weakListView.lock();
-				listView->ItemChanged(SimulationManager::GetSelectedAtom());
-			}
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
 		);
 		velocityZSlider->ValueChanged(
 			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](float value)
-			{
-				SimulationManager::SelectedAtomVelocityZ(value);
+		{
+			SimulationManager::SelectedAtomVelocityZ(value);
 
-				auto listView = weakListView.lock();
-				listView->ItemChanged(SimulationManager::GetSelectedAtom());
-			}
+			auto listView = weakListView.lock();
+			listView->ItemChanged(SimulationManager::GetSelectedAtom());
+		}
 		);
 
 		atomTypeComboBox->SelectionChanged(
@@ -881,7 +948,7 @@ namespace LayoutConfiguration
 			// In this case, expand the simulation box to fully include the new atom
 			SimulationManager::ExpandBoxDimensionsIfNecessary();
 
-			// Need to update the slider mni/max values to account for the new atom's radius
+			// Need to update the slider min/max values to account for the new atom's radius
 			DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
 			float radius = SimulationManager::GetSelectedAtom()->Radius();
 			float xMax = (boxDims.x / 2.0f) - radius; // Remove the radius so that the atom cannot go outside the simulation
@@ -901,21 +968,13 @@ namespace LayoutConfiguration
 
 
 		// Assign the Simulation Atom click event function
-		SimulationManager::SetAtomClickedEvent(
-			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView)](std::shared_ptr<Atom> atom)
-		{
-			auto listView = weakListView.lock();
-
-			SimulationManager::SelectAtom(atom);
-			// listView->HighlightItem(atom);
-
-
-
-
-
-			// MUST update sliders and combobox.............
-
-		}
+		SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom)
+			{
+				SimulationManager::SelectAtom(atom);
+			
+				// Don't need to update the listview or other controls because I think they get updated
+				// on the selectedAtomChanged event
+			}
 		);
 
 		// Whenever the selected atom changes, update the sliders, combobox, and listview
@@ -982,19 +1041,20 @@ namespace LayoutConfiguration
 			listView->HighlightItem(atom);
 		}
 		);
-
-
-
-		// Must set a layout cleared event for the right pane layout
-		// If the layout is cleared, then we must undo the SimulationManager::AtomClickEvent
-		// because the list view has been destroyed
-		layout->SetLayoutClearedEvent([]()
-			{
-				SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom) {});
-				SimulationManager::SetSelectedAtomChangedEvent([](std::shared_ptr<Atom> atom) {});
-			}
-		);
 	}
+	void DisplayAddAtomsControlsBondInfoButtonClick(const std::shared_ptr<ContentWindow>& window)
+	{
+		std::shared_ptr<Layout> mainLayout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"AddAtomsControlsBottomContentLayout"));
+		assert(mainLayout != nullptr);
+		mainLayout->Clear();
+
+		std::shared_ptr<Text> atomInfoButtonText = mainLayout->CreateControl<Text>();
+		atomInfoButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
+		atomInfoButtonText->SetText(L"Bond Info");
+	}
+
+
+
 	void DisplayAddMoleculeControls(const std::shared_ptr<ContentWindow>& window)
 	{
 		// Make sure the simulation is just in VIEW mode

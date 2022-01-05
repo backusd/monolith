@@ -43,8 +43,7 @@
 #define THEME_QUICK_BAR_TEXT "quick-bar-text"
 
 // New simulation pane themes
-#define THEME_NEW_SIMULATION_BACKDROP_BUTTON_COLOR "new-simulation-backdrop-button-color"
-#define THEME_NEW_SIMULATION_BACKDROP_BUTTON_BORDER "new-simulation-backdrop-button-border"
+#define THEME_NEW_SIMULATION_BACKDROP_COLOR "new-simulation-backdrop-color"
 #define THEME_NEW_SIMULATION_TEXT "new-simulation-text"
 #define THEME_NEW_SIMULATION_ADD_BUTTON_COLOR "new-simulation-add-button-color"
 #define THEME_NEW_SIMULATION_ADD_BUTTON_BORDER "new-simulation-add-button-border"
@@ -73,3 +72,8 @@
 #define THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_COLOR "new-simulation-edit-velocity-arrows-button-color"
 #define THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_BORDER "new-simulation-edit-velocity-arrows-button-border"
 #define THEME_NEW_SIMULATION_EDIT_VELOCITY_ARROWS_BUTTON_TEXT "new-simulation-edit-velocity-arrows-button-text"
+
+#define THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_COLOR "new-simulation-tab-selected-button-color"
+#define THEME_NEW_SIMULATION_TAB_SELECTED_BUTTON_BORDER "new-simulation-tab-selected-button-border"
+#define THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_COLOR "new-simulation-tab-unselected-button-color"
+#define THEME_NEW_SIMULATION_TAB_UNSELECTED_BUTTON_BORDER "new-simulation-tab-unselected-button-border"
