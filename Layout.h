@@ -93,6 +93,11 @@ public:
 	bool Render2DControls();
 	bool Render2DCapturedControl();
 
+	bool Render2DControlsClipFirstAndLastSublayouts(D2D1_RECT_F renderWindow);
+	bool Render2DControlsWithClipping(D2D1_RECT_F renderWindow);
+
+
+
 	void Name(std::wstring name) { m_name = name; }
 	std::wstring Name() { return m_name; }
 

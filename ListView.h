@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <functional>
+#include <math.h>
 
 template <class T>
 class ListView : public Control
@@ -115,7 +116,7 @@ private:
 	std::shared_ptr<Layout> m_layout;
 
 	// Represents the first index into the itemLayouts that is the top layout to be rendered
-	unsigned int m_scrollOffset;
+	int m_scrollOffset;
 
 	// Must manually set the height of the items so the rows can be sized appropriately
 	float m_itemHeight;
@@ -208,7 +209,8 @@ int ListView<T>::MaxItemsCount()
 	rect.bottom -= m_marginBottom;
 
 	// Return total height / item height
-	return static_cast<int>((rect.bottom - rect.top) / m_itemHeight);
+	// Round up because there may be partially visible items at the beginning or end of the list
+	return static_cast<int>(ceil((rect.bottom - rect.top) / m_itemHeight));
 }
 
 template <class T>
@@ -272,10 +274,8 @@ void ListView<T>::RemoveItem(std::shared_ptr<T> item)
 		else if (removeIndex < m_highlightedItemIndex)
 			--m_highlightedItemIndex;
 
-
-		// if the scroll offset would leave an empty spot, then we must decrement the offset
-		if (m_scrollOffset > 0 && m_scrollOffset + MaxItemsCount() > m_itemLayouts.size())
-			--m_scrollOffset;
+		// Decrease m_scrollOffset but make sure to not go under 0
+		m_scrollOffset = std::max(0, m_scrollOffset - static_cast<int>(m_itemHeight));
 
 		UpdateSubLayouts();
 	}
@@ -287,16 +287,56 @@ void ListView<T>::UpdateSubLayouts()
 	// Must clear the sublayouts and then reassign
 	m_layout->ClearSubLayouts();
 
-	int maxItems = this->MaxItemsCount();
+	//================================================
+	// We are going to create a completely new layout that actually goes outside
+	// the confines of the listview control. However, when it is rendered, the first
+	// and last item are subject to being clipped so that only what is in the confines
+	// of the listview gets rendered
+	//
+	//				_____________
+	// Item1:   ----|_____________|---- Everything between dashed lines will be rendered
+	// Item2:		|_____________|
+	// Item3:		|_____________|
+	// Item4:		|_____________|
+	// Item5:		|_____________|
+	// Item6:	----|_____________|----
 
-	for (int iii = 0; iii < maxItems; ++iii)
+	// Compute the area that will be rendered
+	D2D1_RECT_F renderRect = GetParentRect();
+	renderRect.top += m_marginTop;
+	renderRect.bottom -= m_marginBottom;
+
+	D2D1_RECT_F layoutRect;
+	layoutRect.right = renderRect.right;
+	layoutRect.left = renderRect.left;
+
+	// Compute the new top of the layout (will be in the range [0, m_itemHeight - 1]
+	layoutRect.top = renderRect.top - (m_scrollOffset % static_cast<int>(m_itemHeight));
+
+	// Compute the bottom of the layout and begin adding row definitions
+	layoutRect.bottom = layoutRect.top;
+	RowColDefinitions rowDefs;
+	int rowCount = 0;
+	while (layoutRect.bottom < renderRect.bottom)
 	{
-		// break if there aren't enough items to fill the main layout
-		if (iii == m_itemLayouts.size())
+		layoutRect.bottom += m_itemHeight;
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, m_itemHeight);
+		++rowCount;
+	}
+
+	// Create the new layout and assign the row definitions
+	m_layout = std::make_shared<Layout>(m_deviceResources, layoutRect);
+	m_layout->SetRowDefinitions(rowDefs);
+
+	// Add the sublayouts to the new layout
+	int firstVisibleItemIndex = static_cast<int>(m_scrollOffset / m_itemHeight);
+	for (int iii = 0; iii < rowCount; ++iii)
+	{
+		// Break if we have already added all the layouts
+		if (iii + firstVisibleItemIndex == m_itemLayouts.size())
 			break;
-		
-		// Assign the layout to the appropriate row within the list view
-		m_layout->SetSubLayout(m_itemLayouts[iii + m_scrollOffset], iii, 0);
+
+		m_layout->SetSubLayout(m_itemLayouts[iii + firstVisibleItemIndex], iii, 0);
 	}
 }
 
@@ -318,7 +358,10 @@ void ListView<T>::ReleaseLayout()
 template <class T>
 bool ListView<T>::Render2D()
 {
-	m_layout->Render2DControls();
+	D2D1_RECT_F renderRect = GetParentRect();
+	renderRect.top += m_marginTop;
+	renderRect.bottom -= m_marginBottom;
+	m_layout->Render2DControlsClipFirstAndLastSublayouts(renderRect);
 
 	return true;
 }
@@ -382,28 +425,38 @@ bool ListView<T>::MouseIsOver(int x, int y)
 template <class T>
 OnMessageResult ListView<T>::OnMouseWheel(int wheelDelta)
 {
-	// Only scroll if delta is >120 or <-120
-	if (abs(wheelDelta) >= 120)
+	// Compute this to know if the listview is scrollable
+	//                       top of listview                         + (number of items      * size of each item)
+	float bottomOfLastItem = this->GetParentRect().top + m_marginTop + (m_itemLayouts.size() * m_itemHeight);
+
+	float bottomOfListView = this->GetParentRect().bottom - m_marginBottom;
+
+	// If the bottom of the last item is larger than the bottom of the list view, then scrolling is possible
+	if (bottomOfLastItem > bottomOfListView)
 	{
-		// If scrolling up, just decrement the offset by 1 and update layouts
-		if (wheelDelta < 0)
-		{
-			if (m_scrollOffset > 0)
-			{
-				--m_scrollOffset;
-				UpdateSubLayouts();
-			}
-		}
-		else if (m_itemLayouts.size() > MaxItemsCount() + m_scrollOffset)
-		{
-			++m_scrollOffset;
-			UpdateSubLayouts();
-		}
+		// Divide by 12 so that a change of +/-120 is a change of 10 pixels
+		// Subtract the value because scrolling down gives a negative wheeldelta, and we want to increase the scroll offset
+		m_scrollOffset -= (wheelDelta / 12);
+
+		// scroll offset cannot be less than 0
+		m_scrollOffset = std::max(m_scrollOffset, 0);
+
+		// scroll offset cannot be greater than the difference between the bottom of the last item
+		// and the bottom of the listview area
+		m_scrollOffset = std::min(m_scrollOffset, static_cast<int>(bottomOfLastItem - bottomOfListView));
+
+		// Update the layouts given the new scroll offset
+		UpdateSubLayouts();
 	}
 
-	//std::ostringstream oss;
-	//oss << wheelDelta << '\n';
-	//OutputDebugString(oss.str().c_str());
+	
+
+
+	/*
+	std::ostringstream oss;
+	oss << wheelDelta << '\n';
+	OutputDebugString(oss.str().c_str());
+	*/
 
 	return OnMessageResult::CAPTURE_MOUSE_AND_MESSAGE_HANDLED;
 }

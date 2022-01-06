@@ -380,6 +380,7 @@ namespace LayoutConfiguration
 		std::shared_ptr<ListView<Atom>> atomListView = topLayout->CreateControl<ListView<Atom>>(1, 0);
 		atomListView->SetItemHeight(40.0f);
 		atomListView->Name(L"AtomListView");
+		atomListView->Margin(0.0f, 0.0f, 0.0f, 5.0f);
 		atomListView->SetHighlightItemLayoutMethod(
 			[](std::shared_ptr<Layout> layout)
 			{
@@ -790,7 +791,7 @@ namespace LayoutConfiguration
 		std::shared_ptr<Text> velocityText = atomPositionVelocitySubLayout->CreateControl<Text>(4, 0);
 		velocityText->SetTextTheme(THEME_NEW_SIMULATION_TEXT);
 		velocityText->SetText(L"Velocity");
-		velocityText->Margin(5.0f, 10.0f, 5.0f, 0.0f);
+		velocityText->Margin(10.0f, 10.0f, 5.0f, 0.0f);
 
 		// Text for X Velocity
 		std::shared_ptr<Text> velocityXText = atomPositionVelocitySubLayout->CreateControl<Text>(5, 0);

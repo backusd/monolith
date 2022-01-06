@@ -719,6 +719,108 @@ bool Layout::Render2DControls()
 	return needsPresent;
 }
 
+bool Layout::Render2DControlsClipFirstAndLastSublayouts(D2D1_RECT_F renderWindow)
+{
+	// if the layout background color is not nullptr, then render it
+	if (m_colorTheme != nullptr)
+	{
+		ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+
+		context->SetTransform(m_deviceResources->OrientationTransform2D());
+
+		D2D1_RECT_F rect = D2D1::RectF(
+			m_left + m_colorMarginLeft,
+			m_top + m_colorMarginTop,
+			m_left + m_width - m_colorMarginRight,
+			m_top + m_height - m_colorMarginBottom);
+
+		// Just fill the layout with the default color (don't allow layouts to change color)
+		context->FillRectangle(rect, m_colorTheme->GetBrush(MouseOverDown::NONE));
+	}
+
+	// Pass the Render call along to each child control
+	// ONLY 2D rendering controls should react to this - other controls
+	// should NOT override Control::Render2D
+	bool needsPresent = false;
+	for (std::shared_ptr<Control> control : m_controls)
+	{
+		if (control->Render2D())
+			needsPresent = true;
+	}
+
+	// Pass the Render call along to each sub layout as a 2D control can live in a sub-layout
+	needsPresent = m_subLayouts[0]._Myfirst._Val->Render2DControlsWithClipping(renderWindow);
+	if (m_subLayouts.size() > 1)
+	{
+		for (unsigned int iii = 1; iii < m_subLayouts.size() - 1; ++iii)
+		{
+			if(m_subLayouts[iii]._Myfirst._Val->Render2DControls())
+				needsPresent = true;
+		}
+		if (m_subLayouts[m_subLayouts.size() - 1]._Myfirst._Val->Render2DControlsWithClipping(renderWindow))
+			needsPresent = true;
+	}
+
+	return needsPresent;
+}
+
+bool Layout::Render2DControlsWithClipping(D2D1_RECT_F renderWindow)
+{
+	// if the layout background color is not nullptr, then render it
+	if (m_colorTheme != nullptr)
+	{
+		ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+
+		context->SetTransform(m_deviceResources->OrientationTransform2D());
+
+		D2D1_RECT_F rect = D2D1::RectF(
+			m_left + m_colorMarginLeft,
+			m_top + m_colorMarginTop,
+			m_left + m_width - m_colorMarginRight,
+			m_top + m_height - m_colorMarginBottom);
+
+		// Just fill the layout with the default color (don't allow layouts to change color)
+		context->FillRectangle(rect, m_colorTheme->GetBrush(MouseOverDown::NONE));
+	}
+
+	// Before rendering each control, check to see if its top is outside of the renderWindow
+	// If so, clip off the top. Otherwise, check if the bottom is below the renderWindow.
+	// If so, clip off the bottom.
+	bool needsPresent = false;
+	D2D1_RECT_F controlRect;
+	for (std::shared_ptr<Control> control : m_controls)
+	{
+		controlRect = control->GetParentRect();
+
+		if (controlRect.top < renderWindow.top)
+		{
+			controlRect.top = renderWindow.top;
+			if (control->Render2D(controlRect, true))
+				needsPresent = true;
+		}
+		else if (controlRect.bottom > renderWindow.bottom)
+		{
+			controlRect.bottom = renderWindow.bottom;
+			if (control->Render2D(controlRect, false))
+				needsPresent = true;
+		}
+		else
+		{
+			if (control->Render2D())
+				needsPresent = true;
+		}		
+	}
+
+	// Pass the Render call along to each sub layout as a 2D control can live in a sub-layout
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		if (subLayoutTuple._Myfirst._Val->Render2DControls())
+			needsPresent = true;
+	}
+
+	return needsPresent;
+}
+
 bool Layout::Render2DCapturedControl()
 {
 	if (m_mouseCapturedControl != nullptr)

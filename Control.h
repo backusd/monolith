@@ -70,8 +70,15 @@ public:
 	virtual bool Render3D() { return false; } // false indicates the control has not made a draw call
 	virtual bool Render2D() { return false; }
 
-protected:
+	// This function allows a control to only render the portion of itself that fits within the 
+	// renderWindow parameter. This is useful for things like ListView which may need to clip
+	// the first and/or last item that is visible
+	virtual bool Render2D(D2D1_RECT_F renderWindow, bool clipTop = true) { return false; }
+
 	D2D1_RECT_F GetParentRect() { return m_parentLayout->GetRect(m_row, m_column, m_rowSpan, m_columnSpan); }
+
+protected:
+	
 
 	// Pointer to device resources
 	std::shared_ptr<DeviceResources> m_deviceResources;
