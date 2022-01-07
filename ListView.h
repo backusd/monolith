@@ -124,6 +124,11 @@ private:
 	// Index of selected/highlighted item
 	int m_highlightedItemIndex;
 
+	// Keep track of mouse location so that when handling OnMouseWheel event, we can trigger
+	// an OnMouseMove event to re-color the items in the layout
+	int m_mouseX;
+	int m_mouseY;
+
 	// Method that gets executed when a new item is added
 	// This allows for custom formatting of the objects in the list view
 	// Input Parameter 1: Pointer to the item that was just added
@@ -165,6 +170,8 @@ ListView<T>::ListView(const std::shared_ptr<DeviceResources>& deviceResources,
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_scrollOffset(0),
 	m_highlightedItemIndex(-1),
+	m_mouseX(0),
+	m_mouseY(0),
 	FormatAddedItem([](std::shared_ptr<T> item, bool highlighted) { return std::make_shared<Layout>(nullptr, 0.0f, 0.0f, 0.0f, 0.0f); }), // return an empty layout
 	ValueChangedUpdateLayoutMethod([](std::shared_ptr<T> item, std::shared_ptr<Layout> layout) {}),
 	ItemClickMethod([](std::shared_ptr<T> item) {}),
@@ -337,6 +344,13 @@ void ListView<T>::UpdateSubLayouts()
 			break;
 
 		m_layout->SetSubLayout(m_itemLayouts[iii + firstVisibleItemIndex], iii, 0);
+
+		// Because the mouse may have moved off of the listview item it was over, reset the 
+		// mouse state to none for the sublayout
+		std::shared_ptr<MouseState> mouseState = std::make_shared<MouseState>();
+		mouseState->X(0);
+		mouseState->Y(0);
+		m_itemLayouts[iii + firstVisibleItemIndex]->ForceOnMouseMove(mouseState);
 	}
 }
 
@@ -369,6 +383,8 @@ bool ListView<T>::Render2D()
 template <class T>
 OnMessageResult ListView<T>::OnMouseMove(std::shared_ptr<MouseState> mouseState)
 {
+	m_mouseX = mouseState->X();
+	m_mouseY = mouseState->Y();
 	return m_layout->OnMouseMove(mouseState);
 }
 
@@ -447,6 +463,13 @@ OnMessageResult ListView<T>::OnMouseWheel(int wheelDelta)
 
 		// Update the layouts given the new scroll offset
 		UpdateSubLayouts();
+
+		// The layouts have been updated, so now trigger an OnMouseMove event because the mouse
+		// may no longer be over the original item
+		std::shared_ptr<MouseState> mouseState = std::make_shared<MouseState>();
+		mouseState->X(m_mouseX);
+		mouseState->Y(m_mouseY);
+		m_layout->OnMouseMove(mouseState);
 	}
 
 	

@@ -479,6 +479,22 @@ OnMessageResult Layout::OnMouseMove(const std::shared_ptr<MouseState>& mouseStat
 
 	return result;
 }
+OnMessageResult Layout::ForceOnMouseMove(const std::shared_ptr<MouseState>& mouseState)
+{
+	// Forcefully pass the OnMouseMove call to all child controls and sublayouts
+
+	for (std::shared_ptr<Control> control : m_controls)
+		control->OnMouseMove(mouseState);
+
+	std::shared_ptr<Layout> layout;
+	for (std::tuple<std::shared_ptr<Layout>, int, int> subLayoutTuple : m_subLayouts)
+	{
+		layout = subLayoutTuple._Myfirst._Val;
+		layout->OnMouseMove(mouseState);
+	}
+
+	return OnMessageResult::NONE;
+}
 OnMessageResult Layout::OnMouseLeave()
 {
 	OnMessageResult result = OnMessageResult::NONE;

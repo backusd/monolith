@@ -81,6 +81,7 @@ public:
 	OnMessageResult OnLButtonDoubleClick(const std::shared_ptr<MouseState>& mouseState);
 
 	OnMessageResult OnMouseMove(const std::shared_ptr<MouseState>& mouseState);
+	OnMessageResult ForceOnMouseMove(const std::shared_ptr<MouseState>& mouseState);
 	OnMessageResult OnMouseLeave();
 	OnMessageResult OnMouseWheel(int wheelDelta);
 
