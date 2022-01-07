@@ -45,6 +45,8 @@ public:
 	float DIPSToPixels(float dips) { return dips * m_dpiScale; }
 	float PixelsToDIPS(float pixels) { return pixels / m_dpiScale; }
 
+	RECT WindowRect();
+
 private:
 
 	void CreateDeviceDependentResources();

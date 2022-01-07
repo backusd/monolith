@@ -63,6 +63,13 @@ DeviceResources::~DeviceResources()
 	// m_d2dRenderTarget = nullptr;
 }
 
+RECT DeviceResources::WindowRect()
+{
+	RECT rect;
+	GetClientRect(m_hWnd, &rect);
+	return rect;
+}
+
 void DeviceResources::CreateDeviceDependentResources()
 {
 	try

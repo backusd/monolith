@@ -93,7 +93,11 @@ namespace LayoutConfiguration
 				auto window = weakWindow.lock();			
 
 				// Pause the simulation - this will automatically update the play/pause button glyph
-				SimulationManager::Pause();
+				// Do not try to Pause the simulation if it is already paused because triggering a pause
+				// will also call DisplayAddAtomsControls, which the code below does, so there's no reason
+				// to do it twice
+				if (!SimulationManager::SimulationIsPaused())
+					SimulationManager::Pause();
 
 				// Clear out the quick bar dynamic controls and add new controls
 				DisplayNewSimulationQuickBarControls(window);
