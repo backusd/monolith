@@ -1109,8 +1109,6 @@ namespace LayoutConfiguration
 		std::shared_ptr<Layout> bondInfoLayout = layout->CreateSubLayout(1, 0);
 
 
-
-
 		SimulationManager::SetSelectedBondChangedEvent(
 			[weakLayout = std::weak_ptr<Layout>(bondInfoLayout),
 			weakWindow = std::weak_ptr<ContentWindow>(window)](std::shared_ptr<Bond> bond)
@@ -1122,7 +1120,7 @@ namespace LayoutConfiguration
 				float rowHeight = 40.0f;
 
 				RowColDefinitions rowDefs;
-				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Bond"
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Bond" & Delete Button
 				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Length: "
 				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Equilibrium Length: "
 				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight); // "Spring Constant: "
@@ -1139,8 +1137,14 @@ namespace LayoutConfiguration
 				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		//
 				layout->SetRowDefinitions(rowDefs);
 
-				// Bond Header ===================================================================
-				std::shared_ptr<Text> bondText = layout->CreateControl<Text>(0, 0);
+				// Bond Header & Delete Button ===================================================
+				std::shared_ptr<Layout> bondHeaderLayout = layout->CreateSubLayout(0, 0);
+				RowColDefinitions bondHeaderColumnDefs;
+				bondHeaderColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 50.0f); // "Bond" text
+				bondHeaderColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Delete Button
+				bondHeaderLayout->SetColumnDefinitions(bondHeaderColumnDefs);
+
+				std::shared_ptr<Text> bondText = bondHeaderLayout->CreateControl<Text>(0, 0);
 
 				if (bond == nullptr)
 				{
@@ -1152,6 +1156,25 @@ namespace LayoutConfiguration
 				bondText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
 				bondText->Margin(20.0f, 0.0f, 0.0f, 0.0f);
 				bondText->SetText(L"Bond");
+
+
+				std::shared_ptr<Button> deleteBondButton = bondHeaderLayout->CreateControl<Button>(0, 1);
+				deleteBondButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
+				deleteBondButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
+				deleteBondButton->Margin(125.0f, 10.0f, 10.0f, 10.0f);
+				deleteBondButton->Click(
+					[weakBond = std::weak_ptr<Bond>(bond),
+					weakWindow = std::weak_ptr<ContentWindow>(window)]()
+					{
+						auto bond = weakBond.lock();
+						auto window = weakWindow.lock();
+						DisplayDeleteBondPromptControls(window, bond);
+					}
+				);
+
+				std::shared_ptr<Text> deleteBondButtonText = deleteBondButton->GetLayout()->CreateControl<Text>(0, 0);
+				deleteBondButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
+				deleteBondButtonText->SetText(L"Delete Bond");
 				
 				// Bond Length ===================================================================
 				std::shared_ptr<Layout> bondLengthSublayout = layout->CreateSubLayout(1, 0);
@@ -1389,11 +1412,14 @@ namespace LayoutConfiguration
 				std::shared_ptr<Text> atom2ChargeValue = atom2ChargeSublayout->CreateControl<Text>(0, 1);
 				atom2ChargeValue->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
 				atom2ChargeValue->SetText(std::to_wstring(bond->Atom2()->Charge()));
-
-
-
 			}
 		);
+
+		// If there is a bond already selected, go ahead and display the details for it immediately
+		//if (SimulationManager::GetSelectedBond() != nullptr)
+		//	SimulationManager::TriggerSelectedBondChangedEvent();
+
+
 
 	}
 	void DisplayEditVelocityArrowsControls(const std::shared_ptr<ContentWindow>& window)
@@ -1739,7 +1765,78 @@ namespace LayoutConfiguration
 		cancelButtonText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT);
 		cancelButtonText->SetText(L"Cancel");
 	}
+	void DisplayDeleteBondPromptControls(const std::shared_ptr<ContentWindow>& window, const std::shared_ptr<Bond>& selectedBond)
+	{
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
+		assert(layout != nullptr);
 
+		// Make sure the layout is cleared before creating new content
+		layout->Clear();
+
+		// Create three columns that evenly divide the layout (one for each button)
+		RowColDefinitions columnDefs;
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Left Column
+		//columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Middle Column
+		columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Right Column
+		layout->SetColumnDefinitions(columnDefs);
+
+		RowColDefinitions rowDefs;
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Row for Prompt Text
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f); // Row for Buttons
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // Space filling row
+		layout->SetRowDefinitions(rowDefs);
+
+		// Text Prompt
+		std::shared_ptr<Text> promptText = layout->CreateControl<Text>(0, 0, 1, 2);
+		promptText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_PROMPT_TEXT);
+		promptText->SetText(L"Are you sure you want to delete this bond?");
+
+		// Delete Bond Button
+		std::shared_ptr<Button> deleteBondButton = layout->CreateControl<Button>(1, 0);
+		deleteBondButton->SetColorTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_COLOR);
+		deleteBondButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
+		deleteBondButton->Margin(15.0f, 5.0f, 5.0f, 0.0f);
+		deleteBondButton->Click(
+			[weakBond = std::weak_ptr<Bond>(selectedBond), 
+			weakWindow = std::weak_ptr<ContentWindow>(window)]()
+		{
+			auto bond = weakBond.lock();
+			auto window = weakWindow.lock();
+
+			SimulationManager::DeleteBond(bond);
+			DisplayCreateBondControls(window);
+		}
+		);
+
+		std::shared_ptr<Text> deleteButtonText = deleteBondButton->GetLayout()->CreateControl<Text>();
+		deleteButtonText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT);
+		deleteButtonText->SetText(L"Delete");
+
+
+		// Cancel Button
+		std::shared_ptr<Button> cancelButton = layout->CreateControl<Button>(1, 1);
+		cancelButton->SetColorTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_COLOR);
+		cancelButton->SetBorderTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_BORDER);
+		cancelButton->Margin(5.0f, 5.0f, 15.0f, 0.0f);
+		cancelButton->Click(
+			[weakBond = std::weak_ptr<Bond>(selectedBond), 
+			weakWindow = std::weak_ptr<ContentWindow>(window)]()
+		{
+			auto bond = weakBond.lock();
+			auto window = weakWindow.lock();
+
+			// Display the add atoms controls
+			DisplayCreateBondControls(window);
+
+			// Need to trigger the SelectedBondChangedEvent to display the bond info again
+			SimulationManager::SelectBond(bond);
+		}
+		);
+
+		std::shared_ptr<Text> cancelButtonText = cancelButton->GetLayout()->CreateControl<Text>();
+		cancelButtonText->SetTextTheme(THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_TEXT);
+		cancelButtonText->SetText(L"Cancel");
+	}
 
 
 

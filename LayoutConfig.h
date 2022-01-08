@@ -45,6 +45,8 @@ namespace LayoutConfiguration
 	// Display prompt on right side for whether or not to save the simulation
 	void DisplaySaveSimulationPromptControls(const std::shared_ptr<ContentWindow>& window);
 
+	// Display prompt on the right side for whether or not to delete the currently selected bond
+	void DisplayDeleteBondPromptControls(const std::shared_ptr<ContentWindow>& window, const std::shared_ptr<Bond>& selectedBond);
 
 
 
