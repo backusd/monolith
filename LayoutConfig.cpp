@@ -1017,30 +1017,35 @@ namespace LayoutConfiguration
 				radius = atom->Radius();
 
 				// Update the Atom type combo box to display the correct element type
-				comboBox->SelectItem(ElementStrings[atom->ElementType()]);
+				if (comboBox != nullptr)
+					comboBox->SelectItem(ElementStrings[atom->ElementType()]);
 			}
 
-			// Update the position/velocity sliders
-			pXSlider->SetValue(position.x);
-			pYSlider->SetValue(position.y);
-			pZSlider->SetValue(position.z);
-			vXSlider->SetValue(velocity.x);
-			vYSlider->SetValue(velocity.y);
-			vZSlider->SetValue(velocity.z);
+			// Make sure the sliders are still visible
+			if (pXSlider != nullptr)
+			{
+				// Update the position/velocity sliders
+				pXSlider->SetValue(position.x);
+				pYSlider->SetValue(position.y);
+				pZSlider->SetValue(position.z);
+				vXSlider->SetValue(velocity.x);
+				vYSlider->SetValue(velocity.y);
+				vZSlider->SetValue(velocity.z);
 
-			// Also need to update the slide mni/max values to account for the new atom's radius
-			DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
-			float xMax = (boxDims.x / 2.0f) - radius; // Remove the radius so that the atom cannot go outside the simulation
-			float yMax = (boxDims.y / 2.0f) - radius;
-			float zMax = (boxDims.z / 2.0f) - radius;
+				// Also need to update the slide mni/max values to account for the new atom's radius
+				DirectX::XMFLOAT3 boxDims = SimulationManager::BoxDimensions();
+				float xMax = (boxDims.x / 2.0f) - radius; // Remove the radius so that the atom cannot go outside the simulation
+				float yMax = (boxDims.y / 2.0f) - radius;
+				float zMax = (boxDims.z / 2.0f) - radius;
 
-			// Slider for X Position
-			pXSlider->SetMin(-xMax);
-			pXSlider->SetMax(xMax);
-			pYSlider->SetMin(-yMax);
-			pYSlider->SetMax(yMax);
-			pZSlider->SetMin(-zMax);
-			pZSlider->SetMax(zMax);
+				// Slider for X Position
+				pXSlider->SetMin(-xMax);
+				pXSlider->SetMax(xMax);
+				pYSlider->SetMin(-yMax);
+				pYSlider->SetMax(yMax);
+				pZSlider->SetMin(-zMax);
+				pZSlider->SetMax(zMax);
+			}		
 
 			// Highlight the correct atom in the listview
 			listView->HighlightItem(atom);
@@ -1107,8 +1112,10 @@ namespace LayoutConfiguration
 
 
 		SimulationManager::SetSelectedBondChangedEvent(
-			[weakLayout = std::weak_ptr<Layout>(bondInfoLayout)](std::shared_ptr<Bond> bond) 
+			[weakLayout = std::weak_ptr<Layout>(bondInfoLayout),
+			weakWindow = std::weak_ptr<ContentWindow>(window)](std::shared_ptr<Bond> bond)
 			{
+				auto window = weakWindow.lock();
 				auto layout = weakLayout.lock();
 				layout->Clear();
 
@@ -1217,11 +1224,21 @@ namespace LayoutConfiguration
 				atom1ElementSelectButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
 				atom1ElementSelectButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
 				atom1ElementSelectButton->Margin(10.0f, 10.0f);
+				atom1ElementSelectButton->Click(
+					[weakBond = std::weak_ptr<Bond>(bond),
+					weakWindow = std::weak_ptr<ContentWindow>(window)]()
+					{
+						auto window = weakWindow.lock();
+						auto bond = weakBond.lock();
+						SimulationManager::SelectAtom(bond->Atom1());
+						DisplayAddAtomsControls(window);
+					}
+				);
 
 				std::shared_ptr<Layout> atom1ElementSelectButtonLayout = atom1ElementSelectButton->GetLayout();
 				std::shared_ptr<Text> atom1SelectButtonText = atom1ElementSelectButtonLayout->CreateControl<Text>(0, 0);
 				atom1SelectButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
-				atom1SelectButtonText->SetText(L"Select");
+				atom1SelectButtonText->SetText(L"Edit");
 
 				// Atom 1 position ===============================================================
 				std::shared_ptr<Layout> atom1PositionSublayout = layout->CreateSubLayout(6, 0);
@@ -1301,11 +1318,21 @@ namespace LayoutConfiguration
 				atom2ElementSelectButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
 				atom2ElementSelectButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
 				atom2ElementSelectButton->Margin(10.0f, 10.0f);
+				atom2ElementSelectButton->Click(
+					[weakBond = std::weak_ptr<Bond>(bond),
+					weakWindow = std::weak_ptr<ContentWindow>(window)]()
+					{
+						auto window = weakWindow.lock();
+						auto bond = weakBond.lock();
+						SimulationManager::SelectAtom(bond->Atom2());
+						DisplayAddAtomsControls(window);
+					}
+				);
 
 				std::shared_ptr<Layout> atom2ElementSelectButtonLayout = atom2ElementSelectButton->GetLayout();
 				std::shared_ptr<Text> atom2SelectButtonText = atom2ElementSelectButtonLayout->CreateControl<Text>(0, 0);
 				atom2SelectButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
-				atom2SelectButtonText->SetText(L"Select");
+				atom2SelectButtonText->SetText(L"Edit");
 
 				// Atom 2 position ===============================================================
 				std::shared_ptr<Layout> atom2PositionSublayout = layout->CreateSubLayout(11, 0);
