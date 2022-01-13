@@ -42,7 +42,7 @@ void ContentWindow::Update()
 
 	std::ostringstream oss;
 	oss << "Time: " << m_timer.GetTotalSeconds();
-	SetWindowText(m_hWnd, oss.str().c_str());
+	//SetWindowText(m_hWnd, oss.str().c_str());
 
 	m_timer.Tick([&]() 
 		{

@@ -85,6 +85,8 @@ public:
 
 	static void SelectBond(std::shared_ptr<Bond> bond) { SelectedBondChangedEvent(bond); }
 
+	static void TriggerSelectedBondChangedEvent(std::shared_ptr<Bond> bond) { SelectedBondChangedEvent(bond); }
+
 	// Event setters
 	static void SetPlayPauseChangedEvent(std::function<void(bool)> function) { PlayPauseChangedEvent = function; }
 	static void SetAtomHoveredOverChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomHoveredOverChangedEvent = function; }

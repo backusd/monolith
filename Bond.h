@@ -3,6 +3,7 @@
 
 #include "CylinderMesh.h"
 #include "MeshManager.h"
+#include "Enums.h"
 
 #include <memory>
 
@@ -31,9 +32,14 @@ public:
 	float EquilibriumLength();
 	float SpringConstant() { return m_springConstant; }
 
+	BONDTYPE GetBondType() { return m_type; }
+	void SetBondType(BONDTYPE bondType);
+
 private:
 	std::shared_ptr<Atom> m_atom1;
 	std::shared_ptr<Atom> m_atom2;
+
+	BONDTYPE m_type;
 
 	std::shared_ptr<CylinderMesh> m_cylinderMesh;
 

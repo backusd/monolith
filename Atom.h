@@ -20,17 +20,17 @@ class Atom
 public:
 	// Constructors
 	Atom(const std::shared_ptr<DeviceResources>& deviceResources,
-		Element element,
+		ELEMENT element,
 		DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
 
 	Atom(const std::shared_ptr<DeviceResources>& deviceResources,
-		Element element,
+		ELEMENT element,
 		DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity,
 		int neutronCount, int electronCount);
 
 	// If you want to explicitly set the radius
 	Atom(const std::shared_ptr<DeviceResources>& deviceResources,
-		Element element,
+		ELEMENT element,
 		DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity,
 		int neutronCount, int electronCount,
 		float radius);
@@ -55,7 +55,7 @@ public:
 	// Get
 	DirectX::XMFLOAT3 Position() { return m_position; };
 	DirectX::XMFLOAT3 Velocity() { return m_velocity; };
-	Element ElementType() { return m_element; }
+	ELEMENT ElementType() { return m_element; }
 	float Mass() { return static_cast<float>(m_element + m_neutronCount); }
 	int ProtonsCount() { return m_element; }
 	int NeutronsCount() { return m_neutronCount; }
@@ -95,7 +95,7 @@ protected:
 	DirectX::XMFLOAT3		m_position;
 	DirectX::XMFLOAT3		m_velocity;
 
-	Element								   m_element;
+	ELEMENT								   m_element;
 	std::vector<std::shared_ptr<Electron>> m_electrons;
 
 	std::vector<std::shared_ptr<Bond>>	m_bonds;

@@ -501,7 +501,7 @@ bool SimulationRenderer::Render3D()
 	std::vector<std::shared_ptr<Atom>> atoms = SimulationManager::Atoms();
 
 	// Set the current element to invalid so that the first atom will set the material properties
-	Element currentElement = Element::INVALID;
+	ELEMENT currentElement = Element::INVALID;
 	MaterialProperties* hoverAtomMaterialPropertiesOLD;
 	MaterialProperties* hoverAtomMaterialPropertiesNEW;
 
@@ -769,10 +769,64 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 		}
 	}
 
+	/*
 	// Perform cylinder/bond checking 
 	//
 	// ...
 	// ... (set atomHoveredOver = nullptr if found a better cylinder)
+	origin = XMVector3Unproject(
+		clickpointNearVector,
+		m_viewport.TopLeftX,
+		m_viewport.TopLeftY,
+		m_viewport.Width,
+		m_viewport.Height,
+		0,
+		1,
+		m_projectionMatrix,
+		m_viewMatrix,
+		XMMatrixTranslation(0.0f, 0.0f, 0.0f));
+		//bond->TranslationMatrix());
+
+	destination = XMVector3Unproject(
+		clickpointFarVector,
+		m_viewport.TopLeftX,
+		m_viewport.TopLeftY,
+		m_viewport.Width,
+		m_viewport.Height,
+		0,
+		1,
+		m_projectionMatrix,
+		m_viewMatrix,
+		XMMatrixTranslation(0.0f, 0.0f, 0.0f));
+
+	direction = XMVector3Normalize(destination - origin);
+
+
+
+
+	XMFLOAT3 o, d;
+	XMStoreFloat3(&o, origin);
+	XMStoreFloat3(&d, direction);
+
+
+	std::ostringstream oss;
+	oss << "Origin: <" << o.x << ", " << o.y << ", " << o.z << ">  Direction: <" << d.x << ", " << d.y << ", " << d.z << ">";
+	SetWindowText(GetActiveWindow(), oss.str().c_str());
+	*/
+	/*
+	for (std::shared_ptr<Bond> bond :  SimulationManager::Bonds())
+	{
+		// if an intersection is found, the distance will be returned in the 'distance' variable
+		if (CylinderIntersection(origin, direction, bond, distance))
+		{
+			if (distance < shortestDistance)
+			{
+				atomHoveredOver = nullptr;
+				shortestDistance = distance;
+			}
+		}
+	}
+	*/
 
 	// Inform the SimulationManager - CAN be nullptr
 	SimulationManager::AtomHoveredOver(atomHoveredOver);
@@ -820,3 +874,36 @@ bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDire
 	return true;
 }
 
+bool SimulationRenderer::CylinderIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Bond> bond, float& distance)
+{
+	XMFLOAT3 origin, direction;
+	XMStoreFloat3(&origin, rayOrigin);
+	XMStoreFloat3(&direction, rayDirection);
+
+	/*
+	float a, b, c, discriminant;
+	float radius = atom->Radius();
+
+
+	float a = (direction.x * direction.x) + (direction.z * direction.z);
+	float b = 2 * (direction.x * (origin.x - center.x) + direction.z * (origin.z - center.z));
+	float c = (origin.x - center.x) * (origin.x - center.x) + (origin.z - center.z) * (origin.z - center.z) - (radius * radius);
+
+	float delta = b * b - 4 * (a * c);
+	if (fabs(delta) < 0.001) return -1.0;
+	if (delta < 0.0) return -1.0;
+
+	float t1 = (-b - sqrt(delta)) / (2 * a);
+	float t2 = (-b + sqrt(delta)) / (2 * a);
+	float t;
+
+	if (t1 > t2) t = t2;
+	else t = t1;
+
+	float r = origin.y + t * direction.y;
+
+	if ((r >= center.y) and (r <= center.y + height))return t;
+	else return -1;
+	*/ 
+	return false;
+}

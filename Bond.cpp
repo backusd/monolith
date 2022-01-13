@@ -9,6 +9,7 @@ using DirectX::XMVECTOR;
 Bond::Bond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2) :
 	m_atom1(atom1),
 	m_atom2(atom2),
+	m_type(BondType::SINGLE),
 	m_cylinderMesh(MeshManager::GetCylinderMesh()),
 	m_springConstant(1.0f)
 {
@@ -45,4 +46,11 @@ float Bond::BondLength()
 	XMFLOAT3 magnitude;
 	DirectX::XMStoreFloat3(&magnitude, DirectX::XMVector3Length(differenceVector));
 	return magnitude.x;
+}
+
+void Bond::SetBondType(BONDTYPE bondType)
+{
+	m_type = bondType;
+
+	// Will need to look up what the equilibrium length should be and set that value as well
 }

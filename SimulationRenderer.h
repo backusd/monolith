@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <vector>
+#include <sstream>
 
 class SimulationRenderer : public Control
 {
@@ -58,6 +59,7 @@ private:
 
 	void PerformPicking(float mouseX, float mouseY);
 	bool SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance);
+	bool CylinderIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Bond> bond, float& distance);
 
 
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_backgroundColorBrush;

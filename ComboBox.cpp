@@ -54,7 +54,9 @@ ComboBox::ComboBox(const std::shared_ptr<DeviceResources>& deviceResources,
 	dropDownRect.top = m_mainLayout->Bottom();
 	dropDownRect.left = m_mainLayout->Left();
 	dropDownRect.right = m_mainLayout->Right();		// Set the width of the drop down to the width of the main layout
-	dropDownRect.bottom = m_deviceResources->PixelsToDIPS(static_cast<float>(m_deviceResources->WindowRect().bottom)) - 10;	// Make the bottom of the list view 10 pixels above the bottom of the window
+	// Just make the bottom one itemHeight lower than the top - later, as items get added, it will resize
+	//dropDownRect.bottom = m_deviceResources->PixelsToDIPS(static_cast<float>(m_deviceResources->WindowRect().bottom)) - 10;	// Make the bottom of the list view 10 pixels above the bottom of the window
+	dropDownRect.bottom = dropDownRect.top + m_dropDownItemHeight;
 
 	m_dropDownListViewLayout = std::make_shared<Layout>(m_deviceResources, dropDownRect);
 
@@ -207,7 +209,12 @@ void ComboBox::Resize()
 	m_mainLayout->OnResize(rect);
 
 	rect.top = rect.bottom;
-	rect.bottom = m_deviceResources->PixelsToDIPS(static_cast<float>(m_deviceResources->WindowRect().bottom)) - 10;	// Make the bottom of the list view 10 pixels above the bottom of the window
+
+	// Take the bottom to be the minimum of 10 pixels above the bottom of the window OR bottom of lowest item
+	rect.bottom = std::min(
+		m_deviceResources->PixelsToDIPS(static_cast<float>(m_deviceResources->WindowRect().bottom)) - 10,
+		rect.top + (m_dropDownItemCount * m_dropDownItemHeight)
+	);
 
 	m_dropDownListViewLayout->OnResize(rect);
 }
@@ -326,13 +333,23 @@ OnMessageResult ComboBox::OnMouseWheel(int wheelDelta)
 
 void ComboBox::AddComboBoxItem(std::wstring text)
 {
+	// Unfortunately, order matters here. The first thing that needs to happen is the increment the item count and
+	// resize the listview. This is because ListView::AddItem() calls ListView::MaxItemsCount() to determine if the
+	// new item will fit on the screen. If not, it does not bother to call ListView::UpdateSubLayouts(). So if you
+	// don't resize the listview first, it will always think the listview is too small and will not attempt to update
+	// the sublayouts
+	++m_dropDownItemCount;
+
+	// Resize the layout - Layout should grow until it is about to go off screen
+	Resize();
+
 	// Just add the text as a new item to the list view
 	std::shared_ptr<std::wstring> _text = std::make_shared<std::wstring>(text);
 	m_dropDownListView->AddItem(_text);
 
 	// if the main text is empty (because no items have been added yet), add this to the main text
 	if (m_mainText->GetText() == L"")
-		m_mainText->SetText(text);
+		m_mainText->SetText(text);	
 }
 
 void ComboBox::SelectItem(std::wstring text)

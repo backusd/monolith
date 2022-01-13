@@ -4,7 +4,7 @@ using DirectX::XMFLOAT3;
 using DirectX::XMMATRIX;
 
 
-Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element element, XMFLOAT3 position, XMFLOAT3 velocity) :
+Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, ELEMENT element, XMFLOAT3 position, XMFLOAT3 velocity) :
 	m_element(element),
 	m_position(position),
 	m_velocity(velocity),
@@ -19,7 +19,7 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 		m_electrons.push_back(std::shared_ptr<Electron>(new Electron()));
 }
 
-Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element element, XMFLOAT3 position, XMFLOAT3 velocity, int neutronCount, int electronCount) :
+Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, ELEMENT element, XMFLOAT3 position, XMFLOAT3 velocity, int neutronCount, int electronCount) :
 	m_element(element),
 	m_position(position),
 	m_velocity(velocity),
@@ -34,7 +34,7 @@ Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element elem
 		m_electrons.push_back(std::shared_ptr<Electron>(new Electron()));
 }
 
-Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, Element element, XMFLOAT3 position, XMFLOAT3 velocity, int neutronCount, int electronCount, float radius) :
+Atom::Atom(const std::shared_ptr<DeviceResources>& deviceResources, ELEMENT element, XMFLOAT3 position, XMFLOAT3 velocity, int neutronCount, int electronCount, float radius) :
 	m_element(element),
 	m_position(position),
 	m_velocity(velocity),
