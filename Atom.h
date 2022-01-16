@@ -61,6 +61,7 @@ public:
 	int NeutronsCount() { return m_neutronCount; }
 	int ElectronsCount() { return static_cast<int>(m_electrons.size()); }
 	float Radius() { return m_radius; }
+	float DisplayRadius() { return m_radius; } // This will need updating once ball & stick style is implemented
 	int Charge() { return ProtonsCount() - ElectronsCount(); }
 
 	std::wstring Name();

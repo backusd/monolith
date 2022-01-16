@@ -31,6 +31,18 @@ void MoveLookController::ResetState()
 
 DirectX::XMMATRIX MoveLookController::ViewMatrix()
 {
+    // Unfortunately, there is a slight issue in the code that tests whether the mouse is over a bond
+    // Whenever the y value for the eye is 0, the code makes a computational mistake and will always fail
+    // to determine if the mouse is over the bond. The way to remedy this is to make a slight offset to the 
+    // reported view matrix such that y is not 0 (Note: trying y = 0.01 yields good, but less preferable results 
+    // that using 0.05)
+    XMFLOAT3 eye;
+    DirectX::XMStoreFloat3(&eye, m_eyeVec);
+    if (eye.y == 0.0f)
+    {
+        eye.y = 0.05f;
+        return DirectX::XMMatrixLookAtRH(DirectX::XMLoadFloat3(&eye), m_atVec, m_upVec);
+    }
 	return DirectX::XMMatrixLookAtRH(m_eyeVec, m_atVec, m_upVec);
 }
 

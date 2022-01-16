@@ -142,7 +142,7 @@ void CylinderMesh::LoadCylinderVertexAndIndexBuffers()
 	);
 }
 
-void CylinderMesh::Render(XMFLOAT3 position1, XMFLOAT3 position2, XMMATRIX viewProjection)
+DirectX::XMMATRIX CylinderMesh::Render(XMFLOAT3 position1, XMFLOAT3 position2, XMMATRIX viewProjection)
 {
 	auto context = m_deviceResources->D3DDeviceContext();
 
@@ -185,7 +185,11 @@ void CylinderMesh::Render(XMFLOAT3 position1, XMFLOAT3 position2, XMMATRIX viewP
 
 		// Draw the objects.
 		context->DrawIndexed(m_cylinderIndexCount, 0, 0);
+
+		return m_modelMatrix;
 	}
+	
+	return DirectX::XMMatrixIdentity();
 }
 
 XMMATRIX CylinderMesh::ComputeRotationMatrix(XMFLOAT3 velocity)

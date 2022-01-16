@@ -74,6 +74,8 @@ public:
 	static void AtomHoveredOver(std::shared_ptr<Atom> atom);
 	static std::shared_ptr<Atom> AtomHoveredOver() { return m_atomHoveredOver; }
 
+	static void BondHoveredOver(std::shared_ptr<Bond> bond);
+
 	static void SimulationClickDown();
 	static void SimulationClickUp();
 
@@ -84,6 +86,10 @@ public:
 	static UserState GetUserState() { return m_userState; }
 
 	static void SelectBond(std::shared_ptr<Bond> bond) { SelectedBondChangedEvent(bond); }
+	
+	static std::shared_ptr<Bond> GetSelectedBond() { return m_selectedBond; }
+	static std::shared_ptr<Bond> GetBondHoveredOver() { return m_bondHoveredOver; }
+
 
 	static void TriggerSelectedBondChangedEvent(std::shared_ptr<Bond> bond) { SelectedBondChangedEvent(bond); }
 
@@ -92,6 +98,8 @@ public:
 	static void SetAtomHoveredOverChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomHoveredOverChangedEvent = function; }
 	static void SetAtomClickedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomClickedEvent = function; }
 	static void SetSelectedAtomChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { SelectedAtomChangedEvent = function; }
+	
+	static void SetBondHoveredOverChangedEvent(std::function<void(std::shared_ptr<Bond>)> function) { BondHoveredOverChangedEvent = function; }
 	static void SetSelectedBondChangedEvent(std::function<void(std::shared_ptr<Bond>)> function) { SelectedBondChangedEvent = function; }
 
 private:
@@ -109,6 +117,10 @@ private:
 	static std::shared_ptr<Atom> m_atomHoveredOver;
 	static std::shared_ptr<Atom> m_atomBeingClicked;
 
+	// Track which bond is being hovered over
+	static std::shared_ptr<Bond> m_selectedBond;
+	static std::shared_ptr<Bond> m_bondHoveredOver;
+
 	// Additional data to track which atoms the user is creating bonds for
 	static std::shared_ptr<Atom> m_bondAtom1;
 	static std::shared_ptr<Bond> m_newBond;
@@ -123,6 +135,8 @@ private:
 	static std::function<void(std::shared_ptr<Atom>)> AtomHoveredOverChangedEvent;
 	static std::function<void(std::shared_ptr<Atom>)> AtomClickedEvent;
 	static std::function<void(std::shared_ptr<Atom>)> SelectedAtomChangedEvent;
+
+	static std::function<void(std::shared_ptr<Bond>)> BondHoveredOverChangedEvent;
 	static std::function<void(std::shared_ptr<Bond>)> SelectedBondChangedEvent;
 
 

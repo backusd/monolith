@@ -20,7 +20,11 @@ SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& d
 SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& deviceResources,
 									   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
-	m_velocityArrowMaterial(nullptr)
+	m_velocityArrowMaterial(nullptr),
+	m_testCylinder(MeshManager::GetCylinderMesh()),
+	m_rayOrigin(XMVECTOR()),
+	m_rayEnd(XMVECTOR()),
+	m_hoveredOver(false)
 {
 	// Create resources that will not change on window resizing and not device dependent
 	// -- Must call this first because it will create the MoveLookController which will be used later
@@ -557,9 +561,35 @@ bool SimulationRenderer::Render3D()
 
 	// Draw Bonds ===========================================================================
 	std::vector<std::shared_ptr<Bond>> bonds = SimulationManager::Bonds();
+	std::shared_ptr<Bond> selectedBond = SimulationManager::GetSelectedBond();
+	std::shared_ptr<Bond> bondHoveredOver = SimulationManager::GetBondHoveredOver();
+
 	for (std::shared_ptr<Bond> bond : bonds)
 	{
-		bond->Render(viewProjectionMatrix);
+		// Re-color any selected bond or bond that is being hovered over
+		if (bond == selectedBond || bond == bondHoveredOver)
+		{
+			// Update the material constant buffers to have a different emmissive value
+			MaterialProperties* newBondMaterial = new MaterialProperties();
+			newBondMaterial->Material = m_velocityArrowMaterial->Material;
+			newBondMaterial->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
+			ID3D11Buffer* const psConstantBuffers1[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
+
+			// Render the bond
+			bond->Render(viewProjectionMatrix);
+
+			// Update the material constant buffers back to what they were
+			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_velocityArrowMaterial.get(), 0, 0);
+			ID3D11Buffer* const psConstantBuffers2[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			context->PSSetConstantBuffers1(0, 2, psConstantBuffers2, nullptr, nullptr);
+		}
+		else
+		{
+			bond->Render(viewProjectionMatrix);
+		}
 	}
 
 
@@ -769,67 +799,50 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 		}
 	}
 
-	/*
+	
 	// Perform cylinder/bond checking 
-	//
-	// ...
-	// ... (set atomHoveredOver = nullptr if found a better cylinder)
-	origin = XMVector3Unproject(
-		clickpointNearVector,
-		m_viewport.TopLeftX,
-		m_viewport.TopLeftY,
-		m_viewport.Width,
-		m_viewport.Height,
-		0,
-		1,
-		m_projectionMatrix,
-		m_viewMatrix,
-		XMMatrixTranslation(0.0f, 0.0f, 0.0f));
-		//bond->TranslationMatrix());
 
-	destination = XMVector3Unproject(
-		clickpointFarVector,
-		m_viewport.TopLeftX,
-		m_viewport.TopLeftY,
-		m_viewport.Width,
-		m_viewport.Height,
-		0,
-		1,
-		m_projectionMatrix,
-		m_viewMatrix,
-		XMMatrixTranslation(0.0f, 0.0f, 0.0f));
+	float shortestBondDistance = FLT_MAX; // Set initial to the maximum possible float value
+	float bondDistance = FLT_MAX;
+	std::shared_ptr<Bond> bondHoveredOver = nullptr;
 
-	direction = XMVector3Normalize(destination - origin);
-
-
-
-
-	XMFLOAT3 o, d;
-	XMStoreFloat3(&o, origin);
-	XMStoreFloat3(&d, direction);
-
-
-	std::ostringstream oss;
-	oss << "Origin: <" << o.x << ", " << o.y << ", " << o.z << ">  Direction: <" << d.x << ", " << d.y << ", " << d.z << ">";
-	SetWindowText(GetActiveWindow(), oss.str().c_str());
-	*/
-	/*
 	for (std::shared_ptr<Bond> bond :  SimulationManager::Bonds())
 	{
 		// if an intersection is found, the distance will be returned in the 'distance' variable
-		if (CylinderIntersection(origin, direction, bond, distance))
+		if (bond->MouseIsOver(mouseX, mouseY, m_viewport, m_projectionMatrix, m_viewMatrix, bondDistance))
 		{
-			if (distance < shortestDistance)
+			if (bondDistance < shortestBondDistance)
 			{
-				atomHoveredOver = nullptr;
-				shortestDistance = distance;
+				bondHoveredOver = bond;
+				shortestBondDistance = bondDistance;
 			}
 		}
 	}
-	*/
+
+	// If a bond and an atom are both being hovered over, then find the closest to the camera and use that one
+	if (bondHoveredOver != nullptr && atomHoveredOver != nullptr)
+	{
+		XMVECTOR cameraVector = m_moveLookController->Position();
+		XMVECTOR bondCenterVector = bondHoveredOver->BondCenter();
+		XMFLOAT3 atomCenter = atomHoveredOver->Position();
+		XMVECTOR atomCenterVector = DirectX::XMLoadFloat3(&atomCenter);
+
+		XMFLOAT3 cameraToBondDistance;
+		DirectX::XMStoreFloat3(&cameraToBondDistance, DirectX::XMVector3Length(DirectX::XMVectorSubtract(cameraVector, bondCenterVector)));
+		
+		XMFLOAT3 cameraToAtomDistance;
+		DirectX::XMStoreFloat3(&cameraToAtomDistance, DirectX::XMVector3Length(DirectX::XMVectorSubtract(cameraVector, atomCenterVector)));
+
+		// Set the object not being hovered over to nullptr
+		if (std::abs(cameraToBondDistance.x) < std::abs(cameraToAtomDistance.x))
+			atomHoveredOver = nullptr;
+		else
+			bondHoveredOver = nullptr;
+	}
 
 	// Inform the SimulationManager - CAN be nullptr
 	SimulationManager::AtomHoveredOver(atomHoveredOver);
+	SimulationManager::BondHoveredOver(bondHoveredOver);
 }
 
 bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance)
@@ -872,38 +885,4 @@ bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDire
 	distance = minRoot;
 
 	return true;
-}
-
-bool SimulationRenderer::CylinderIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Bond> bond, float& distance)
-{
-	XMFLOAT3 origin, direction;
-	XMStoreFloat3(&origin, rayOrigin);
-	XMStoreFloat3(&direction, rayDirection);
-
-	/*
-	float a, b, c, discriminant;
-	float radius = atom->Radius();
-
-
-	float a = (direction.x * direction.x) + (direction.z * direction.z);
-	float b = 2 * (direction.x * (origin.x - center.x) + direction.z * (origin.z - center.z));
-	float c = (origin.x - center.x) * (origin.x - center.x) + (origin.z - center.z) * (origin.z - center.z) - (radius * radius);
-
-	float delta = b * b - 4 * (a * c);
-	if (fabs(delta) < 0.001) return -1.0;
-	if (delta < 0.0) return -1.0;
-
-	float t1 = (-b - sqrt(delta)) / (2 * a);
-	float t2 = (-b + sqrt(delta)) / (2 * a);
-	float t;
-
-	if (t1 > t2) t = t2;
-	else t = t1;
-
-	float r = origin.y + t * direction.y;
-
-	if ((r >= center.y) and (r <= center.y + height))return t;
-	else return -1;
-	*/ 
-	return false;
 }

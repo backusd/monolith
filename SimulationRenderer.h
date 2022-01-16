@@ -59,8 +59,6 @@ private:
 
 	void PerformPicking(float mouseX, float mouseY);
 	bool SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance);
-	bool CylinderIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Bond> bond, float& distance);
-
 
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_backgroundColorBrush;
 
@@ -101,4 +99,12 @@ private:
 	MaterialProperties							m_boxMaterialProperties;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_boxMaterialPropertiesConstantBuffer;
 
+
+
+
+
+	std::shared_ptr<CylinderMesh> m_testCylinder;
+	XMVECTOR m_rayOrigin;
+	XMVECTOR m_rayEnd;
+	bool m_hoveredOver;
 };

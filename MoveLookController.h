@@ -39,6 +39,8 @@ public:
 
 	bool LButtonIsDown() { return m_mouseDown; }
 
+	DirectX::XMVECTOR Position() { return m_eyeVec; }
+
 private:
 	void ResetState();
 

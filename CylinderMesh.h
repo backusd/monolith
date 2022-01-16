@@ -31,8 +31,11 @@ private:
 
 	DirectX::XMMATRIX ComputeRotationMatrix(DirectX::XMFLOAT3 velocity);
 
+
 public:
 	CylinderMesh(const std::shared_ptr<DeviceResources>& deviceResources);
+
+	float Radius() { return m_xyScaling; }
 
 	/* Render must be passed the following:
 		1. XMFLOAT3 position       - position of the atom   -> used for translating to compute the model matrix
@@ -53,8 +56,13 @@ public:
 				ISSetIndexBuffer
 				VSSetConstantBuffers1
 				DrawIndexed
+
+		Returns: returns the computed model matrix. Because every bond will run Render and they all have a shared_ptr to the
+		         same CylinderMesh, each call will update the model matrix. However, each bond will want to keep track of the
+				 model matrix that was computed so we can easily test for mouse over the cylinder without re-computing the
+				 model matrix.
 	*/
-	void Render(DirectX::XMFLOAT3 position1, DirectX::XMFLOAT3 position2, DirectX::XMMATRIX viewProjection);
+	DirectX::XMMATRIX Render(DirectX::XMFLOAT3 position1, DirectX::XMFLOAT3 position2, DirectX::XMMATRIX viewProjection);
 
 	DirectX::XMMATRIX ModelMatrix() { return m_modelMatrix; }
 };

@@ -35,6 +35,11 @@ public:
 	BONDTYPE GetBondType() { return m_type; }
 	void SetBondType(BONDTYPE bondType);
 
+	DirectX::XMMATRIX ModelMatrix() { return m_modelMatrix; }
+	bool MouseIsOver(float mouseX, float mouseY, CD3D11_VIEWPORT viewport, DirectX::XMMATRIX projectionMatrix, DirectX::XMMATRIX viewMatrix, float& distance);
+
+	DirectX::XMVECTOR BondCenter();
+
 private:
 	std::shared_ptr<Atom> m_atom1;
 	std::shared_ptr<Atom> m_atom2;
@@ -42,6 +47,7 @@ private:
 	BONDTYPE m_type;
 
 	std::shared_ptr<CylinderMesh> m_cylinderMesh;
+	DirectX::XMMATRIX m_modelMatrix;
 
 	float m_springConstant;
 };

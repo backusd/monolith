@@ -7,6 +7,9 @@ std::shared_ptr<Atom> SimulationManager::m_selectedAtom = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomHoveredOver = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomBeingClicked = nullptr;
 
+std::shared_ptr<Bond> SimulationManager::m_selectedBond = nullptr;
+std::shared_ptr<Bond> SimulationManager::m_bondHoveredOver = nullptr;
+
 std::shared_ptr<Atom> SimulationManager::m_bondAtom1 = nullptr;
 std::shared_ptr<Bond> SimulationManager::m_newBond = nullptr;
 bool SimulationManager::m_bondAlreadyExisted = false;
@@ -15,6 +18,8 @@ std::function<void(bool)> SimulationManager::PlayPauseChangedEvent = [](bool val
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomHoveredOverChangedEvent = [](std::shared_ptr<Atom> atom) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomClickedEvent = [](std::shared_ptr<Atom> atom) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::SelectedAtomChangedEvent = [](std::shared_ptr<Atom> atom) {};
+
+std::function<void(std::shared_ptr<Bond>)> SimulationManager::BondHoveredOverChangedEvent = [](std::shared_ptr<Bond> bond) {};
 std::function<void(std::shared_ptr<Bond>)> SimulationManager::SelectedBondChangedEvent = [](std::shared_ptr<Bond> bond) {};
 
 
@@ -115,6 +120,16 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 	}
 }
 
+void SimulationManager::BondHoveredOver(std::shared_ptr<Bond> bond)
+{
+	// Only update and trigger the event if the atom changed
+	if (bond != m_bondHoveredOver)
+	{
+		m_bondHoveredOver = bond;
+		BondHoveredOverChangedEvent(bond); // CAN be nullptr
+	}
+}
+
 void SimulationManager::SimulationClickDown()
 {
 	switch (m_userState)
@@ -125,6 +140,8 @@ void SimulationManager::SimulationClickDown()
 		// be moved off the atom and therefore will not actually click the atom when the mouse
 		// is released
 		m_atomBeingClicked = m_atomHoveredOver;
+
+		// During the VIEW state, don't worry about bond hovering/selection
 		break;
 
 	case UserState::EDIT_BONDS:
@@ -144,6 +161,13 @@ void SimulationManager::SimulationClickUp()
 		m_bondAtom1 = nullptr;
 		m_newBond = nullptr;
 		m_bondAlreadyExisted = false;
+
+		// Update the selected bond
+		if (m_selectedBond != m_bondHoveredOver)
+		{
+			m_selectedBond = m_bondHoveredOver;
+			SelectedBondChangedEvent(m_selectedBond);
+		}
 
 		break;
 
