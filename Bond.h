@@ -28,7 +28,7 @@ public:
 	std::shared_ptr<Atom> Atom1() { return m_atom1; }
 	std::shared_ptr<Atom> Atom2() { return m_atom2; }
 
-	float BondLength();
+	float BondLength(); 
 	float EquilibriumLength();
 	float SpringConstant() { return m_springConstant; }
 

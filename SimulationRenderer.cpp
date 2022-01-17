@@ -753,8 +753,6 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 	XMVECTOR clickpointNearVector = XMLoadFloat3(&clickpointNear);
 	XMVECTOR clickpointFarVector = XMLoadFloat3(&clickpointFar);
 
-	XMVECTOR origin, destination, direction;
-
 	float shortestDistance = FLT_MAX; // Set initial to the maximum possible float value
 	float distance = FLT_MAX;
 	
@@ -762,34 +760,7 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 
 	for (std::shared_ptr<Atom> atom : atoms)
 	{
-		origin = XMVector3Unproject(
-			clickpointNearVector,
-			m_viewport.TopLeftX,
-			m_viewport.TopLeftY,
-			m_viewport.Width,
-			m_viewport.Height,
-			0,
-			1,
-			m_projectionMatrix,
-			m_viewMatrix,
-			atom->TranslationMatrix());
-
-		destination = XMVector3Unproject(
-			clickpointFarVector,
-			m_viewport.TopLeftX,
-			m_viewport.TopLeftY,
-			m_viewport.Width,
-			m_viewport.Height,
-			0,
-			1,
-			m_projectionMatrix,
-			m_viewMatrix,
-			atom->TranslationMatrix());
-
-		direction = XMVector3Normalize(destination - origin);
-
-		// if an intersection is found, the distance will be returned in the 'distance' variable
-		if (SphereIntersection(origin, direction, atom, distance))
+		if (atom->MouseIsOver(mouseX, mouseY, m_viewport, m_projectionMatrix, m_viewMatrix, distance))
 		{
 			if (distance < shortestDistance)
 			{

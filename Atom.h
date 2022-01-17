@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <cmath>
 
 #include <typeinfo>
 
@@ -86,6 +87,9 @@ public:
 	//void AddBond(std::vector<std::shared_ptr<Bond>> bonds);
 	void AddBond(const std::shared_ptr<Bond>& bond) { m_bonds.push_back(bond); }
 	void RemoveBond(const std::shared_ptr<Bond>& bond);
+
+	bool MouseIsOver(float mouseX, float mouseY, CD3D11_VIEWPORT viewport, DirectX::XMMATRIX projectionMatrix, DirectX::XMMATRIX viewMatrix, float& distance);
+
 
 
 protected:
