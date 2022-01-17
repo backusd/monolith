@@ -19,8 +19,8 @@ public:
 		m_atom2 = nullptr;
 	}
 
-	void RenderAtom1ToMidPoint(DirectX::XMMATRIX viewProjectionMatrix);
-	void RenderMidPointToAtom2(DirectX::XMMATRIX viewProjectionMatrix);
+	void RenderAtom1ToMidPoint(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector);
+	void RenderMidPointToAtom2(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector);
 
 	bool IncludesAtom(const std::shared_ptr<Atom>& atom){ return m_atom1 == atom || m_atom2 == atom; }
 
@@ -36,15 +36,14 @@ public:
 	BONDTYPE GetBondType() { return m_type; }
 	void SetBondType(BONDTYPE bondType);
 
-	//DirectX::XMMATRIX ModelMatrix() { return m_modelMatrix; }
-	bool MouseIsOver(float mouseX, float mouseY, CD3D11_VIEWPORT viewport, DirectX::XMMATRIX projectionMatrix, DirectX::XMMATRIX viewMatrix, float& distance);
+	bool MouseIsOver(float mouseX, float mouseY, CD3D11_VIEWPORT viewport, DirectX::XMMATRIX projectionMatrix, DirectX::XMMATRIX viewMatrix, DirectX::XMVECTOR eyeVector, float& distance);
 
 	DirectX::XMVECTOR BondCenter();
 
 private:
 	// Get the position of the end of the cylinder
-	DirectX::XMFLOAT3 BondStartPosition(int cylinderNumber = 1);
-	DirectX::XMFLOAT3 BondEndPosition(int cylinderNumber = 1);
+	DirectX::XMFLOAT3 BondStartPosition(DirectX::XMVECTOR eyeVector, int cylinderNumber = 1);
+	DirectX::XMFLOAT3 BondEndPosition(DirectX::XMVECTOR eyeVector, int cylinderNumber = 1);
 
 
 	std::shared_ptr<Atom> m_atom1;
@@ -53,7 +52,6 @@ private:
 	BONDTYPE m_type;
 
 	std::shared_ptr<CylinderMesh> m_cylinderMesh;
-	//DirectX::XMMATRIX m_modelMatrix;
 
 	float m_springConstant;
 };

@@ -581,7 +581,7 @@ bool SimulationRenderer::Render3D()
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
 
 			// Render the bond
-			bond->RenderAtom1ToMidPoint(viewProjectionMatrix);
+			bond->RenderAtom1ToMidPoint(viewProjectionMatrix, m_moveLookController->Position());
 
 			delete newBondMaterial;
 
@@ -596,7 +596,7 @@ bool SimulationRenderer::Render3D()
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
 
 			// Render the bond
-			bond->RenderMidPointToAtom2(viewProjectionMatrix);
+			bond->RenderMidPointToAtom2(viewProjectionMatrix, m_moveLookController->Position());
 			
 			delete newBondMaterial;
 		}
@@ -609,7 +609,7 @@ bool SimulationRenderer::Render3D()
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
 			
 			// Render atom1 to midpoint
-			bond->RenderAtom1ToMidPoint(viewProjectionMatrix);
+			bond->RenderAtom1ToMidPoint(viewProjectionMatrix, m_moveLookController->Position());
 
 
 
@@ -620,7 +620,7 @@ bool SimulationRenderer::Render3D()
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
 
 			// Render midpoint to atom2
-			bond->RenderMidPointToAtom2(viewProjectionMatrix);
+			bond->RenderMidPointToAtom2(viewProjectionMatrix, m_moveLookController->Position());
 		}
 	}
 
@@ -812,7 +812,7 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 	for (std::shared_ptr<Bond> bond :  SimulationManager::Bonds())
 	{
 		// if an intersection is found, the distance will be returned in the 'distance' variable
-		if (bond->MouseIsOver(mouseX, mouseY, m_viewport, m_projectionMatrix, m_viewMatrix, bondDistance))
+		if (bond->MouseIsOver(mouseX, mouseY, m_viewport, m_projectionMatrix, m_viewMatrix, m_moveLookController->Position(), bondDistance))
 		{
 			if (bondDistance < shortestBondDistance)
 			{
