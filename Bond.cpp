@@ -16,47 +16,35 @@ Bond::Bond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom
 {
 }
 
-void Bond::Render(XMMATRIX viewProjectionMatrix)
+void Bond::RenderAtom1ToMidPoint(XMMATRIX viewProjectionMatrix)
 {
-	/*
-	// So as to not allow hovering over part of the cylinder that resides within the atom itself,
-	// Only draw the cylinder from the surface of the atom to the other atom
-	XMFLOAT3 p1 = m_atom1->Position();
-	XMVECTOR p1Vector = DirectX::XMLoadFloat3(&p1);
-	XMFLOAT3 p2 = m_atom2->Position();
-	XMVECTOR p2Vector = DirectX::XMLoadFloat3(&p2);
-
-	// Get the display radius, which may be smaller than actual radius if rendering in ball and stick style
-	float r1 = m_atom1->DisplayRadius();
-	float r2 = m_atom2->DisplayRadius();
-
-	// Compute and normalize the vector between the two atoms
-	XMVECTOR bondDirectionVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(p2Vector, p1Vector));
-	XMFLOAT3 bondDirection;
-	DirectX::XMStoreFloat3(&bondDirection, bondDirectionVector);
-
-	// Adjust p1 by adding the radius amount along the bond direction
-	float factor = 0.98f; // Multiple each by this factor so the bond does not appear outside the sphere
-	r1 *= factor;
-	r2 *= factor;
-
-	p1.x += (bondDirection.x * r1);
-	p1.y += (bondDirection.y * r1);
-	p1.z += (bondDirection.z * r1);
-
-	// Adjust p2 by subtracting the radius amount along the bond direction
-	p2.x -= (bondDirection.x * r2);
-	p2.y -= (bondDirection.y * r2);
-	p2.z -= (bondDirection.z * r2);
-	*/
-
 	// Get start and end location for the first cylinder
 	XMFLOAT3 p1 = this->BondStartPosition(1);
 	XMFLOAT3 p2 = this->BondEndPosition(1);
 
-	// Get back the model matrix for the cylinder mesh that was computed in the call to Render
+	// Compute the midpoint between positions
+	XMFLOAT3 midPoint = XMFLOAT3((p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f, (p1.z + p2.z) / 2.0f);
+
+	// Set the radius of the cylinders
 	float radius = Constants::AtomicRadii[Element::HYDROGEN] / 3.0f;
-	m_cylinderMesh->Render(p1, p2, radius, viewProjectionMatrix);
+
+	// Render the first cylinder from p1 to midPoint
+	m_cylinderMesh->Render(p1, midPoint, radius, viewProjectionMatrix);
+}
+void Bond::RenderMidPointToAtom2(XMMATRIX viewProjectionMatrix)
+{
+	// Get start and end location for the first cylinder
+	XMFLOAT3 p1 = this->BondStartPosition(1);
+	XMFLOAT3 p2 = this->BondEndPosition(1);
+
+	// Compute the midpoint between positions
+	XMFLOAT3 midPoint = XMFLOAT3((p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f, (p1.z + p2.z) / 2.0f);
+
+	// Set the radius of the cylinders
+	float radius = Constants::AtomicRadii[Element::HYDROGEN] / 3.0f;
+
+	// Render the second cylinder from midPoint to p2
+	m_cylinderMesh->Render(midPoint, p2, radius, viewProjectionMatrix);
 }
 
 void Bond::SwitchAtom(const std::shared_ptr<Atom>& oldAtom, const std::shared_ptr<Atom>& newAtom)

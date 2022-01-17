@@ -19,7 +19,8 @@ public:
 		m_atom2 = nullptr;
 	}
 
-	void Render(DirectX::XMMATRIX viewProjectionMatrix);
+	void RenderAtom1ToMidPoint(DirectX::XMMATRIX viewProjectionMatrix);
+	void RenderMidPointToAtom2(DirectX::XMMATRIX viewProjectionMatrix);
 
 	bool IncludesAtom(const std::shared_ptr<Atom>& atom){ return m_atom1 == atom || m_atom2 == atom; }
 

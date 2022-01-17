@@ -529,6 +529,8 @@ bool SimulationRenderer::Render3D()
 
 			// Set the atom element to invalid so that the materials properties will get updated for the next atom
 			currentElement = Element::INVALID;
+
+			delete hoverAtomMaterialPropertiesNEW;
 		}
 		else
 		{
@@ -571,7 +573,7 @@ bool SimulationRenderer::Render3D()
 		{
 			// Update the material constant buffers to have a different emmissive value
 			MaterialProperties* newBondMaterial = new MaterialProperties();
-			newBondMaterial->Material = m_velocityArrowMaterial->Material;
+			newBondMaterial->Material = m_materialProperties[bond->Atom1()->ElementType()]->Material;
 			newBondMaterial->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
@@ -579,16 +581,46 @@ bool SimulationRenderer::Render3D()
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
 
 			// Render the bond
-			bond->Render(viewProjectionMatrix);
+			bond->RenderAtom1ToMidPoint(viewProjectionMatrix);
 
-			// Update the material constant buffers back to what they were
-			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_velocityArrowMaterial.get(), 0, 0);
+			delete newBondMaterial;
+
+
+			// Update the material constant buffers to have a different emmissive value
+			newBondMaterial = new MaterialProperties();
+			newBondMaterial->Material = m_materialProperties[bond->Atom2()->ElementType()]->Material;
+			newBondMaterial->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
 			ID3D11Buffer* const psConstantBuffers2[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-			context->PSSetConstantBuffers1(0, 2, psConstantBuffers2, nullptr, nullptr);
+			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
+
+			// Render the bond
+			bond->RenderMidPointToAtom2(viewProjectionMatrix);
+			
+			delete newBondMaterial;
 		}
 		else
 		{
-			bond->Render(viewProjectionMatrix);
+			// Update the material to that of the first atom
+			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[bond->Atom1()->ElementType()], 0, 0);
+
+			ID3D11Buffer* const psConstantBuffers1[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+			
+			// Render atom1 to midpoint
+			bond->RenderAtom1ToMidPoint(viewProjectionMatrix);
+
+
+
+			// Update the material to that of the second atom
+			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[bond->Atom2()->ElementType()], 0, 0);
+
+			ID3D11Buffer* const psConstantBuffers2[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+
+			// Render midpoint to atom2
+			bond->RenderMidPointToAtom2(viewProjectionMatrix);
 		}
 	}
 
