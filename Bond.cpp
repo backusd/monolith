@@ -11,13 +11,14 @@ Bond::Bond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom
 	m_atom2(atom2),
 	m_type(BondType::SINGLE),
 	m_cylinderMesh(MeshManager::GetCylinderMesh()),
-	m_modelMatrix(DirectX::XMMatrixIdentity()),
+	//m_modelMatrix(DirectX::XMMatrixIdentity()),
 	m_springConstant(1.0f)
 {
 }
 
 void Bond::Render(XMMATRIX viewProjectionMatrix)
 {
+	/*
 	// So as to not allow hovering over part of the cylinder that resides within the atom itself,
 	// Only draw the cylinder from the surface of the atom to the other atom
 	XMFLOAT3 p1 = m_atom1->Position();
@@ -47,10 +48,15 @@ void Bond::Render(XMMATRIX viewProjectionMatrix)
 	p2.x -= (bondDirection.x * r2);
 	p2.y -= (bondDirection.y * r2);
 	p2.z -= (bondDirection.z * r2);
+	*/
 
+	// Get start and end location for the first cylinder
+	XMFLOAT3 p1 = this->BondStartPosition(1);
+	XMFLOAT3 p2 = this->BondEndPosition(1);
 
 	// Get back the model matrix for the cylinder mesh that was computed in the call to Render
-	m_modelMatrix = m_cylinderMesh->Render(p1, p2, viewProjectionMatrix);
+	float radius = Constants::AtomicRadii[Element::HYDROGEN] / 3.0f;
+	m_cylinderMesh->Render(p1, p2, radius, viewProjectionMatrix);
 }
 
 void Bond::SwitchAtom(const std::shared_ptr<Atom>& oldAtom, const std::shared_ptr<Atom>& newAtom)
@@ -86,6 +92,9 @@ void Bond::SetBondType(BONDTYPE bondType)
 
 bool Bond::MouseIsOver(float mouseX, float mouseY, CD3D11_VIEWPORT viewport, DirectX::XMMATRIX projectionMatrix, DirectX::XMMATRIX viewMatrix, float& distance)
 {
+	float radius = Constants::AtomicRadii[Element::HYDROGEN] / 3.0f;
+	XMMATRIX modelMatrix = m_cylinderMesh->ModelMatrix(BondStartPosition(1), BondEndPosition(1), radius);
+	
 	XMVECTOR rayOriginVector, rayDestinationVector, rayDirectionVector;
 
 	rayOriginVector = XMVector3Unproject(
@@ -98,7 +107,7 @@ bool Bond::MouseIsOver(float mouseX, float mouseY, CD3D11_VIEWPORT viewport, Dir
 		1,
 		projectionMatrix,
 		viewMatrix,
-		m_modelMatrix);
+		modelMatrix);
 
 	rayDestinationVector = XMVector3Unproject(
 		DirectX::XMVectorSet(mouseX, mouseY, 1.0f, 0.0f), // click point far vector
@@ -110,7 +119,7 @@ bool Bond::MouseIsOver(float mouseX, float mouseY, CD3D11_VIEWPORT viewport, Dir
 		1,
 		projectionMatrix,
 		viewMatrix,
-		m_modelMatrix);
+		modelMatrix);
 
 	rayDirectionVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(rayDestinationVector, rayOriginVector));
 
@@ -190,4 +199,62 @@ XMVECTOR Bond::BondCenter()
 	);
 
 	return DirectX::XMLoadFloat3(&middle);
+}
+
+XMFLOAT3 Bond::BondStartPosition(int cylinderNumber)
+{
+	// So as to not allow hovering over part of the cylinder that resides within the atom itself,
+	// Only draw the cylinder from the surface of the atom to the other atom
+	XMFLOAT3 position1 = m_atom1->Position();
+	XMVECTOR position1Vector = DirectX::XMLoadFloat3(&position1);
+
+	XMFLOAT3 position2 = m_atom2->Position();
+	XMVECTOR position2Vector = DirectX::XMLoadFloat3(&position2);
+
+	// Get the display radius, which may be smaller than actual radius if rendering in ball and stick style
+	float atom1Radius = m_atom1->DisplayRadius();
+
+	// Compute and normalize the vector between the two atoms
+	XMVECTOR bondDirectionVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(position2Vector, position1Vector));
+	XMFLOAT3 bondDirection;
+	DirectX::XMStoreFloat3(&bondDirection, bondDirectionVector);
+
+	// Adjust p1 by adding the radius amount along the bond direction
+	float factor = 0.93f; // Multiple each by this factor so the bond does not appear outside the sphere
+	atom1Radius *= factor;
+
+	position1.x += (bondDirection.x * atom1Radius);
+	position1.y += (bondDirection.y * atom1Radius);
+	position1.z += (bondDirection.z * atom1Radius);
+
+	return position1;
+}
+XMFLOAT3 Bond::BondEndPosition(int cylinderNumber)
+{
+	// So as to not allow hovering over part of the cylinder that resides within the atom itself,
+	// Only draw the cylinder from the surface of the atom to the other atom
+	XMFLOAT3 position1 = m_atom1->Position();
+	XMVECTOR position1Vector = DirectX::XMLoadFloat3(&position1);
+
+	XMFLOAT3 position2 = m_atom2->Position();
+	XMVECTOR position2Vector = DirectX::XMLoadFloat3(&position2);
+
+	// Get the display radius, which may be smaller than actual radius if rendering in ball and stick style
+	float atom2Radius = m_atom2->DisplayRadius();
+
+	// Compute and normalize the vector between the two atoms
+	XMVECTOR bondDirectionVector = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(position2Vector, position1Vector));
+	XMFLOAT3 bondDirection;
+	DirectX::XMStoreFloat3(&bondDirection, bondDirectionVector);
+
+	// Adjust p1 by adding the radius amount along the bond direction
+	float factor = 0.93f; // Multiple each by this factor so the bond does not appear outside the sphere
+	atom2Radius *= factor;
+
+	// Adjust p2 by subtracting the radius amount along the bond direction
+	position2.x -= (bondDirection.x * atom2Radius);
+	position2.y -= (bondDirection.y * atom2Radius);
+	position2.z -= (bondDirection.z * atom2Radius);
+
+	return position2;
 }

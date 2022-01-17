@@ -22,10 +22,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	m_modelViewProjectionBuffer;
 	ModelViewProjectionConstantBuffer		m_modelViewProjectionBufferData;
 
-	DirectX::XMMATRIX m_modelMatrix;
-
-	float m_xyScaling;
-
 	void CreateModelViewProjectionBuffer();
 	void LoadCylinderVertexAndIndexBuffers();
 
@@ -34,8 +30,6 @@ private:
 
 public:
 	CylinderMesh(const std::shared_ptr<DeviceResources>& deviceResources);
-
-	float Radius() { return m_xyScaling; }
 
 	/* Render must be passed the following:
 		1. XMFLOAT3 position       - position of the atom   -> used for translating to compute the model matrix
@@ -62,7 +56,10 @@ public:
 				 model matrix that was computed so we can easily test for mouse over the cylinder without re-computing the
 				 model matrix.
 	*/
-	DirectX::XMMATRIX Render(DirectX::XMFLOAT3 position1, DirectX::XMFLOAT3 position2, DirectX::XMMATRIX viewProjection);
+	void Render(DirectX::XMFLOAT3 position1, DirectX::XMFLOAT3 position2, float radius, DirectX::XMMATRIX viewProjection);
 
-	DirectX::XMMATRIX ModelMatrix() { return m_modelMatrix; }
+	//DirectX::XMMATRIX ModelMatrix() { return m_modelMatrix; }
+
+	// Compute and return a model matrix 
+	DirectX::XMMATRIX ModelMatrix(DirectX::XMFLOAT3 position1, DirectX::XMFLOAT3 position2, float radius);
 };

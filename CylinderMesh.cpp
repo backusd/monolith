@@ -6,8 +6,7 @@ using DirectX::XMVECTOR;
 
 CylinderMesh::CylinderMesh(const std::shared_ptr<DeviceResources>& deviceResources) :
 	m_deviceResources(deviceResources),
-	m_cylinderIndexCount(0),
-	m_xyScaling(Constants::AtomicRadii[Element::HYDROGEN] / 3.0f)
+	m_cylinderIndexCount(0)
 {
 	CreateModelViewProjectionBuffer();
 	LoadCylinderVertexAndIndexBuffers();
@@ -142,7 +141,7 @@ void CylinderMesh::LoadCylinderVertexAndIndexBuffers()
 	);
 }
 
-DirectX::XMMATRIX CylinderMesh::Render(XMFLOAT3 position1, XMFLOAT3 position2, XMMATRIX viewProjection)
+void CylinderMesh::Render(XMFLOAT3 position1, XMFLOAT3 position2, float radius, XMMATRIX viewProjection)
 {
 	auto context = m_deviceResources->D3DDeviceContext();
 
@@ -165,16 +164,16 @@ DirectX::XMMATRIX CylinderMesh::Render(XMFLOAT3 position1, XMFLOAT3 position2, X
 	XMFLOAT3 difference;
 	DirectX::XMStoreFloat3(&difference, differenceVector);
 
+	XMMATRIX modelMatrix;
+
 	if (magnitude.x > 0.0f)
 	{
-		m_modelMatrix = DirectX::XMMatrixScaling(m_xyScaling, m_xyScaling, magnitude.z) // scale the z-stretch to the length of the cylinder
-			* ComputeRotationMatrix(difference)
-			* DirectX::XMMatrixTranslation(position1.x, position1.y, position1.z);
+		modelMatrix = this->ModelMatrix(position1, position2, radius);
 
 		// Store model, modelviewprojection, and inversetransposemodel matrices
-		XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, m_modelMatrix);
-		XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, m_modelMatrix * viewProjection);
-		XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, m_modelMatrix)));
+		XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, modelMatrix);
+		XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, modelMatrix * viewProjection);
+		XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, modelMatrix)));
 
 		// Prepare the constant buffer to send it to the graphics device.
 		context->UpdateSubresource1(m_modelViewProjectionBuffer.Get(), 0, NULL, &m_modelViewProjectionBufferData, 0, 0, 0);
@@ -185,11 +184,7 @@ DirectX::XMMATRIX CylinderMesh::Render(XMFLOAT3 position1, XMFLOAT3 position2, X
 
 		// Draw the objects.
 		context->DrawIndexed(m_cylinderIndexCount, 0, 0);
-
-		return m_modelMatrix;
 	}
-	
-	return DirectX::XMMatrixIdentity();
 }
 
 XMMATRIX CylinderMesh::ComputeRotationMatrix(XMFLOAT3 velocity)
@@ -213,4 +208,20 @@ XMMATRIX CylinderMesh::ComputeRotationMatrix(XMFLOAT3 velocity)
 	}
 
 	return rotationMatrix;
+}
+
+XMMATRIX CylinderMesh::ModelMatrix(XMFLOAT3 position1, XMFLOAT3 position2, float radius)
+{
+	XMVECTOR position1Vector = DirectX::XMLoadFloat3(&position1);
+	XMVECTOR position2Vector = DirectX::XMLoadFloat3(&position2);
+	XMVECTOR differenceVector = DirectX::XMVectorSubtract(position2Vector, position1Vector);
+	XMFLOAT3 magnitude;
+	DirectX::XMStoreFloat3(&magnitude, DirectX::XMVector3Length(differenceVector));
+
+	XMFLOAT3 difference;
+	DirectX::XMStoreFloat3(&difference, differenceVector);
+
+	return DirectX::XMMatrixScaling(radius, radius, magnitude.z) // scale the z-stretch to the length of the cylinder
+		* ComputeRotationMatrix(difference)
+		* DirectX::XMMatrixTranslation(position1.x, position1.y, position1.z);
 }
