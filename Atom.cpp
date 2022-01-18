@@ -56,6 +56,12 @@ void Atom::Render(XMMATRIX viewProjectionMatrix)
 	m_sphereMesh->Render(m_position, m_radius, viewProjectionMatrix);
 }
 
+void Atom::RenderOutline(DirectX::XMMATRIX viewProjectionMatrix, float outlineWidth)
+{
+	m_sphereMesh->Render(m_position, m_radius + outlineWidth, viewProjectionMatrix);
+}
+
+
 void Atom::RenderVelocityArrow(XMMATRIX viewProjectionMatrix)
 {
 	if (m_showVelocityArrow)

@@ -28,6 +28,7 @@ DeviceResources::DeviceResources(HWND hWnd) :
 	m_d3dDeviceContext(nullptr),
 	m_d3dRenderTargetView(nullptr),
 	m_d3dDepthStencilView(nullptr),
+	m_d3dDepthStencilState(nullptr),
 	m_dxgiSwapChain(nullptr),
 	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
 	m_dpiScale(96.0f)
@@ -336,7 +337,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 
 	// Create a depth stencil view for use with 3D rendering if needed
 	CD3D11_TEXTURE2D_DESC1 depthStencilDesc(
-		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		DXGI_FORMAT_D24_UNORM_S8_UINT, // reserve 24 bits for the depth value and 8 bits for stencil value (used for outline effect)
 		static_cast<UINT>(width),
 		static_cast<UINT>(height),
 		1, // This depth stencil view has only one texture
@@ -353,7 +354,10 @@ void DeviceResources::CreateWindowSizeDependentResources()
 		)
 	);
 
-	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
+	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(
+		D3D11_DSV_DIMENSION_TEXTURE2D,
+		DXGI_FORMAT_D24_UNORM_S8_UINT
+		);
 	ThrowIfFailed(
 		m_d3dDevice->CreateDepthStencilView(
 			depthStencil.Get(),
@@ -361,6 +365,10 @@ void DeviceResources::CreateWindowSizeDependentResources()
 			m_d3dDepthStencilView.ReleaseAndGetAddressOf()
 		)
 	);
+
+
+
+
 
 	// Set the 3D rendering viewport to target the entire window
 	m_viewport = CD3D11_VIEWPORT(0.0f, 0.0f, width, height);
@@ -371,7 +379,7 @@ void DeviceResources::CreateWindowSizeDependentResources()
 	D3D11_RASTERIZER_DESC rd;
 	rd.FillMode = D3D11_FILL_SOLID; // or D3D11_FILL_WIREFRAME
 	rd.CullMode = D3D11_CULL_NONE;
-	rd.FrontCounterClockwise = false;
+	rd.FrontCounterClockwise = true;	// This must be true for the outline effect to work properly
 	rd.DepthBias = 0;
 	rd.SlopeScaledDepthBias = 0.0f;
 	rd.DepthBiasClamp = 0.0f;
@@ -475,4 +483,88 @@ void DeviceResources::Present()
 		ThrowIfFailed(hr);
 	}
 
+}
+
+void DeviceResources::SetStencilMode(StencilMode mode)
+{
+	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC{ CD3D11_DEFAULT{} };
+
+	/*
+	* This is what the default settings are
+	* 
+	dsDesc.DepthEnable    = TRUE;									// Depth testing is enabled
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;				// All depth bits can be written to
+	dsDesc.DepthFunc      = D3D11_COMPARISON_LESS;					// Smaller depth values will be saved
+
+	dsDesc.StencilEnable    = FALSE;								// Disable stencil testing
+	dsDesc.StencilReadMask  = 0xFF;									// Read from entire stencil buffer
+	dsDesc.StencilWriteMask = 0xFF;									// Write to entire stencil buffer
+
+			// Pixels with normal facing the camera
+	dsDesc.FrontFace.StencilFunc        = D3D11_COMPARISON_ALWAYS;	// Stencil test will always pass
+	dsDesc.FrontFace.StencilPassOp      = D3D11_STENCIL_OP_KEEP;	// Keep existing stencil data (do not overwrite)
+	dsDesc.FrontFace.StencilFailOp      = D3D11_STENCIL_OP_KEEP;	//
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;	//
+
+			// Pixels with normal facing away from the camera
+	dsDesc.BackFace.StencilFunc        = D3D11_COMPARISON_ALWAYS;	// Stencil test will always pass
+	dsDesc.BackFace.StencilPassOp      = D3D11_STENCIL_OP_KEEP;		// Keep existing stencil data (do not overwrite)
+	dsDesc.BackFace.StencilFailOp      = D3D11_STENCIL_OP_KEEP;		//
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;		//
+	*/
+
+
+	// This value will be the one that is used as the "source" stencil value that is compared
+	// against the existing stencil value. We set it to 0 by default because that is what the
+	// entire stencil buffered is set to (see ContentWindow->Render()).
+	UINT referenceValue = 0;
+
+	if (mode == StencilMode::WRITE)
+	{
+		// When we want to write to the stencil buffer, we want to set the stencil buffer value to 1
+		referenceValue = 1;
+
+		// Use compare_less_equal because an atom may be rendered twice BEFORE drawing the outline, 
+		// and it is the second draw that will set the stencil buffer value to 1. So we need the second
+		// draw to pass the depth test, which would fail if we just used compare_less because we are
+		// draw the same object to the same location
+		dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+		// Enable stencil testing - write to entire stencil buffer
+		dsDesc.StencilEnable    = TRUE;
+		dsDesc.StencilWriteMask = 0xFF;
+
+		// For front facing, always pass the stencil test so each pixel sets the stencil value to 1
+		dsDesc.FrontFace.StencilFunc   = D3D11_COMPARISON_ALWAYS;
+		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;		// When stencil & depth pass, write to the stencil buffer
+		dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;			// When stencil fails, don't write to stencil buffer
+		
+		//dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;	// When stencil passes, but depth fails, don't write to stencil buffer
+		dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;	// When stencil passes, but depth fails, do write to the stencil buffer
+																		// So, when the selected atom is partially (or completely) behind other atoms
+																		// the stencil mask will still be drawn so the outline will be visible through other objects
+
+		// Don't modify any back facing pixels - never allow them to overwrite the stencil buffer
+		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+	}
+	else if (mode == StencilMode::MASK)
+	{
+		// Disable depth testing so we are guaranteed to draw the pixels to the screen if it passes the stencil test
+		dsDesc.DepthEnable = FALSE;
+
+		// Enable stencil testing - Read from entire stencil buffer
+		dsDesc.StencilEnable   = TRUE;
+		dsDesc.StencilReadMask = 0xFF;
+		
+		// We will leave the referenceValue to 0, so only pass the stencil test if we are on a pixel
+		// where the stencil value has not been set to 1
+		dsDesc.FrontFace.StencilFunc   = D3D11_COMPARISON_EQUAL;
+		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;		// In this case, keep the existing data (do not overwrite the mask)
+		
+		// Don't modify any back facing pixels - never allow them to overwrite the stencil buffer
+		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+	}
+
+	ThrowIfFailed(m_d3dDevice->CreateDepthStencilState(&dsDesc, m_d3dDepthStencilState.ReleaseAndGetAddressOf()));
+	m_d3dDeviceContext->OMSetDepthStencilState(m_d3dDepthStencilState.Get(), referenceValue);
 }

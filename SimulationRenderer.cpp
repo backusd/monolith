@@ -545,8 +545,60 @@ bool SimulationRenderer::Render3D()
 			}
 		}
 
+
+
+		m_deviceResources->SetStencilMode(StencilMode::NONE);
 		atom->Render(viewProjectionMatrix);
 	}
+
+
+
+	// If there is an atom hovered over, draw an outline around the atom
+	if (atomHoveredOver != nullptr)
+	{
+		// Step 1: Re-render the atom using the stencil buffer to set the pixels to mask the rendering in the next step
+		
+		context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[atomHoveredOver->ElementType()], 0, 0);
+
+		ID3D11Buffer* const _psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+		context->PSSetConstantBuffers1(0, 2, _psConstantBuffers, nullptr, nullptr);		
+		
+		
+		m_deviceResources->SetStencilMode(StencilMode::WRITE);
+		atomHoveredOver->Render(viewProjectionMatrix);
+
+		
+		
+		
+		
+		
+		
+		
+		// Step 2: Re-draw the atom slightly larger and in a different color using the stencil mask
+		m_deviceResources->SetStencilMode(StencilMode::MASK);
+
+		//     Change the color to purple
+		MaterialProperties* outlineMaterial = new MaterialProperties();
+		outlineMaterial->Material.Emissive = XMFLOAT4(0.3f, 0.0f, 0.0f, 1.0f);
+		outlineMaterial->Material.Ambient = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+		outlineMaterial->Material.Diffuse = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+		outlineMaterial->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+		outlineMaterial->Material.SpecularPower = 6.0f;
+
+		context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, outlineMaterial, 0, 0);
+		ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+		context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+
+		atomHoveredOver->RenderOutline(viewProjectionMatrix, 0.02f);
+
+
+
+		delete outlineMaterial;
+
+		// Reset the stencil mode
+		m_deviceResources->SetStencilMode(StencilMode::NONE);
+	}
+
 
 	// Draw Atom velocity arrows ============================================================
 
@@ -802,7 +854,6 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 		}
 	}
 
-	
 	// Perform cylinder/bond checking 
 
 	float shortestBondDistance = FLT_MAX; // Set initial to the maximum possible float value

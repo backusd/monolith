@@ -2,6 +2,12 @@
 #include "pch.h"
 #include "DirectXHelper.h"
 
+enum class StencilMode
+{
+	NONE,
+	WRITE,
+	MASK
+};
 
 class DeviceResources
 {
@@ -47,6 +53,9 @@ public:
 
 	RECT WindowRect();
 
+	// Stencil functions
+	void SetStencilMode(StencilMode mode);
+
 private:
 
 	void CreateDeviceDependentResources();
@@ -84,6 +93,8 @@ private:
 	// Direct3D Rendering objects ------ THESE MAY END UP GETTING STORED PER WINDOW
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView1>	m_d3dRenderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
+
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_d3dDepthStencilState;
 
 	D3D11_VIEWPORT m_viewport;
 	

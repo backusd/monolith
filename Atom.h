@@ -49,6 +49,7 @@ public:
 
 	// Render
 	void Render(DirectX::XMMATRIX viewProjectionMatrix);
+	void RenderOutline(DirectX::XMMATRIX viewProjectionMatrix, float outlineWidth);
 	void RenderVelocityArrow(DirectX::XMMATRIX viewProjectionMatrix);
 	DirectX::XMMATRIX ModelMatrix() { return m_sphereMesh->ModelMatrix(); }
 	DirectX::XMMATRIX TranslationMatrix() { return DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z); }

@@ -68,8 +68,6 @@ bool ContentWindow::Render()
 
 	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
 
-	//D3D11_VIEWPORT viewport = m_deviceResources->GetScreenViewport();
-	//context->RSSetViewports(1, &viewport);
 	m_deviceResources->ResetViewport();
 
 	FLOAT background[4] = { 45.0f / 255.0f, 45.0f / 255.0f, 48.0f / 255.0f };
@@ -78,6 +76,8 @@ bool ContentWindow::Render()
 
 	ID3D11RenderTargetView* const targets[1] = { m_deviceResources->GetBackBufferRenderTargetView() };
 	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
+
+	
 
 	// Draw all 3D simulation controls first
 	m_layout->Render3DControls();
