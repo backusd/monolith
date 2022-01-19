@@ -10,6 +10,20 @@
 #include <vector>
 #include <sstream>
 
+typedef DirectX::XMVECTORF32 DirectXColor;
+
+enum class StencilMode
+{
+	NONE,
+	WRITE,
+	MASK
+};
+
+enum class ShaderMode
+{
+	PHONG,
+	SOLID
+};
 
 class SimulationRenderer : public Control
 {
@@ -59,7 +73,13 @@ private:
 	void CreateBox();
 
 	void PerformPicking(float mouseX, float mouseY);
-	bool SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance);
+
+	// Pipeline Modification functions
+	void SetShaderMode(ShaderMode mode);
+	void SetStencilMode(StencilMode mode);
+	void SetMaterialProperties(std::shared_ptr<Atom> atom); // Set pixel shader buffer to use atom specific material
+	void SetMaterialProperties(DirectXColor color);			// Set pixel shader buffer to use a solid color
+
 
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_backgroundColorBrush;
 
@@ -77,9 +97,13 @@ private:
 	DirectX::XMFLOAT4X4 m_translation;
 
 	// Object Independent Resources
-	Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_vertexShader;
-	Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_pixelShader;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_inputLayout;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_phongVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_phongPixelShader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_phongInputLayout;
+
+	Microsoft::WRL::ComPtr<ID3D11VertexShader>	m_solidVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>	m_solidPixelShader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout>	m_solidInputLayout;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_modelViewProjectionBuffer;
 	ModelViewProjectionConstantBuffer			m_modelViewProjectionBufferData;
@@ -91,16 +115,20 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_lightPropertiesConstantBuffer;
 
 	// MaterialProperties
-	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_materialPropertiesConstantBuffer;
-	std::vector<MaterialProperties*>			m_materialProperties;
-	std::unique_ptr<MaterialProperties>			m_velocityArrowMaterial;
+	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_phongMaterialPropertiesConstantBuffer;
+	std::vector<PhongMaterialProperties*>		m_phongMaterialProperties;
+	std::unique_ptr<PhongMaterialProperties>	m_velocityArrowMaterial;
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_solidMaterialPropertiesConstantBuffer;
+
 
 	// Box Resources
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_boxVertexBuffer;
-	MaterialProperties							m_boxMaterialProperties;
+	PhongMaterialProperties						m_boxMaterialProperties;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>		m_boxMaterialPropertiesConstantBuffer;
 
-
+	// Pipeline configuration
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_d3dDepthStencilState;
 
 
 

@@ -16,9 +16,9 @@ struct VertexPositionNormal
     DirectX::XMFLOAT3 normal;
 };
 
-struct _Material
+struct _PhongMaterial
 {
-    _Material()
+    _PhongMaterial()
         : Emissive(0.0f, 0.0f, 0.0f, 1.0f)
         , Ambient(0.1f, 0.1f, 0.1f, 1.0f)
         , Diffuse(1.0f, 1.0f, 1.0f, 1.0f)
@@ -43,9 +43,14 @@ struct _Material
     //----------------------------------- (16 byte boundary)
 }; // Total:                                80 bytes (5 * 16)
 
-struct MaterialProperties
+struct PhongMaterialProperties
 {
-    _Material   Material;
+    _PhongMaterial   Material;
+};
+
+struct SolidMaterialProperties
+{
+    DirectX::XMFLOAT4   Color;
 };
 
 enum LightType

@@ -232,9 +232,9 @@ XMFLOAT3 Bond::BondStartPosition(DirectX::XMVECTOR eyeVector, int cylinderNumber
 	case BondType::DOUBLE: separation = (cylinderNumber == 1) ? s : -s; break;
 	case BondType::TRIPLE: 
 		if (cylinderNumber == 1)
-			separation = 1.5 * s;
+			separation = 1.5f * s;
 		else if (cylinderNumber == 3)
-			separation = -1.5 * s;
+			separation = -1.5f * s;
 		break;
 	}
 
@@ -287,9 +287,9 @@ XMFLOAT3 Bond::BondEndPosition(DirectX::XMVECTOR eyeVector, int cylinderNumber)
 	case BondType::DOUBLE: separation = (cylinderNumber == 1) ? s : -s; break;
 	case BondType::TRIPLE:
 		if (cylinderNumber == 1)
-			separation = 1.5 * s;
+			separation = 1.5f * s;
 		else if (cylinderNumber == 3)
-			separation = -1.5 * s;
+			separation = -1.5f * s;
 		break;
 	}
 

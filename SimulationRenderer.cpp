@@ -21,6 +21,7 @@ SimulationRenderer::SimulationRenderer(const std::shared_ptr<DeviceResources>& d
 									   const std::shared_ptr<Layout>& parentLayout, int row, int column, int rowSpan, int columnSpan) :
 	Control(deviceResources, parentLayout, row, column, rowSpan, columnSpan),
 	m_velocityArrowMaterial(nullptr),
+	m_d3dDepthStencilState(nullptr),
 	m_testCylinder(MeshManager::GetCylinderMesh()),
 	m_rayOrigin(XMVECTOR()),
 	m_rayEnd(XMVECTOR()),
@@ -107,101 +108,101 @@ void SimulationRenderer::CreateStaticResources()
 	// Sphere Material
 
 	// Load vector of material properties
-	MaterialProperties* dummy = new MaterialProperties(); // Set a dummy property so that each element is at the index of its element type
-	m_materialProperties.push_back(dummy);
+	PhongMaterialProperties* dummy = new PhongMaterialProperties(); // Set a dummy property so that each element is at the index of its element type
+	m_phongMaterialProperties.push_back(dummy);
 
-	MaterialProperties* hydrogen = new MaterialProperties();
+	PhongMaterialProperties* hydrogen = new PhongMaterialProperties();
 	hydrogen->Material.Emissive = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
 	hydrogen->Material.Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	hydrogen->Material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	hydrogen->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	hydrogen->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(hydrogen);
+	m_phongMaterialProperties.push_back(hydrogen);
 
-	MaterialProperties* helium = new MaterialProperties();
+	PhongMaterialProperties* helium = new PhongMaterialProperties();
 	helium->Material.Emissive = XMFLOAT4(0.4f, 0.14f, 0.14f, 1.0f);
 	helium->Material.Ambient = XMFLOAT4(1.0f, 0.75f, 0.75f, 1.0f);
 	helium->Material.Diffuse = XMFLOAT4(1.0f, 0.6f, 0.6f, 1.0f);
 	helium->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	helium->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(helium);
+	m_phongMaterialProperties.push_back(helium);
 
-	MaterialProperties* lithium = new MaterialProperties();
+	PhongMaterialProperties* lithium = new PhongMaterialProperties();
 	lithium->Material.Emissive = XMFLOAT4(0.15f, 0.0f, 0.15f, 1.0f);
 	lithium->Material.Ambient = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
 	lithium->Material.Diffuse = XMFLOAT4(1.0f, 0.6f, 0.6f, 1.0f);
 	lithium->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	lithium->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(lithium);
+	m_phongMaterialProperties.push_back(lithium);
 
-	MaterialProperties* beryllium = new MaterialProperties();
+	PhongMaterialProperties* beryllium = new PhongMaterialProperties();
 	beryllium->Material.Emissive = XMFLOAT4(0.15f, 0.15f, 0.0f, 1.0f);
 	beryllium->Material.Ambient = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
 	beryllium->Material.Diffuse = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
 	beryllium->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	beryllium->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(beryllium);
+	m_phongMaterialProperties.push_back(beryllium);
 
-	MaterialProperties* boron = new MaterialProperties();
+	PhongMaterialProperties* boron = new PhongMaterialProperties();
 	boron->Material.Emissive = XMFLOAT4(0.45f, 0.22f, 0.22f, 1.0f);
 	boron->Material.Ambient = XMFLOAT4(1.0f, 0.45f, 0.45f, 1.0f);
 	boron->Material.Diffuse = XMFLOAT4(1.0f, 0.8f, 0.8f, 1.0f);
 	boron->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	boron->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(boron);
+	m_phongMaterialProperties.push_back(boron);
 
-	MaterialProperties* carbon = new MaterialProperties();
+	PhongMaterialProperties* carbon = new PhongMaterialProperties();
 	carbon->Material.Emissive = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	carbon->Material.Ambient = XMFLOAT4(0.12f, 0.12f, 0.12f, 1.0f);
 	carbon->Material.Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	carbon->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	carbon->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(carbon);
+	m_phongMaterialProperties.push_back(carbon);
 
-	MaterialProperties* nitrogen = new MaterialProperties();
+	PhongMaterialProperties* nitrogen = new PhongMaterialProperties();
 	nitrogen->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.3f, 1.0f);
 	nitrogen->Material.Ambient = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	nitrogen->Material.Diffuse = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 	nitrogen->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	nitrogen->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(nitrogen);
+	m_phongMaterialProperties.push_back(nitrogen);
 
-	MaterialProperties* oxygen = new MaterialProperties();
+	PhongMaterialProperties* oxygen = new PhongMaterialProperties();
 	oxygen->Material.Emissive = XMFLOAT4(0.3f, 0.0f, 0.0f, 1.0f);
 	oxygen->Material.Ambient = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	oxygen->Material.Diffuse = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	oxygen->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	oxygen->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(oxygen);
+	m_phongMaterialProperties.push_back(oxygen);
 
-	MaterialProperties* flourine = new MaterialProperties();
+	PhongMaterialProperties* flourine = new PhongMaterialProperties();
 	flourine->Material.Emissive = XMFLOAT4(0.0f, 0.12f, 0.12f, 1.0f);
 	flourine->Material.Ambient = XMFLOAT4(0.0f, 0.5f, 0.5f, 1.0f);
 	flourine->Material.Diffuse = XMFLOAT4(0.0f, 0.2f, 1.0f, 1.0f);
 	flourine->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	flourine->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(flourine);
+	m_phongMaterialProperties.push_back(flourine);
 
-	MaterialProperties* neon = new MaterialProperties();
+	PhongMaterialProperties* neon = new PhongMaterialProperties();
 	neon->Material.Emissive = XMFLOAT4(0.1f, 0.3f, 0.3f, 1.0f);
 	neon->Material.Ambient = XMFLOAT4(0.3f, 1.0f, 0.0f, 1.0f);
 	neon->Material.Diffuse = XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
 	neon->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	neon->Material.SpecularPower = 6.0f;
 
-	m_materialProperties.push_back(neon);
+	m_phongMaterialProperties.push_back(neon);
 
 	// Velocity Arrow Material =================================================
-	m_velocityArrowMaterial = std::make_unique<MaterialProperties>();
+	m_velocityArrowMaterial = std::make_unique<PhongMaterialProperties>();
 	m_velocityArrowMaterial->Material.Emissive = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
 	m_velocityArrowMaterial->Material.Ambient = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	m_velocityArrowMaterial->Material.Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -209,7 +210,7 @@ void SimulationRenderer::CreateStaticResources()
 	m_velocityArrowMaterial->Material.SpecularPower = 6.0f;
 
 	// Box Material ============================================================
-	m_boxMaterialProperties = MaterialProperties();
+	m_boxMaterialProperties = PhongMaterialProperties();
 	m_boxMaterialProperties.Material.Ambient = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	m_boxMaterialProperties.Material.Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 	m_boxMaterialProperties.Material.Specular = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -269,22 +270,51 @@ void SimulationRenderer::CreateStaticResources()
 
 void SimulationRenderer::CreateVertexShaderAndInputLayout() 
 {
+	// SOLID shader =======================================================================
+	
+	ComPtr<ID3DBlob> solidBlob;
+	ThrowIfFailed(
+		D3DReadFileToBlob(L"SolidVertexShader.cso", solidBlob.ReleaseAndGetAddressOf())
+	);
+	ThrowIfFailed(
+		m_deviceResources->D3DDevice()->CreateVertexShader(
+			solidBlob->GetBufferPointer(),
+			solidBlob->GetBufferSize(),
+			nullptr,
+			m_solidVertexShader.ReleaseAndGetAddressOf()
+		)
+	);
+
+	static const D3D11_INPUT_ELEMENT_DESC solidVertexDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+	};
+
+	ThrowIfFailed(
+		m_deviceResources->D3DDevice()->CreateInputLayout(
+			solidVertexDesc,
+			ARRAYSIZE(solidVertexDesc),
+			solidBlob->GetBufferPointer(),
+			solidBlob->GetBufferSize(),
+			m_solidInputLayout.ReleaseAndGetAddressOf()
+		)
+	);
+
+	// PHONG shader =======================================================================
 	// create vertex shader
 	ComPtr<ID3DBlob> blob;
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"MyVertexShader.cso", blob.ReleaseAndGetAddressOf())
+		D3DReadFileToBlob(L"PhongVertexShader.cso", blob.ReleaseAndGetAddressOf())
 	);
 	ThrowIfFailed(
 		m_deviceResources->D3DDevice()->CreateVertexShader(
 			blob->GetBufferPointer(), 
 			blob->GetBufferSize(), 
 			nullptr, 
-			m_vertexShader.ReleaseAndGetAddressOf()
+			m_phongVertexShader.ReleaseAndGetAddressOf()
 		)
 	);
-
-	// bind vertex shader
-	m_deviceResources->D3DDeviceContext()->VSSetShader(m_vertexShader.Get(), nullptr, 0u);
 
 	/* D3D11_INPUT_ELEMENT_DESC
 	Parameter 1: Semantic Name           - must match the semantic used in VertexShaderInput
@@ -308,29 +338,41 @@ void SimulationRenderer::CreateVertexShaderAndInputLayout()
 			ARRAYSIZE(vertexDesc),
 			blob->GetBufferPointer(),
 			blob->GetBufferSize(),
-			m_inputLayout.ReleaseAndGetAddressOf()
+			m_phongInputLayout.ReleaseAndGetAddressOf()
 		)
 	);
 }
 
 void SimulationRenderer::CreatePixelShader()
 {
+	// SOLID shader =======================================================================
+	ComPtr<ID3DBlob> solidBlob;
+	ThrowIfFailed(
+		D3DReadFileToBlob(L"SolidPixelShader.cso", solidBlob.ReleaseAndGetAddressOf())
+	);
+	ThrowIfFailed(
+		m_deviceResources->D3DDevice()->CreatePixelShader(
+			solidBlob->GetBufferPointer(),
+			solidBlob->GetBufferSize(),
+			nullptr,
+			m_solidPixelShader.ReleaseAndGetAddressOf()
+		)
+	);
+
+	// PHONG shader =======================================================================
 	// create pixel shader
 	ComPtr<ID3DBlob> blob;
 	ThrowIfFailed(
-		D3DReadFileToBlob(L"MyPixelShader.cso", blob.ReleaseAndGetAddressOf())
+		D3DReadFileToBlob(L"PhongPixelShader.cso", blob.ReleaseAndGetAddressOf())
 	);
 	ThrowIfFailed(
 		m_deviceResources->D3DDevice()->CreatePixelShader(
 			blob->GetBufferPointer(), 
 			blob->GetBufferSize(), 
 			nullptr, 
-			m_pixelShader.ReleaseAndGetAddressOf()
+			m_phongPixelShader.ReleaseAndGetAddressOf()
 		)
 	);
-
-	// bind pixel shader
-	m_deviceResources->D3DDeviceContext()->PSSetShader(m_pixelShader.Get(), nullptr, 0u);
 }
 
 void SimulationRenderer::CreateBuffers()
@@ -344,18 +386,28 @@ void SimulationRenderer::CreateBuffers()
 		)
 	);
 
-	// Sphere Material constant buffer (Pixel Shader)
-	CD3D11_BUFFER_DESC materialConstantBufferDesc(sizeof(MaterialProperties), D3D11_BIND_CONSTANT_BUFFER);
+	// Phong Material constant buffer (Pixel Shader)
+	CD3D11_BUFFER_DESC phongMaterialConstantBufferDesc(sizeof(PhongMaterialProperties), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
 		m_deviceResources->D3DDevice()->CreateBuffer(
-			&materialConstantBufferDesc,
+			&phongMaterialConstantBufferDesc,
 			nullptr,
-			m_materialPropertiesConstantBuffer.ReleaseAndGetAddressOf()
+			m_phongMaterialPropertiesConstantBuffer.ReleaseAndGetAddressOf()
+		)
+	);
+
+	// Solid material constant buffer (Pixel Shader)
+	CD3D11_BUFFER_DESC solidMaterialConstantBufferDesc(sizeof(SolidMaterialProperties), D3D11_BIND_CONSTANT_BUFFER);
+	ThrowIfFailed(
+		m_deviceResources->D3DDevice()->CreateBuffer(
+			&solidMaterialConstantBufferDesc,
+			nullptr,
+			m_solidMaterialPropertiesConstantBuffer.ReleaseAndGetAddressOf()
 		)
 	);
 
 	// Box Material constant buffer (Pixel Shader)
-	CD3D11_BUFFER_DESC boxMaterialConstantBufferDesc(sizeof(MaterialProperties), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC boxMaterialConstantBufferDesc(sizeof(PhongMaterialProperties), D3D11_BIND_CONSTANT_BUFFER);
 	ThrowIfFailed(
 		m_deviceResources->D3DDevice()->CreateBuffer(
 			&boxMaterialConstantBufferDesc,
@@ -488,13 +540,9 @@ bool SimulationRenderer::Render3D()
 	XMMATRIX viewProjectionMatrix = m_viewMatrix * m_projectionMatrix;
 
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	context->IASetInputLayout(m_inputLayout.Get());
 
-	// Attach our vertex shader.
-	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
 
-	// Attach our pixel shader.
-	context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+	this->SetShaderMode(ShaderMode::PHONG);
 
 	// Update the Material constant buffer and Light constant buffer then bind it to the pixel shader
 	context->UpdateSubresource(m_lightPropertiesConstantBuffer.Get(), 0, nullptr, &m_lightProperties, 0, 0);
@@ -506,48 +554,18 @@ bool SimulationRenderer::Render3D()
 
 	// Set the current element to invalid so that the first atom will set the material properties
 	ELEMENT currentElement = Element::INVALID;
-	MaterialProperties* hoverAtomMaterialPropertiesOLD;
-	MaterialProperties* hoverAtomMaterialPropertiesNEW;
 
 	std::shared_ptr<Atom> atomHoveredOver = SimulationManager::AtomHoveredOver();
 
 	for (std::shared_ptr<Atom> atom : atoms)
 	{
-		// If the atom is the atom that is hovered over, then we need to adjust its color directly
-		if (atom == atomHoveredOver)
+		if (atom->ElementType() != currentElement)
 		{
-			hoverAtomMaterialPropertiesOLD = m_materialProperties[atom->ElementType()];
-
-			// Copy the material settings and adjust the Emission of the material
-			hoverAtomMaterialPropertiesNEW = new MaterialProperties();
-			hoverAtomMaterialPropertiesNEW->Material = hoverAtomMaterialPropertiesOLD->Material;
-			hoverAtomMaterialPropertiesNEW->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-
-			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, hoverAtomMaterialPropertiesNEW, 0, 0);
-			ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
-
-			// Set the atom element to invalid so that the materials properties will get updated for the next atom
-			currentElement = Element::INVALID;
-
-			delete hoverAtomMaterialPropertiesNEW;
-		}
-		else
-		{
-			if (atom->ElementType() != currentElement)
-			{
-				currentElement = atom->ElementType();
-
-				context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[currentElement], 0, 0);
-
-				ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-				context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
-			}
+			currentElement = atom->ElementType();
+			this->SetMaterialProperties(atom);
 		}
 
-
-
-		m_deviceResources->SetStencilMode(StencilMode::NONE);
+		this->SetStencilMode(StencilMode::NONE);		
 		atom->Render(viewProjectionMatrix);
 	}
 
@@ -557,14 +575,8 @@ bool SimulationRenderer::Render3D()
 	if (atomHoveredOver != nullptr)
 	{
 		// Step 1: Re-render the atom using the stencil buffer to set the pixels to mask the rendering in the next step
-		
-		context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[atomHoveredOver->ElementType()], 0, 0);
-
-		ID3D11Buffer* const _psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-		context->PSSetConstantBuffers1(0, 2, _psConstantBuffers, nullptr, nullptr);		
-		
-		
-		m_deviceResources->SetStencilMode(StencilMode::WRITE);
+		this->SetMaterialProperties(atomHoveredOver);
+		this->SetStencilMode(StencilMode::WRITE);
 		atomHoveredOver->Render(viewProjectionMatrix);
 
 		
@@ -575,36 +587,44 @@ bool SimulationRenderer::Render3D()
 		
 		
 		// Step 2: Re-draw the atom slightly larger and in a different color using the stencil mask
-		m_deviceResources->SetStencilMode(StencilMode::MASK);
+		//m_deviceResources->SetStencilMode(StencilMode::MASK);
+		this->SetStencilMode(StencilMode::MASK);
 
 		//     Change the color to purple
-		MaterialProperties* outlineMaterial = new MaterialProperties();
+		/*
+		PhongMaterialProperties* outlineMaterial = new PhongMaterialProperties();
 		outlineMaterial->Material.Emissive = XMFLOAT4(0.3f, 0.0f, 0.0f, 1.0f);
 		outlineMaterial->Material.Ambient = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		outlineMaterial->Material.Diffuse = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		outlineMaterial->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 		outlineMaterial->Material.SpecularPower = 6.0f;
 
-		context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, outlineMaterial, 0, 0);
-		ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+		context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, outlineMaterial, 0, 0);
+		ID3D11Buffer* const psConstantBuffers[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
 		context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+		*/
 
-		atomHoveredOver->RenderOutline(viewProjectionMatrix, 0.02f);
+		this->SetMaterialProperties(DirectX::Colors::Purple);
+
+		atomHoveredOver->RenderOutline(viewProjectionMatrix, 0.005f);
 
 
 
-		delete outlineMaterial;
+		//delete outlineMaterial;
 
 		// Reset the stencil mode
-		m_deviceResources->SetStencilMode(StencilMode::NONE);
+		this->SetStencilMode(StencilMode::NONE);
+
+		// Reset the pixel shader buffers
+		this->SetMaterialProperties(atomHoveredOver);
 	}
 
 
 	// Draw Atom velocity arrows ============================================================
 
 	// Update the material constant buffers
-	context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_velocityArrowMaterial.get(), 0, 0);
-	ID3D11Buffer* const psConstantBuffers[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+	context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_velocityArrowMaterial.get(), 0, 0);
+	ID3D11Buffer* const psConstantBuffers[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
 	context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
 
 	for (std::shared_ptr<Atom> atom : atoms)
@@ -624,12 +644,12 @@ bool SimulationRenderer::Render3D()
 		if (bond == selectedBond || bond == bondHoveredOver)
 		{
 			// Update the material constant buffers to have a different emmissive value
-			MaterialProperties* newBondMaterial = new MaterialProperties();
-			newBondMaterial->Material = m_materialProperties[bond->Atom1()->ElementType()]->Material;
+			PhongMaterialProperties* newBondMaterial = new PhongMaterialProperties();
+			newBondMaterial->Material = m_phongMaterialProperties[bond->Atom1()->ElementType()]->Material;
 			newBondMaterial->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
-			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
-			ID3D11Buffer* const psConstantBuffers1[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
+			ID3D11Buffer* const psConstantBuffers1[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
 
 			// Render the bond
@@ -639,12 +659,12 @@ bool SimulationRenderer::Render3D()
 
 
 			// Update the material constant buffers to have a different emmissive value
-			newBondMaterial = new MaterialProperties();
-			newBondMaterial->Material = m_materialProperties[bond->Atom2()->ElementType()]->Material;
+			newBondMaterial = new PhongMaterialProperties();
+			newBondMaterial->Material = m_phongMaterialProperties[bond->Atom2()->ElementType()]->Material;
 			newBondMaterial->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
-			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
-			ID3D11Buffer* const psConstantBuffers2[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
+			ID3D11Buffer* const psConstantBuffers2[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
 
 			// Render the bond
@@ -655,9 +675,9 @@ bool SimulationRenderer::Render3D()
 		else
 		{
 			// Update the material to that of the first atom
-			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[bond->Atom1()->ElementType()], 0, 0);
+			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_phongMaterialProperties[bond->Atom1()->ElementType()], 0, 0);
 
-			ID3D11Buffer* const psConstantBuffers1[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			ID3D11Buffer* const psConstantBuffers1[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
 			
 			// Render atom1 to midpoint
@@ -666,9 +686,9 @@ bool SimulationRenderer::Render3D()
 
 
 			// Update the material to that of the second atom
-			context->UpdateSubresource(m_materialPropertiesConstantBuffer.Get(), 0, nullptr, m_materialProperties[bond->Atom2()->ElementType()], 0, 0);
+			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_phongMaterialProperties[bond->Atom2()->ElementType()], 0, 0);
 
-			ID3D11Buffer* const psConstantBuffers2[] = { m_materialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+			ID3D11Buffer* const psConstantBuffers2[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
 			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
 
 			// Render midpoint to atom2
@@ -688,9 +708,9 @@ bool SimulationRenderer::Render3D()
 	XMFLOAT3 dims = SimulationManager::BoxDimensions();
 	XMMATRIX model = DirectX::XMMatrixScaling(dims.x, dims.y, dims.z);
 
-	XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, model);
-	XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, model* viewProjectionMatrix);
-	XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, model)));
+	DirectX::XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, model);
+	DirectX::XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, model* viewProjectionMatrix);
+	DirectX::XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, model)));
 
 	// Prepare the constant buffer to send it to the graphics device.
 	context->UpdateSubresource1(m_modelViewProjectionBuffer.Get(), 0, NULL, &m_modelViewProjectionBufferData, 0, 0, 0);
@@ -899,44 +919,135 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 	SimulationManager::BondHoveredOver(bondHoveredOver);
 }
 
-bool SimulationRenderer::SphereIntersection(XMVECTOR rayOrigin, XMVECTOR rayDirection, std::shared_ptr<Atom> atom, float& distance)
+
+
+void SimulationRenderer::SetShaderMode(ShaderMode mode)
 {
-	XMFLOAT3 origin, direction;
-	XMStoreFloat3(&origin, rayOrigin);
-	XMStoreFloat3(&direction, rayDirection);
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
 
-	float a, b, c, discriminant;
-	float radius = atom->Radius();
-
-	// Calculate the a, b, and c coefficients.
-	a = (direction.x * direction.x) + (direction.y * direction.y) + (direction.z * direction.z);
-	b = ((direction.x * origin.x) + (direction.y * origin.y) + (direction.z * origin.z)) * 2.0f;
-	c = ((origin.x * origin.x) + (origin.y * origin.y) + (origin.z * origin.z)) - (radius * radius);
-
-	// Find the discriminant.
-	discriminant = (b * b) - (4 * a * c);
-
-	// if discriminant is negative the picking ray missed the sphere, otherwise it intersected the sphere.
-	if (discriminant < 0.0f)
-		return false;
-
-	// determine the distance to the closest point
-	float minRoot = (-b + std::sqrtf(discriminant)) / (2 * a);
-	float maxRoot = (-b - std::sqrtf(discriminant)) / (2 * a);
-
-	if (minRoot > maxRoot)
-		std::swap(minRoot, maxRoot);
-
-	// Get the smallest positive root
-	if (minRoot < 0)
+	switch (mode)
 	{
-		minRoot = maxRoot;
-		if (minRoot < 0)
-			return false;		// Both roots are negative so return false
+	case ShaderMode::PHONG:
+		context->IASetInputLayout(m_phongInputLayout.Get());
+		context->VSSetShader(m_phongVertexShader.Get(), nullptr, 0);
+		context->PSSetShader(m_phongPixelShader.Get(), nullptr, 0);
+		break;
+	case ShaderMode::SOLID:
+		context->IASetInputLayout(m_solidInputLayout.Get());
+		context->VSSetShader(m_solidVertexShader.Get(), nullptr, 0);
+		context->PSSetShader(m_solidPixelShader.Get(), nullptr, 0);
+		break;
+	}
+}
+
+void SimulationRenderer::SetStencilMode(StencilMode mode)
+{
+	D3D11_DEPTH_STENCIL_DESC dsDesc = CD3D11_DEPTH_STENCIL_DESC{ CD3D11_DEFAULT{} };
+
+	/*
+	* This is what the default settings are
+	*
+	dsDesc.DepthEnable    = TRUE;									// Depth testing is enabled
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;				// All depth bits can be written to
+	dsDesc.DepthFunc      = D3D11_COMPARISON_LESS;					// Smaller depth values will be saved
+
+	dsDesc.StencilEnable    = FALSE;								// Disable stencil testing
+	dsDesc.StencilReadMask  = 0xFF;									// Read from entire stencil buffer
+	dsDesc.StencilWriteMask = 0xFF;									// Write to entire stencil buffer
+
+			// Pixels with normal facing the camera
+	dsDesc.FrontFace.StencilFunc        = D3D11_COMPARISON_ALWAYS;	// Stencil test will always pass
+	dsDesc.FrontFace.StencilPassOp      = D3D11_STENCIL_OP_KEEP;	// Keep existing stencil data (do not overwrite)
+	dsDesc.FrontFace.StencilFailOp      = D3D11_STENCIL_OP_KEEP;	//
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;	//
+
+			// Pixels with normal facing away from the camera
+	dsDesc.BackFace.StencilFunc        = D3D11_COMPARISON_ALWAYS;	// Stencil test will always pass
+	dsDesc.BackFace.StencilPassOp      = D3D11_STENCIL_OP_KEEP;		// Keep existing stencil data (do not overwrite)
+	dsDesc.BackFace.StencilFailOp      = D3D11_STENCIL_OP_KEEP;		//
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;		//
+	*/
+
+
+	// This value will be the one that is used as the "source" stencil value that is compared
+	// against the existing stencil value. We set it to 0 by default because that is what the
+	// entire stencil buffered is set to (see ContentWindow->Render()).
+	UINT referenceValue = 0;
+
+	if (mode == StencilMode::WRITE)
+	{
+		// When we want to write to the stencil buffer, we want to set the stencil buffer value to 1
+		referenceValue = 1;
+
+		// Use compare_less_equal because an atom may be rendered twice BEFORE drawing the outline, 
+		// and it is the second draw that will set the stencil buffer value to 1. So we need the second
+		// draw to pass the depth test, which would fail if we just used compare_less because we are
+		// draw the same object to the same location
+		dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+		// Enable stencil testing - write to entire stencil buffer
+		dsDesc.StencilEnable = TRUE;
+		dsDesc.StencilWriteMask = 0xFF;
+
+		// For front facing, always pass the stencil test so each pixel sets the stencil value to 1
+		dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;		// When stencil & depth pass, write to the stencil buffer
+		dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;			// When stencil fails, don't write to stencil buffer
+
+		//dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;	// When stencil passes, but depth fails, don't write to stencil buffer
+		dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;	// When stencil passes, but depth fails, do write to the stencil buffer
+																		// So, when the selected atom is partially (or completely) behind other atoms
+																		// the stencil mask will still be drawn so the outline will be visible through other objects
+
+		// Don't modify any back facing pixels - never allow them to overwrite the stencil buffer
+		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+	}
+	else if (mode == StencilMode::MASK)
+	{
+		// Disable depth testing so we are guaranteed to draw the pixels to the screen if it passes the stencil test
+		dsDesc.DepthEnable = FALSE;
+
+		// Enable stencil testing - Read from entire stencil buffer
+		dsDesc.StencilEnable = TRUE;
+		dsDesc.StencilReadMask = 0xFF;
+
+		// We will leave the referenceValue to 0, so only pass the stencil test if we are on a pixel
+		// where the stencil value has not been set to 1
+		dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;		// In this case, keep the existing data (do not overwrite the mask)
+
+		// Don't modify any back facing pixels - never allow them to overwrite the stencil buffer
+		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
 	}
 
-	// Return the distance to the sphere
-	distance = minRoot;
+	ID3D11Device5* device = m_deviceResources->D3DDevice();
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
 
-	return true;
+	ThrowIfFailed(device->CreateDepthStencilState(&dsDesc, m_d3dDepthStencilState.ReleaseAndGetAddressOf()));
+	context->OMSetDepthStencilState(m_d3dDepthStencilState.Get(), referenceValue);
 }
+
+void SimulationRenderer::SetMaterialProperties(std::shared_ptr<Atom> atom)
+{
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
+
+	context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_phongMaterialProperties[atom->ElementType()], 0, 0);
+	ID3D11Buffer* const psConstantBuffers[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+	context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+}
+
+void SimulationRenderer::SetMaterialProperties(DirectXColor color)
+{
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
+
+	// Create a new solid material and store the passed in color values
+	SolidMaterialProperties* material = new SolidMaterialProperties();
+	DirectX::XMStoreFloat4(&material->Color, color);
+
+	context->UpdateSubresource(m_solidMaterialPropertiesConstantBuffer.Get(), 0, nullptr, material, 0, 0);
+	ID3D11Buffer* const psConstantBuffers[] = { m_solidMaterialPropertiesConstantBuffer.Get() };
+	context->PSSetConstantBuffers1(0, 1, psConstantBuffers, nullptr, nullptr);	
+
+	delete material;
+}
+
