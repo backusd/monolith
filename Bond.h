@@ -20,7 +20,10 @@ public:
 	}
 
 	void RenderAtom1ToMidPoint(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector);
+	void RenderOutline(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector, float radiusIncrease);
 	void RenderMidPointToAtom2(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector);
+	//void RenderMidPointToAtom2Outline(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector, float radiusIncrease);
+
 
 	bool IncludesAtom(const std::shared_ptr<Atom>& atom){ return m_atom1 == atom || m_atom2 == atom; }
 

@@ -77,9 +77,21 @@ private:
 	// Pipeline Modification functions
 	void SetShaderMode(ShaderMode mode);
 	void SetStencilMode(StencilMode mode);
+
 	void SetMaterialProperties(std::shared_ptr<Atom> atom); // Set pixel shader buffer to use atom specific material
 	void SetMaterialProperties(DirectXColor color);			// Set pixel shader buffer to use a solid color
+	void SetMaterialProperties(PhongMaterialProperties* material); // Pass a material pointer in directly (used for setting arrow material)
 
+	// Render steps
+	void DrawBackground();
+	void DrawAtoms();
+	void DrawHoveredAtom();
+	void DrawSelectedAtoms();
+	void DrawAtomVelocityArrows();
+	void DrawBonds();
+	void DrawHoveredBond();
+	void DrawSelectedBonds();
+	void DrawBox();
 
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_backgroundColorBrush;
 
@@ -109,6 +121,8 @@ private:
 	ModelViewProjectionConstantBuffer			m_modelViewProjectionBufferData;
 	DirectX::XMMATRIX							m_viewMatrix;
 	DirectX::XMMATRIX							m_projectionMatrix;
+	DirectX::XMMATRIX							m_viewProjectionMatrix;
+
 
 	// Light Properties
 	LightProperties								m_lightProperties;

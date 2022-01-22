@@ -520,7 +520,43 @@ void SimulationRenderer::Update(StepTimer const& stepTimer)
 
 bool SimulationRenderer::Render3D()
 {
-	// Draw Background ========================================================================
+	// Compute the view-projection matrix at the beginning of each render
+	m_viewProjectionMatrix = m_viewMatrix * m_projectionMatrix;
+
+	// Fill in the background of the area to hold the 3D scene
+	DrawBackground();
+
+	// Set up pipeline configurations that will not change
+ 	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->UpdateSubresource(m_lightPropertiesConstantBuffer.Get(), 0, nullptr, &m_lightProperties, 0, 0);
+	context->RSSetViewports(1, &m_viewport);
+
+
+	this->SetShaderMode(ShaderMode::PHONG);
+
+
+	// Draw everything that doesn't need special effects (ex. stenciling)
+	DrawAtoms();
+	DrawAtomVelocityArrows();
+	DrawBonds();
+
+
+	// Second rendering pass
+	DrawHoveredAtom();
+	DrawHoveredBond();
+	DrawSelectedAtoms();
+	DrawSelectedBonds();
+
+
+	DrawBox();
+
+	return true;
+}
+
+void SimulationRenderer::DrawBackground()
+{
+	// Fill the background of the 3D area to be rendered
 	D2D1_RECT_F rect = {};
 	rect.left = m_deviceResources->PixelsToDIPS(m_viewport.TopLeftX);
 	rect.top = m_deviceResources->PixelsToDIPS(m_viewport.TopLeftY);
@@ -531,173 +567,205 @@ bool SimulationRenderer::Render3D()
 	context2->BeginDraw();
 	context2->FillRectangle(rect, m_backgroundColorBrush.Get());
 	context2->EndDraw();
-
-	// Set up pipeline ========================================================================
-
- 	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
-
-	// Compute the view/projection matrix
-	XMMATRIX viewProjectionMatrix = m_viewMatrix * m_projectionMatrix;
-
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
-	this->SetShaderMode(ShaderMode::PHONG);
-
-	// Update the Material constant buffer and Light constant buffer then bind it to the pixel shader
-	context->UpdateSubresource(m_lightPropertiesConstantBuffer.Get(), 0, nullptr, &m_lightProperties, 0, 0);
-
-	context->RSSetViewports(1, &m_viewport);
-
-	// Draw Atoms =============================================================================
-	std::vector<std::shared_ptr<Atom>> atoms = SimulationManager::Atoms();
+}
+void SimulationRenderer::DrawAtoms()
+{
+	// Set up the pipeline for drawing atoms
+	this->SetStencilMode(StencilMode::NONE);	// Do not write to the stencil buffer
+	this->SetShaderMode(ShaderMode::PHONG);		// Use Phong shading
 
 	// Set the current element to invalid so that the first atom will set the material properties
 	ELEMENT currentElement = Element::INVALID;
 
-	std::shared_ptr<Atom> atomHoveredOver = SimulationManager::AtomHoveredOver();
-
-	for (std::shared_ptr<Atom> atom : atoms)
+	for (std::shared_ptr<Atom> atom : SimulationManager::Atoms())
 	{
+		// Update the material type if necessary
 		if (atom->ElementType() != currentElement)
 		{
 			currentElement = atom->ElementType();
 			this->SetMaterialProperties(atom);
 		}
-
-		this->SetStencilMode(StencilMode::NONE);		
-		atom->Render(viewProjectionMatrix);
+		
+		atom->Render(m_viewProjectionMatrix);
 	}
-
-
+}
+void SimulationRenderer::DrawHoveredAtom()
+{
+	std::shared_ptr<Atom> atomHoveredOver = SimulationManager::AtomHoveredOver();
 
 	// If there is an atom hovered over, draw an outline around the atom
 	if (atomHoveredOver != nullptr)
 	{
 		// Step 1: Re-render the atom using the stencil buffer to set the pixels to mask the rendering in the next step
 		this->SetMaterialProperties(atomHoveredOver);
-		this->SetStencilMode(StencilMode::WRITE);
-		atomHoveredOver->Render(viewProjectionMatrix);
 
-		
-		
-		
-		
-		
-		
-		
+		//		Set the stencil to mode to write so that we write 1's to the stencil buffer for the pixels that will be masked
+		this->SetStencilMode(StencilMode::WRITE);
+
+		this->SetShaderMode(ShaderMode::PHONG);		// Use Phong shading
+
+		atomHoveredOver->Render(m_viewProjectionMatrix);
+
+
 		// Step 2: Re-draw the atom slightly larger and in a different color using the stencil mask
-		//m_deviceResources->SetStencilMode(StencilMode::MASK);
+
+		//		Set the stencil to mode to mask so that we don't render to pixels where the stencil buffer value is 1
 		this->SetStencilMode(StencilMode::MASK);
 
-		//     Change the color to purple
-		/*
-		PhongMaterialProperties* outlineMaterial = new PhongMaterialProperties();
-		outlineMaterial->Material.Emissive = XMFLOAT4(0.3f, 0.0f, 0.0f, 1.0f);
-		outlineMaterial->Material.Ambient = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-		outlineMaterial->Material.Diffuse = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-		outlineMaterial->Material.Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-		outlineMaterial->Material.SpecularPower = 6.0f;
+		//		Set the shader mode to solid so we can draw solid color
+		this->SetShaderMode(ShaderMode::SOLID);
 
-		context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, outlineMaterial, 0, 0);
-		ID3D11Buffer* const psConstantBuffers[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-		context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
-		*/
-
+		//     Change the color to solid purple
 		this->SetMaterialProperties(DirectX::Colors::Purple);
 
-		atomHoveredOver->RenderOutline(viewProjectionMatrix, 0.005f);
-
-
-
-		//delete outlineMaterial;
-
-		// Reset the stencil mode
-		this->SetStencilMode(StencilMode::NONE);
-
-		// Reset the pixel shader buffers
-		this->SetMaterialProperties(atomHoveredOver);
+		atomHoveredOver->RenderOutline(m_viewProjectionMatrix, 0.005f);
 	}
+}
+void SimulationRenderer::DrawSelectedAtoms()
+{
 
+}
+void SimulationRenderer::DrawAtomVelocityArrows()
+{
+	// Set up the pipeline for drawing the velocity arrows
+	this->SetStencilMode(StencilMode::NONE);					// Do not write to the stencil buffer
+	this->SetShaderMode(ShaderMode::PHONG);						// Use Phong shading
+	this->SetMaterialProperties(m_velocityArrowMaterial.get()); // Set the velocity arrow material
 
-	// Draw Atom velocity arrows ============================================================
-
-	// Update the material constant buffers
-	context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_velocityArrowMaterial.get(), 0, 0);
-	ID3D11Buffer* const psConstantBuffers[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-	context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
-
-	for (std::shared_ptr<Atom> atom : atoms)
+	for (std::shared_ptr<Atom> atom : SimulationManager::Atoms())
 	{
-		atom->RenderVelocityArrow(viewProjectionMatrix);
+		atom->RenderVelocityArrow(m_viewProjectionMatrix);
 	}
+}
+void SimulationRenderer::DrawBonds()
+{
+	// Set up the pipeline for drawing bonds
+	this->SetStencilMode(StencilMode::NONE);	// Do not write to the stencil buffer
+	this->SetShaderMode(ShaderMode::PHONG);		// Use Phong shading
 
+	for (std::shared_ptr<Bond> bond : SimulationManager::Bonds())
+	{
+		// Set material property for first atom
+		this->SetMaterialProperties(bond->Atom1());
 
-	// Draw Bonds ===========================================================================
-	std::vector<std::shared_ptr<Bond>> bonds = SimulationManager::Bonds();
-	std::shared_ptr<Bond> selectedBond = SimulationManager::GetSelectedBond();
+		// Render atom1 to midpoint
+		bond->RenderAtom1ToMidPoint(m_viewProjectionMatrix, m_moveLookController->Position());
+
+		// Set material property for second atom
+		this->SetMaterialProperties(bond->Atom2());
+
+		// Render midpoint to atom2
+		bond->RenderMidPointToAtom2(m_viewProjectionMatrix, m_moveLookController->Position());
+	}
+}
+void SimulationRenderer::DrawHoveredBond()
+{
 	std::shared_ptr<Bond> bondHoveredOver = SimulationManager::GetBondHoveredOver();
 
-	for (std::shared_ptr<Bond> bond : bonds)
+	// If there is a bond hovered over, draw an outline around the bond
+	if (bondHoveredOver != nullptr && bondHoveredOver->Atom1() != nullptr)
 	{
-		// Re-color any selected bond or bond that is being hovered over
-		if (bond == selectedBond || bond == bondHoveredOver)
-		{
-			// Update the material constant buffers to have a different emmissive value
-			PhongMaterialProperties* newBondMaterial = new PhongMaterialProperties();
-			newBondMaterial->Material = m_phongMaterialProperties[bond->Atom1()->ElementType()]->Material;
-			newBondMaterial->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		// Step 1: Re-render the bond using the stencil buffer to set the pixels to mask the rendering in the next step
 
-			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
-			ID3D11Buffer* const psConstantBuffers1[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
+		//		Set the stencil to mode to write so that we write 1's to the stencil buffer for the pixels that will be masked
+		this->SetStencilMode(StencilMode::WRITE);
 
-			// Render the bond
-			bond->RenderAtom1ToMidPoint(viewProjectionMatrix, m_moveLookController->Position());
+		this->SetShaderMode(ShaderMode::PHONG);
 
-			delete newBondMaterial;
+		//		Set the material to the first atom in the bond
+		this->SetMaterialProperties(bondHoveredOver->Atom1());
+
+		//		Render cylinder from atom1 to midpoint
+		bondHoveredOver->RenderAtom1ToMidPoint(m_viewProjectionMatrix, m_moveLookController->Position());
+
+		// Also re-draw the atoms so that they may also add to the stencil mask. This makes it so that the bond cylinder
+		// inside the atom sphere is not visible
+		//bondHoveredOver->Atom1()->Render(viewProjectionMatrix);
 
 
-			// Update the material constant buffers to have a different emmissive value
-			newBondMaterial = new PhongMaterialProperties();
-			newBondMaterial->Material = m_phongMaterialProperties[bond->Atom2()->ElementType()]->Material;
-			newBondMaterial->Material.Emissive = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		//		Set the material to the second atom in the bond
+		this->SetMaterialProperties(bondHoveredOver->Atom2());
 
-			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, newBondMaterial, 0, 0);
-			ID3D11Buffer* const psConstantBuffers2[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-			context->PSSetConstantBuffers1(0, 2, psConstantBuffers1, nullptr, nullptr);
+		//		Render cylinder from midpoint to atom2
+		bondHoveredOver->RenderMidPointToAtom2(m_viewProjectionMatrix, m_moveLookController->Position());
 
-			// Render the bond
-			bond->RenderMidPointToAtom2(viewProjectionMatrix, m_moveLookController->Position());
-			
-			delete newBondMaterial;
-		}
-		else
-		{
-			// Update the material to that of the first atom
-			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_phongMaterialProperties[bond->Atom1()->ElementType()], 0, 0);
-
-			ID3D11Buffer* const psConstantBuffers1[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
-			
-			// Render atom1 to midpoint
-			bond->RenderAtom1ToMidPoint(viewProjectionMatrix, m_moveLookController->Position());
+		// Also re-draw the atoms so that they may also add to the stencil mask. This makes it so that the bond cylinder
+		// inside the atom sphere is not visible
+		//bondHoveredOver->Atom2()->Render(viewProjectionMatrix);
 
 
 
-			// Update the material to that of the second atom
-			context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_phongMaterialProperties[bond->Atom2()->ElementType()], 0, 0);
+		// Step 2: Re-draw the atom slightly larger and in a different color using the stencil mask
 
-			ID3D11Buffer* const psConstantBuffers2[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-			context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+		//		Set the stencil to mode to mask so that we don't render to pixels where the stencil buffer value is 1
+		this->SetStencilMode(StencilMode::MASK);
 
-			// Render midpoint to atom2
-			bond->RenderMidPointToAtom2(viewProjectionMatrix, m_moveLookController->Position());
-		}
+		//		Set the shader mode to solid so we can draw solid color
+		this->SetShaderMode(ShaderMode::SOLID);
+
+		//     Change the color to solid purple
+		this->SetMaterialProperties(DirectX::Colors::Purple);
+
+		//		Render the cylinder with the outline
+		bondHoveredOver->RenderOutline(m_viewProjectionMatrix, m_moveLookController->Position(), 0.005f);
 	}
+}
+void SimulationRenderer::DrawSelectedBonds()
+{
+	std::shared_ptr<Bond> selectedBond = SimulationManager::GetSelectedBond();
+
+	// If there is a selected bond, draw an outline around the bond
+	if (selectedBond != nullptr && selectedBond->Atom1() != nullptr)
+	{
+		// Step 1: Re-render the bond using the stencil buffer to set the pixels to mask the rendering in the next step
+
+		//		Set the stencil to mode to write so that we write 1's to the stencil buffer for the pixels that will be masked
+		this->SetStencilMode(StencilMode::WRITE);
+
+		this->SetShaderMode(ShaderMode::PHONG);
+
+		//		Set the material to the first atom in the bond
+		this->SetMaterialProperties(selectedBond->Atom1());
+
+		//		Render cylinder from atom1 to midpoint
+		selectedBond->RenderAtom1ToMidPoint(m_viewProjectionMatrix, m_moveLookController->Position());
+
+		// Also re-draw the atoms so that they may also add to the stencil mask. This makes it so that the bond cylinder
+		// inside the atom sphere is not visible
+		//bondHoveredOver->Atom1()->Render(viewProjectionMatrix);
 
 
-	// Draw Box =============================================================================
+		//		Set the material to the second atom in the bond
+		this->SetMaterialProperties(selectedBond->Atom2());
+
+		//		Render cylinder from midpoint to atom2
+		selectedBond->RenderMidPointToAtom2(m_viewProjectionMatrix, m_moveLookController->Position());
+
+		// Also re-draw the atoms so that they may also add to the stencil mask. This makes it so that the bond cylinder
+		// inside the atom sphere is not visible
+		//bondHoveredOver->Atom2()->Render(viewProjectionMatrix);
+
+
+
+		// Step 2: Re-draw the atom slightly larger and in a different color using the stencil mask
+
+		//		Set the stencil to mode to mask so that we don't render to pixels where the stencil buffer value is 1
+		this->SetStencilMode(StencilMode::MASK);
+
+		//		Set the shader mode to solid so we can draw solid color
+		this->SetShaderMode(ShaderMode::SOLID);
+
+		//     Change the color to solid purple
+		this->SetMaterialProperties(DirectX::Colors::Green);
+
+		//		Render the cylinder with the outline
+		selectedBond->RenderOutline(m_viewProjectionMatrix, m_moveLookController->Position(), 0.005f);
+	}
+}
+void SimulationRenderer::DrawBox()
+{
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
+
 	UINT stride = sizeof(VertexPositionNormal);
 	UINT offset = 0;
 	ID3D11Buffer* const boxVertexBuffers[] = { m_boxVertexBuffer.Get() };
@@ -709,7 +777,7 @@ bool SimulationRenderer::Render3D()
 	XMMATRIX model = DirectX::XMMatrixScaling(dims.x, dims.y, dims.z);
 
 	DirectX::XMStoreFloat4x4(&m_modelViewProjectionBufferData.model, model);
-	DirectX::XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, model* viewProjectionMatrix);
+	DirectX::XMStoreFloat4x4(&m_modelViewProjectionBufferData.modelViewProjection, model * m_viewProjectionMatrix);
 	DirectX::XMStoreFloat4x4(&m_modelViewProjectionBufferData.inverseTransposeModel, XMMatrixTranspose(XMMatrixInverse(nullptr, model)));
 
 	// Prepare the constant buffer to send it to the graphics device.
@@ -719,15 +787,15 @@ bool SimulationRenderer::Render3D()
 	ID3D11Buffer* const boxConstantBuffers[] = { m_modelViewProjectionBuffer.Get() };
 	context->VSSetConstantBuffers1(0, 1, boxConstantBuffers, nullptr, nullptr);
 
+	this->SetMaterialProperties(&m_boxMaterialProperties);
+
 	// Update the Material constant buffer for the box and then bind it to the pixel shader
-	context->UpdateSubresource(m_boxMaterialPropertiesConstantBuffer.Get(), 0, nullptr, &m_boxMaterialProperties, 0, 0);
-	ID3D11Buffer* const psBoxConstantBuffers[] = { m_boxMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-	context->PSSetConstantBuffers1(0, 2, psBoxConstantBuffers, nullptr, nullptr);
+	//context->UpdateSubresource(m_boxMaterialPropertiesConstantBuffer.Get(), 0, nullptr, &m_boxMaterialProperties, 0, 0);
+	//ID3D11Buffer* const psBoxConstantBuffers[] = { m_boxMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+	//context->PSSetConstantBuffers1(0, 2, psBoxConstantBuffers, nullptr, nullptr);
 
 	// Draw the objects.
 	context->Draw(24, 0);
-
-	return true;
 }
 
 OnMessageResult SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mouseState)
@@ -1000,7 +1068,19 @@ void SimulationRenderer::SetStencilMode(StencilMode mode)
 																		// the stencil mask will still be drawn so the outline will be visible through other objects
 
 		// Don't modify any back facing pixels - never allow them to overwrite the stencil buffer
-		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+		//dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+
+
+
+
+		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+		dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;		// When stencil & depth pass, write to the stencil buffer
+		dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;			// When stencil fails, don't write to stencil buffer
+
+		//dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;	// When stencil passes, but depth fails, don't write to stencil buffer
+		dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_REPLACE;
+
+
 	}
 	else if (mode == StencilMode::MASK)
 	{
@@ -1017,7 +1097,15 @@ void SimulationRenderer::SetStencilMode(StencilMode mode)
 		dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;		// In this case, keep the existing data (do not overwrite the mask)
 
 		// Don't modify any back facing pixels - never allow them to overwrite the stencil buffer
-		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+		//dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+
+
+
+
+
+		dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+		dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+
 	}
 
 	ID3D11Device5* device = m_deviceResources->D3DDevice();
@@ -1029,11 +1117,8 @@ void SimulationRenderer::SetStencilMode(StencilMode mode)
 
 void SimulationRenderer::SetMaterialProperties(std::shared_ptr<Atom> atom)
 {
-	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
-
-	context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, m_phongMaterialProperties[atom->ElementType()], 0, 0);
-	ID3D11Buffer* const psConstantBuffers[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-	context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
+	// Set the material to that of the corresponding atom type
+	SetMaterialProperties(m_phongMaterialProperties[atom->ElementType()]);
 }
 
 void SimulationRenderer::SetMaterialProperties(DirectXColor color)
@@ -1049,5 +1134,14 @@ void SimulationRenderer::SetMaterialProperties(DirectXColor color)
 	context->PSSetConstantBuffers1(0, 1, psConstantBuffers, nullptr, nullptr);	
 
 	delete material;
+}
+
+void SimulationRenderer::SetMaterialProperties(PhongMaterialProperties* material)
+{
+	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
+
+	context->UpdateSubresource(m_phongMaterialPropertiesConstantBuffer.Get(), 0, nullptr, material, 0, 0);
+	ID3D11Buffer* const psConstantBuffers[] = { m_phongMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
+	context->PSSetConstantBuffers1(0, 2, psConstantBuffers, nullptr, nullptr);
 }
 

@@ -35,6 +35,26 @@ void Bond::RenderAtom1ToMidPoint(XMMATRIX viewProjectionMatrix, DirectX::XMVECTO
 		m_cylinderMesh->Render(p1, midPoint, radius, viewProjectionMatrix);
 	}
 }
+void Bond::RenderOutline(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector, float radiusIncrease)
+{
+	// Set the radius of the cylinders
+	float radius = Constants::AtomicRadii[Element::HYDROGEN] / 3.0f;
+
+	XMFLOAT3 p1, p2, midPoint;
+
+	// loop over each cylinder to be drawn
+	for (int iii = 1; iii <= m_type; ++iii)
+	{
+		// Compute start and end positions
+		p1 = this->BondStartPosition(eyeVector, iii);
+		p2 = this->BondEndPosition(eyeVector, iii);
+
+		// midPoint = XMFLOAT3((p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f, (p1.z + p2.z) / 2.0f);
+
+		// Render the first cylinder from p1 to midPoint
+		m_cylinderMesh->Render(p1, p2, radius + radiusIncrease, viewProjectionMatrix);
+	}
+}
 void Bond::RenderMidPointToAtom2(XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector)
 {
 	// Set the radius of the cylinders
@@ -55,6 +75,28 @@ void Bond::RenderMidPointToAtom2(XMMATRIX viewProjectionMatrix, DirectX::XMVECTO
 		m_cylinderMesh->Render(midPoint, p2, radius, viewProjectionMatrix);
 	}
 }
+/*
+void Bond::RenderMidPointToAtom2Outline(DirectX::XMMATRIX viewProjectionMatrix, DirectX::XMVECTOR eyeVector, float radiusIncrease)
+{
+	// Set the radius of the cylinders
+	float radius = Constants::AtomicRadii[Element::HYDROGEN] / 3.0f;
+
+	XMFLOAT3 p1, p2, midPoint;
+
+	// loop over each cylinder to be drawn
+	for (int iii = 1; iii <= m_type; ++iii)
+	{
+		// Compute start and end positions
+		p1 = this->BondStartPosition(eyeVector, iii);
+		p2 = this->BondEndPosition(eyeVector, iii);
+
+		midPoint = XMFLOAT3((p1.x + p2.x) / 2.0f, (p1.y + p2.y) / 2.0f, (p1.z + p2.z) / 2.0f);
+
+		// Render the first cylinder from p1 to midPoint
+		m_cylinderMesh->Render(midPoint, p2, radius + radiusIncrease, viewProjectionMatrix);
+	}
+}
+*/
 
 void Bond::SwitchAtom(const std::shared_ptr<Atom>& oldAtom, const std::shared_ptr<Atom>& newAtom)
 {
