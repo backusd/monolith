@@ -11,8 +11,9 @@
 // Enumeration to track what state the user is in
 enum class UserState
 {
-	VIEW,		// User is just viewing the simulation (mouse is used for dragging/spinning the simulation)
-	EDIT_BONDS	// User is creating new bonds (mouse is used to drag a new bond between two atoms)
+	VIEW,					// User is just viewing the simulation (mouse is used for dragging/spinning the simulation)
+	EDIT_BONDS,				// User is creating new bonds (mouse is used to drag a new bond between two atoms)
+	EDIT_VELOCITY_ARROWS	// User is editing velocity arrows for an atom
 };
 
 
@@ -53,18 +54,18 @@ public:
 	static void ChangeSelectedAtomType();
 
 	static void RemoveAtom(std::shared_ptr<Atom> atom);
-	static void RemoveAllAtoms() { m_simulation->RemoveAllAtoms(); m_selectedAtom = nullptr; }
+	static void RemoveAllAtoms();
 
 	// static void SelectAtom(int index);
-	static void SelectAtom(std::shared_ptr<Atom> atom);
-	static std::shared_ptr<Atom> GetSelectedAtom() { return m_selectedAtom; }
+	//static void SelectAtom(std::shared_ptr<Atom> atom);
+	//static std::shared_ptr<Atom> GetSelectedAtom() { return m_selectedAtom; }
 
-	static void SelectedAtomPositionX(float positionX) { if (m_selectedAtom != nullptr) m_selectedAtom->SetPositionX(positionX); }
-	static void SelectedAtomPositionY(float positionY) { if (m_selectedAtom != nullptr) m_selectedAtom->SetPositionY(positionY); }
-	static void SelectedAtomPositionZ(float positionZ) { if (m_selectedAtom != nullptr) m_selectedAtom->SetPositionZ(positionZ); }
-	static void SelectedAtomVelocityX(float velocityX) { if (m_selectedAtom != nullptr) m_selectedAtom->SetVelocityX(velocityX); }
-	static void SelectedAtomVelocityY(float velocityY) { if (m_selectedAtom != nullptr) m_selectedAtom->SetVelocityY(velocityY); }
-	static void SelectedAtomVelocityZ(float velocityZ) { if (m_selectedAtom != nullptr) m_selectedAtom->SetVelocityZ(velocityZ); }
+	static void SetPrimarySelectedAtomPositionX(float positionX) { if (m_primarySelectedAtom != nullptr) m_primarySelectedAtom->SetPositionX(positionX); }
+	static void SetPrimarySelectedAtomPositionY(float positionY) { if (m_primarySelectedAtom != nullptr) m_primarySelectedAtom->SetPositionY(positionY); }
+	static void SetPrimarySelectedAtomPositionZ(float positionZ) { if (m_primarySelectedAtom != nullptr) m_primarySelectedAtom->SetPositionZ(positionZ); }
+	static void SetPrimarySelectedAtomVelocityX(float velocityX) { if (m_primarySelectedAtom != nullptr) m_primarySelectedAtom->SetVelocityX(velocityX); }
+	static void SetPrimarySelectedAtomVelocityY(float velocityY) { if (m_primarySelectedAtom != nullptr) m_primarySelectedAtom->SetVelocityY(velocityY); }
+	static void SetPrimarySelectedAtomVelocityZ(float velocityZ) { if (m_primarySelectedAtom != nullptr) m_primarySelectedAtom->SetVelocityZ(velocityZ); }
 
 	static void BoxDimensions(float value) { m_simulation->BoxDimensions(value); }
 	static void ExpandBoxDimensionsIfNecessary() { m_simulation->ExpandBoxDimensionsIfNecessary(); }
@@ -75,6 +76,7 @@ public:
 	static std::shared_ptr<Atom> AtomHoveredOver() { return m_atomHoveredOver; }
 
 	static void BondHoveredOver(std::shared_ptr<Bond> bond);
+	static std::shared_ptr<Bond> BondHoveredOver() { return m_bondHoveredOver; }
 
 	static void SimulationClickDown();
 	static void SimulationClickUp();
@@ -85,22 +87,59 @@ public:
 	static void SetUserState(UserState state);
 	static UserState GetUserState() { return m_userState; }
 
-	static void SelectBond(std::shared_ptr<Bond> bond) { SelectedBondChangedEvent(bond); }
+	//static void SelectBond(std::shared_ptr<Bond> bond) { SelectedBondChangedEvent(bond); }
 	
-	static std::shared_ptr<Bond> GetSelectedBond() { return m_selectedBond; }
+	//static std::shared_ptr<Bond> GetSelectedBond() { return m_selectedBond; }
 	static std::shared_ptr<Bond> GetBondHoveredOver() { return m_bondHoveredOver; }
 
 
-	static void TriggerSelectedBondChangedEvent(std::shared_ptr<Bond> bond) { SelectedBondChangedEvent(bond); }
+
+
+
+	// Methods for [Primary] Selected Atom(s)/Bond(s)
+	static void SetPrimarySelectedAtom(std::shared_ptr<Atom> atom);
+	static void SetPrimarySelectedBond(std::shared_ptr<Bond> bond);
+
+	static void ClearPrimarySelectedAtom() { m_primarySelectedAtom = nullptr; }
+	static void ClearPrimarySelectedBond() { m_primarySelectedBond = nullptr; }
+
+	static std::shared_ptr<Atom> GetPrimarySelectedAtom() { return m_primarySelectedAtom; }
+	static std::shared_ptr<Bond> GetPrimarySelectedBond() { return m_primarySelectedBond; }
+
+
+
+	static bool AtomIsSelected(std::shared_ptr<Atom> atom);
+	static bool BondIsSelected(std::shared_ptr<Bond> bond);
+
+	static void SelectAtom(std::shared_ptr<Atom> atom);
+	static void SelectBond(std::shared_ptr<Bond> bond);
+
+	static void UnselectAtom(std::shared_ptr<Atom> atom);
+	static void UnselectBond(std::shared_ptr<Bond> bond);
+
+	static void SwitchAtomSelectedUnselected(std::shared_ptr<Atom> atom);
+	static void SwitchBondSelectedUnselected(std::shared_ptr<Bond> bond);
+
+	static void ClearSelectedAtoms() { m_selectedAtoms.clear(); }
+	static void ClearSelectedBonds() { m_selectedBonds.clear(); }
+
+	static std::vector<std::shared_ptr<Atom>> GetSelectedAtoms() { return m_selectedAtoms; }
+	static std::vector<std::shared_ptr<Bond>> GetSelectedBonds() { return m_selectedBonds; }
+
+
+
+
+	//static void TriggerPrimarySelectedBondChangedEvent(std::shared_ptr<Bond> bond) { PrimarySelectedBondChangedEvent(bond); }
 
 	// Event setters
 	static void SetPlayPauseChangedEvent(std::function<void(bool)> function) { PlayPauseChangedEvent = function; }
 	static void SetAtomHoveredOverChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomHoveredOverChangedEvent = function; }
 	static void SetAtomClickedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomClickedEvent = function; }
-	static void SetSelectedAtomChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { SelectedAtomChangedEvent = function; }
+	static void SetPrimarySelectedAtomChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { PrimarySelectedAtomChangedEvent = function; }
 	
 	static void SetBondHoveredOverChangedEvent(std::function<void(std::shared_ptr<Bond>)> function) { BondHoveredOverChangedEvent = function; }
-	static void SetSelectedBondChangedEvent(std::function<void(std::shared_ptr<Bond>)> function) { SelectedBondChangedEvent = function; }
+	static void SetBondClickedEvent(std::function<void(std::shared_ptr<Bond>)> function) { BondClickedEvent = function; }
+	static void SetPrimarySelectedBondChangedEvent(std::function<void(std::shared_ptr<Bond>)> function) { PrimarySelectedBondChangedEvent = function; }
 
 private:
 	// Disallow creation of a SimulationManager object
@@ -110,15 +149,26 @@ private:
 
 	static std::unique_ptr<Simulation> m_simulation;
 
+	// The primary selected atom is the atom that will be highlighted/selected when on the Add Atoms page 
+	// or the Edit Velocity Arrows page
+	static std::shared_ptr<Atom> m_primarySelectedAtom;
+	static std::shared_ptr<Bond> m_primarySelectedBond;
+
+	static std::vector<std::shared_ptr<Atom>> m_selectedAtoms;
+	static std::vector<std::shared_ptr<Bond>> m_selectedBonds;
+
+
+
+
 	// Additional data regarding the user's interaction with the simulation
 	// This does not belong in the simulation class itself because the simulation should 
 	// only be responsible for itself and not hold state info regarding human interaction
-	static std::shared_ptr<Atom> m_selectedAtom;
+	//static std::shared_ptr<Atom> m_selectedAtom;
 	static std::shared_ptr<Atom> m_atomHoveredOver;
 	static std::shared_ptr<Atom> m_atomBeingClicked;
 
 	// Track which bond is being hovered over
-	static std::shared_ptr<Bond> m_selectedBond;
+	//static std::shared_ptr<Bond> m_selectedBond;
 	static std::shared_ptr<Bond> m_bondHoveredOver;
 
 	// Additional data to track which atoms the user is creating bonds for
@@ -134,10 +184,11 @@ private:
 
 	static std::function<void(std::shared_ptr<Atom>)> AtomHoveredOverChangedEvent;
 	static std::function<void(std::shared_ptr<Atom>)> AtomClickedEvent;
-	static std::function<void(std::shared_ptr<Atom>)> SelectedAtomChangedEvent;
+	static std::function<void(std::shared_ptr<Atom>)> PrimarySelectedAtomChangedEvent;
 
 	static std::function<void(std::shared_ptr<Bond>)> BondHoveredOverChangedEvent;
-	static std::function<void(std::shared_ptr<Bond>)> SelectedBondChangedEvent;
+	static std::function<void(std::shared_ptr<Bond>)> BondClickedEvent;
+	static std::function<void(std::shared_ptr<Bond>)> PrimarySelectedBondChangedEvent;
 
 
 
@@ -153,8 +204,8 @@ template<typename T>
 void SimulationManager::ChangeSelectedAtomType()
 {
 	// Only change the type if it differs
-	if (typeid(*m_selectedAtom) == typeid(T))
+	if (typeid(*m_primarySelectedAtom) == typeid(T))
 		return;
 
-	m_selectedAtom = m_simulation->ChangeAtomType<T>(m_selectedAtom);
+	m_primarySelectedAtom = m_simulation->ChangeAtomType<T>(m_primarySelectedAtom);
 }

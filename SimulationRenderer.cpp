@@ -528,28 +528,27 @@ bool SimulationRenderer::Render3D()
 
 	// Set up pipeline configurations that will not change
  	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	context->UpdateSubresource(m_lightPropertiesConstantBuffer.Get(), 0, nullptr, &m_lightProperties, 0, 0);
 	context->RSSetViewports(1, &m_viewport);
-
-
 	this->SetShaderMode(ShaderMode::PHONG);
 
+	// Draw the box first as everything else will have triangle topology
+	DrawBox();
 
-	// Draw everything that doesn't need special effects (ex. stenciling)
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// FIRST RENDER PASS - Draw everything that doesn't need special effects (ex. stenciling)
 	DrawAtoms();
 	DrawAtomVelocityArrows();
 	DrawBonds();
 
 
-	// Second rendering pass
+	// SECOND RENDER PASS - Draw hovered/selected items with stencil effects (outlining)
 	DrawHoveredAtom();
 	DrawHoveredBond();
 	DrawSelectedAtoms();
 	DrawSelectedBonds();
 
-
-	DrawBox();
 
 	return true;
 }
@@ -712,7 +711,7 @@ void SimulationRenderer::DrawHoveredBond()
 }
 void SimulationRenderer::DrawSelectedBonds()
 {
-	std::shared_ptr<Bond> selectedBond = SimulationManager::GetSelectedBond();
+	std::shared_ptr<Bond> selectedBond = SimulationManager::GetPrimarySelectedBond();
 
 	// If there is a selected bond, draw an outline around the bond
 	if (selectedBond != nullptr && selectedBond->Atom1() != nullptr)
@@ -789,11 +788,6 @@ void SimulationRenderer::DrawBox()
 
 	this->SetMaterialProperties(&m_boxMaterialProperties);
 
-	// Update the Material constant buffer for the box and then bind it to the pixel shader
-	//context->UpdateSubresource(m_boxMaterialPropertiesConstantBuffer.Get(), 0, nullptr, &m_boxMaterialProperties, 0, 0);
-	//ID3D11Buffer* const psBoxConstantBuffers[] = { m_boxMaterialPropertiesConstantBuffer.Get(), m_lightPropertiesConstantBuffer.Get() };
-	//context->PSSetConstantBuffers1(0, 2, psBoxConstantBuffers, nullptr, nullptr);
-
 	// Draw the objects.
 	context->Draw(24, 0);
 }
@@ -804,8 +798,23 @@ OnMessageResult SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mo
 	float _y = m_deviceResources->DIPSToPixels(static_cast<float>(mouseState->Y()));
 	
 	// Make sure the move look controller is only updated when the user state allows it
-	if (SimulationManager::GetUserState() != UserState::EDIT_BONDS)
+	//if (SimulationManager::GetUserState() != UserState::EDIT_BONDS)
+	//	m_moveLookController->OnLButtonDown(_x, _y);
+
+	switch (SimulationManager::GetUserState())
+	{
+	// If we are just viewing the simulation, inform the moveLookController
+	case UserState::VIEW:
 		m_moveLookController->OnLButtonDown(_x, _y);
+		break;
+
+	// If we are editing bonds, only inform the moveLookController if NO bond AND NO atom
+	// are being hovered over
+	case UserState::EDIT_BONDS:
+		if (SimulationManager::AtomHoveredOver() == nullptr)
+			m_moveLookController->OnLButtonDown(_x, _y);
+		break;
+	}
 
 	// Inform the simulation manager in case we are clicking on an atom
 	SimulationManager::SimulationClickDown();

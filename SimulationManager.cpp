@@ -3,24 +3,31 @@
 UserState SimulationManager::m_userState = UserState::VIEW;
 
 std::unique_ptr<Simulation> SimulationManager::m_simulation = nullptr;
-std::shared_ptr<Atom> SimulationManager::m_selectedAtom = nullptr;
+//std::shared_ptr<Atom> SimulationManager::m_selectedAtom = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomHoveredOver = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomBeingClicked = nullptr;
 
-std::shared_ptr<Bond> SimulationManager::m_selectedBond = nullptr;
+//std::shared_ptr<Bond> SimulationManager::m_selectedBond = nullptr;
 std::shared_ptr<Bond> SimulationManager::m_bondHoveredOver = nullptr;
 
 std::shared_ptr<Atom> SimulationManager::m_bondAtom1 = nullptr;
 std::shared_ptr<Bond> SimulationManager::m_newBond = nullptr;
 bool SimulationManager::m_bondAlreadyExisted = false;
 
+std::shared_ptr<Atom> SimulationManager::m_primarySelectedAtom = nullptr;
+std::shared_ptr<Bond> SimulationManager::m_primarySelectedBond = nullptr;
+
+std::vector<std::shared_ptr<Atom>> SimulationManager::m_selectedAtoms = std::vector<std::shared_ptr<Atom>>();
+std::vector<std::shared_ptr<Bond>> SimulationManager::m_selectedBonds = std::vector<std::shared_ptr<Bond>>();
+
 std::function<void(bool)> SimulationManager::PlayPauseChangedEvent = [](bool value) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomHoveredOverChangedEvent = [](std::shared_ptr<Atom> atom) {};
 std::function<void(std::shared_ptr<Atom>)> SimulationManager::AtomClickedEvent = [](std::shared_ptr<Atom> atom) {};
-std::function<void(std::shared_ptr<Atom>)> SimulationManager::SelectedAtomChangedEvent = [](std::shared_ptr<Atom> atom) {};
+std::function<void(std::shared_ptr<Atom>)> SimulationManager::PrimarySelectedAtomChangedEvent = [](std::shared_ptr<Atom> atom) {};
 
 std::function<void(std::shared_ptr<Bond>)> SimulationManager::BondHoveredOverChangedEvent = [](std::shared_ptr<Bond> bond) {};
-std::function<void(std::shared_ptr<Bond>)> SimulationManager::SelectedBondChangedEvent = [](std::shared_ptr<Bond> bond) {};
+std::function<void(std::shared_ptr<Bond>)> SimulationManager::BondClickedEvent = [](std::shared_ptr<Bond> bond) {};
+std::function<void(std::shared_ptr<Bond>)> SimulationManager::PrimarySelectedBondChangedEvent = [](std::shared_ptr<Bond> bond) {};
 
 
 
@@ -62,7 +69,7 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 
 					// Stop tracking the bond being created
 					m_newBond = nullptr;
-					SelectedBondChangedEvent(m_newBond);
+					PrimarySelectedBondChangedEvent(m_newBond);
 				}
 			} // we are hovering over a different atom
 			else
@@ -83,7 +90,7 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 						m_bondAlreadyExisted = false;
 					}
 
-					SelectedBondChangedEvent(m_newBond);
+					PrimarySelectedBondChangedEvent(m_newBond);
 				}
 				else
 				{
@@ -110,23 +117,39 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 							m_bondAlreadyExisted = false;
 						}
 
-						SelectedBondChangedEvent(m_newBond);
+						PrimarySelectedBondChangedEvent(m_newBond);
 					}
 				}
 			}
 		}
 
 		break;
+
+	case UserState::EDIT_VELOCITY_ARROWS:
+		// Do nothing - in other words, all atoms to be hovered in this mode
+		break;
 	}
 }
 
 void SimulationManager::BondHoveredOver(std::shared_ptr<Bond> bond)
 {
-	// Only update and trigger the event if the atom changed
-	if (bond != m_bondHoveredOver)
+	switch (m_userState)
 	{
-		m_bondHoveredOver = bond;
-		BondHoveredOverChangedEvent(bond); // CAN be nullptr
+		// In VIEW and EDIT_BONDS, allow the bond to be hovered over
+	case UserState::VIEW:
+	case UserState::EDIT_BONDS:
+		// Only update and trigger the event if the atom changed
+		if (bond != m_bondHoveredOver)
+		{
+			m_bondHoveredOver = bond;
+			BondHoveredOverChangedEvent(bond); // CAN be nullptr
+		}
+		break;
+	
+	case UserState::EDIT_VELOCITY_ARROWS:
+		// In the edit velocity arrows, don't allow bonds to be hovered over and selected
+		m_bondHoveredOver = nullptr;
+		break;
 	}
 }
 
@@ -134,6 +157,8 @@ void SimulationManager::SimulationClickDown()
 {
 	switch (m_userState)
 	{
+		// For both the EDIT_VELOCTY_ARROWS and VIEW state, just set the atomBeingClicked to the one that is hovered
+	case UserState::EDIT_VELOCITY_ARROWS:
 	case UserState::VIEW:
 		// On the down click, we simply want to keep track of what atom is being clicked
 		// If the user is just grabbing the simulation to rotate it, the mouse will likely
@@ -145,7 +170,9 @@ void SimulationManager::SimulationClickDown()
 		break;
 
 	case UserState::EDIT_BONDS:
-		// If the user state is EDIT_BONDS, then the down click needs to signal a new bond is being made
+		// Set bondAtom1 to atomHoveredOver
+		//		If atomHoveredOver is not nullptr, then we will start making a bond. Otherwise, bondAtom1 will
+		//		be nullptr and we will just move the scene around and not make any bond
 		m_bondAtom1 = m_atomHoveredOver;
 		m_bondAlreadyExisted = false;
 		m_newBond = nullptr;
@@ -163,14 +190,11 @@ void SimulationManager::SimulationClickUp()
 		m_bondAlreadyExisted = false;
 
 		// Update the selected bond
-		if (m_selectedBond != m_bondHoveredOver)
-		{
-			m_selectedBond = m_bondHoveredOver;
-			SelectedBondChangedEvent(m_selectedBond);
-		}
+		SimulationManager::SetPrimarySelectedBond(m_bondHoveredOver);
 
 		break;
 
+	case UserState::EDIT_VELOCITY_ARROWS:
 	case UserState::VIEW:
 		// if the atom that was hovered over when the mouse was clicked down is still being
 		// hovered over, then trigger the necessary click event
@@ -185,37 +209,39 @@ void SimulationManager::SimulationClickUp()
 	}
 }
 
-void SimulationManager::SelectAtom(std::shared_ptr<Atom> atom) 
-{ 
-	if (m_selectedAtom != atom)
-	{
-		m_selectedAtom = atom;
-		SelectedAtomChangedEvent(atom);
-	}
-}
-
 void SimulationManager::RemoveAtom(std::shared_ptr<Atom> atom) 
 { 
-	// MUST do extra work if the atom being removed is the selected one
-	if (m_selectedAtom == atom)
+	// If we are removing the primary selected atom, then we must check what state we are in
+	if (m_primarySelectedAtom == atom)
 	{
 		int atomIndex = m_simulation->GetAtomIndex(atom);
-		
-		if (atomIndex == 0)
-		{
-			// If its the first atom, try getting the second if it exists
-			if (m_simulation->AtomCount() == 1)
-				m_selectedAtom = nullptr;
-			else
-				m_selectedAtom = m_simulation->GetAtomAtIndex(1);
-		}
-		else
-		{
-			// Get the atom one before the selected one
-			m_selectedAtom = m_simulation->GetAtomAtIndex(atomIndex - 1);
-		}
 
-		SelectedAtomChangedEvent(m_selectedAtom);
+		switch (m_userState)
+		{
+			// If we are in VIEW, then we must make a new selection
+		case UserState::VIEW:			
+
+			if (atomIndex == 0)
+			{
+				// If its the first atom, try getting the second if it exists
+				m_primarySelectedAtom = (m_simulation->AtomCount() == 1) ? nullptr : m_simulation->GetAtomAtIndex(1);
+			}
+			else
+			{
+				// Get the atom one before the selected one
+				m_primarySelectedAtom = m_simulation->GetAtomAtIndex(atomIndex - 1);
+			}
+
+			PrimarySelectedAtomChangedEvent(m_primarySelectedAtom);
+			break;
+
+		
+		// Default should just be to set it to nullptr, although these modes should not allow
+		// you to delete an atom
+		default:
+			m_primarySelectedAtom = nullptr;
+			break;
+		}
 	}
 
 	// Removing the atom from the simulation will also delete all bonds to the atom
@@ -233,4 +259,102 @@ void SimulationManager::SetUserState(UserState state)
 	//m_bondAtom1 = nullptr;
 	//m_bondAtom2 = nullptr;
 	//m_newBond = nullptr;
+}
+
+
+void SimulationManager::SetPrimarySelectedAtom(std::shared_ptr<Atom> atom)
+{ 
+	if (m_primarySelectedAtom != atom)
+	{
+		m_primarySelectedAtom = atom;
+		PrimarySelectedAtomChangedEvent(atom);
+	}
+}
+void SimulationManager::SetPrimarySelectedBond(std::shared_ptr<Bond> bond)
+{	
+	if (m_primarySelectedBond != bond)
+	{
+		m_primarySelectedBond = bond;
+		PrimarySelectedBondChangedEvent(bond);
+	} 
+}
+
+
+
+bool SimulationManager::AtomIsSelected(std::shared_ptr<Atom> atom)
+{
+	for (std::shared_ptr<Atom> a : m_selectedAtoms)
+	{
+		if (a == atom)
+			return true;
+	}
+	return false;
+}
+bool SimulationManager::BondIsSelected(std::shared_ptr<Bond> bond)
+{
+	for (std::shared_ptr<Bond> b : m_selectedBonds)
+	{
+		if (b == bond)
+			return true;
+	}
+	return false;
+}
+
+void SimulationManager::SelectAtom(std::shared_ptr<Atom> atom)
+{
+	if (!SimulationManager::AtomIsSelected(atom))
+		m_selectedAtoms.push_back(atom);
+}
+void SimulationManager::SelectBond(std::shared_ptr<Bond> bond)
+{
+	if (!SimulationManager::BondIsSelected(bond))
+		m_selectedBonds.push_back(bond);
+}
+
+void SimulationManager::UnselectAtom(std::shared_ptr<Atom> atom)
+{
+	for (unsigned int iii = 0; iii < m_selectedAtoms.size(); ++iii)
+	{
+		if (m_selectedAtoms[iii] == atom)
+		{
+			m_selectedAtoms.erase(m_selectedAtoms.begin() + iii);
+			return;
+		}
+	}
+}
+void SimulationManager::UnselectBond(std::shared_ptr<Bond> bond)
+{
+	for (unsigned int iii = 0; iii < m_selectedBonds.size(); ++iii)
+	{
+		if (m_selectedBonds[iii] == bond)
+		{
+			m_selectedBonds.erase(m_selectedBonds.begin() + iii);
+			return;
+		}
+	}
+}
+
+void SimulationManager::SwitchAtomSelectedUnselected(std::shared_ptr<Atom> atom)
+{
+	if (SimulationManager::AtomIsSelected(atom))
+		SimulationManager::UnselectAtom(atom);
+	else
+		m_selectedAtoms.push_back(atom);
+}
+void SimulationManager::SwitchBondSelectedUnselected(std::shared_ptr<Bond> bond)
+{
+	if (SimulationManager::BondIsSelected(bond))
+		SimulationManager::UnselectBond(bond);
+	else
+		m_selectedBonds.push_back(bond);
+}
+
+void SimulationManager::RemoveAllAtoms()
+{ 
+	SimulationManager::ClearPrimarySelectedAtom();
+	SimulationManager::ClearPrimarySelectedBond();
+	SimulationManager::ClearSelectedAtoms();
+	SimulationManager::ClearSelectedBonds();
+
+	m_simulation->RemoveAllAtoms();
 }
