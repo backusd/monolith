@@ -544,14 +544,156 @@ bool SimulationRenderer::Render3D()
 
 
 	// SECOND RENDER PASS - Draw hovered/selected items with stencil effects (outlining)
+	DrawStencilMask();
+	DrawHoveredAndSelectedAtomsAndBonds();
+	/*
 	DrawHoveredAtom();
 	DrawHoveredBond();
 	DrawSelectedAtoms();
 	DrawSelectedBonds();
-
+	*/
 
 	return true;
 }
+
+
+void SimulationRenderer::DrawStencilMask()
+{
+	// Set up the pipeline to write to the stencil mask
+	//		Set the stencil to mode to write so that we write 1's to the stencil buffer for the pixels that will be masked
+	this->SetStencilMode(StencilMode::WRITE);
+	this->SetShaderMode(ShaderMode::PHONG);		// Use Phong shading
+
+	// 1: Draw stencil for the hovered atom
+	std::shared_ptr<Atom> atom = SimulationManager::AtomHoveredOver();
+	if (atom != nullptr)
+	{
+		this->SetMaterialProperties(atom);
+		atom->Render(m_viewProjectionMatrix);
+	}
+
+	// 2: Draw stencil for primary selected atom
+	atom = SimulationManager::GetPrimarySelectedAtom();
+	if (atom != nullptr)
+	{
+		this->SetMaterialProperties(atom);
+		atom->Render(m_viewProjectionMatrix);
+	}
+
+	// 3: Draw stencil for all group selected atoms
+	for (std::shared_ptr<Atom> a : SimulationManager::GetSelectedAtoms())
+	{
+		this->SetMaterialProperties(a);
+		a->Render(m_viewProjectionMatrix);
+	}
+
+	// 4: Draw stencil for hovered bond
+	std::shared_ptr<Bond> bond = SimulationManager::BondHoveredOver();
+	if (bond != nullptr)
+	{
+		// Set material property for first atom
+		this->SetMaterialProperties(bond->Atom1());
+
+		// Render atom1 to midpoint
+		bond->RenderAtom1ToMidPoint(m_viewProjectionMatrix, m_moveLookController->Position());
+
+		// Set material property for second atom
+		this->SetMaterialProperties(bond->Atom2());
+
+		// Render midpoint to atom2
+		bond->RenderMidPointToAtom2(m_viewProjectionMatrix, m_moveLookController->Position());
+	}
+
+	// 5: Draw stencil for primary selected bond
+	bond = SimulationManager::GetPrimarySelectedBond();
+	if (bond != nullptr)
+	{
+		// Set material property for first atom
+		this->SetMaterialProperties(bond->Atom1());
+
+		// Render atom1 to midpoint
+		bond->RenderAtom1ToMidPoint(m_viewProjectionMatrix, m_moveLookController->Position());
+
+		// Set material property for second atom
+		this->SetMaterialProperties(bond->Atom2());
+
+		// Render midpoint to atom2
+		bond->RenderMidPointToAtom2(m_viewProjectionMatrix, m_moveLookController->Position());
+	}
+
+	// 6: Draw stencil for all group selected bonds
+	for (std::shared_ptr<Bond> b : SimulationManager::GetSelectedBonds())
+	{
+		// Set material property for first atom
+		this->SetMaterialProperties(b->Atom1());
+
+		// Render atom1 to midpoint
+		b->RenderAtom1ToMidPoint(m_viewProjectionMatrix, m_moveLookController->Position());
+
+		// Set material property for second atom
+		this->SetMaterialProperties(b->Atom2());
+
+		// Render midpoint to atom2
+		b->RenderMidPointToAtom2(m_viewProjectionMatrix, m_moveLookController->Position());
+	}
+}
+void SimulationRenderer::DrawHoveredAndSelectedAtomsAndBonds()
+{
+	// Set the stencil to mode to mask so that we don't render to pixels where the stencil buffer value is 1
+	this->SetStencilMode(StencilMode::MASK);
+
+	// Set the shader mode to solid so we can draw solid color
+	this->SetShaderMode(ShaderMode::SOLID);
+
+	// 1: Draw outline for the hovered atom
+	std::shared_ptr<Atom> atom = SimulationManager::AtomHoveredOver();
+	if (atom != nullptr)
+	{
+		this->SetMaterialProperties(DirectX::Colors::Purple); // Change the color to solid purple
+		atom->RenderOutline(m_viewProjectionMatrix, 0.01f);
+	}
+
+	// 2: Draw outline for primary selected atom
+	atom = SimulationManager::GetPrimarySelectedAtom();
+	if (atom != nullptr)
+	{
+		this->SetMaterialProperties(DirectX::Colors::Red); // Change the color to solid red
+		atom->RenderOutline(m_viewProjectionMatrix, 0.01f);
+	}
+
+	// 3: Draw outline for all group selected atoms
+	for (std::shared_ptr<Atom> a : SimulationManager::GetSelectedAtoms())
+	{
+		this->SetMaterialProperties(DirectX::Colors::Blue); // Change the color to solid blue
+		a->RenderOutline(m_viewProjectionMatrix, 0.005f);
+	}
+
+	// 4: Draw outline for hovered bond
+	std::shared_ptr<Bond> bond = SimulationManager::BondHoveredOver();
+	if (bond != nullptr)
+	{
+		this->SetMaterialProperties(DirectX::Colors::Purple); // Change the color to solid purple
+		bond->RenderOutline(m_viewProjectionMatrix, m_moveLookController->Position(), 0.01f);
+	}
+
+	// 5: Draw outline for primary selected bond
+	bond = SimulationManager::GetPrimarySelectedBond();
+	if (bond != nullptr)
+	{
+		this->SetMaterialProperties(DirectX::Colors::Red); // Change the color to solid red
+		bond->RenderOutline(m_viewProjectionMatrix, m_moveLookController->Position(), 0.01f);
+	}
+
+	// 6: Draw outline for all group selected bonds
+	for (std::shared_ptr<Bond> b : SimulationManager::GetSelectedBonds())
+	{
+		this->SetMaterialProperties(DirectX::Colors::Blue); // Change the color to solid blue
+		b->RenderOutline(m_viewProjectionMatrix, m_moveLookController->Position(), 0.005f);
+	}
+}
+
+
+
 
 void SimulationRenderer::DrawBackground()
 {
@@ -588,6 +730,7 @@ void SimulationRenderer::DrawAtoms()
 		atom->Render(m_viewProjectionMatrix);
 	}
 }
+/*
 void SimulationRenderer::DrawHoveredAtom()
 {
 	std::shared_ptr<Atom> atomHoveredOver = SimulationManager::AtomHoveredOver();
@@ -624,6 +767,7 @@ void SimulationRenderer::DrawSelectedAtoms()
 {
 
 }
+*/
 void SimulationRenderer::DrawAtomVelocityArrows()
 {
 	// Set up the pipeline for drawing the velocity arrows
@@ -657,6 +801,7 @@ void SimulationRenderer::DrawBonds()
 		bond->RenderMidPointToAtom2(m_viewProjectionMatrix, m_moveLookController->Position());
 	}
 }
+/*
 void SimulationRenderer::DrawHoveredBond()
 {
 	std::shared_ptr<Bond> bondHoveredOver = SimulationManager::GetBondHoveredOver();
@@ -761,6 +906,7 @@ void SimulationRenderer::DrawSelectedBonds()
 		selectedBond->RenderOutline(m_viewProjectionMatrix, m_moveLookController->Position(), 0.005f);
 	}
 }
+*/
 void SimulationRenderer::DrawBox()
 {
 	ID3D11DeviceContext4* context = m_deviceResources->D3DDeviceContext();
@@ -993,6 +1139,19 @@ void SimulationRenderer::PerformPicking(float mouseX, float mouseY)
 
 	// Inform the SimulationManager - CAN be nullptr
 	SimulationManager::AtomHoveredOver(atomHoveredOver);
+
+	// There is a weird case where when creating a bond, if you keep the mouse down and over the second atom
+	// immediately after a bond is created, if you manage to move the mouse over the end of the bond cylinder
+	// that is within the atom sphere, it might register that you are hovering over the cylinder instead of the
+	// sphere. When this happens, the code thinks you are no longer hovering over the atom so it wants to delete
+	// the bond it just created. However, the bondHoveredOver variable still has a reference count to that bond,
+	// so what ends up happening is that bondHoveredOver does not become nullptr, but the ptrs it has to two atoms
+	// do become nullptr. This causes issues later when rendering tries to look up what atoms the bond is between.
+	// Solution: If this happens, just set bondHoveredOver to nullptr (which will force another mouse move event
+	// to create a new bond)
+	if (bondHoveredOver != nullptr && bondHoveredOver->Atom1() == nullptr)
+		bondHoveredOver = nullptr;
+
 	SimulationManager::BondHoveredOver(bondHoveredOver);
 }
 

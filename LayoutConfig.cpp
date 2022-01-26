@@ -337,10 +337,29 @@ namespace LayoutConfiguration
 	
 	void DisplayAddAtomsControls(const std::shared_ptr<ContentWindow>& window)
 	{
-		// Make sure the simulation is just in VIEW mode
+		//====================================================================================
+		// SETUP REQUIRED BEFORE BUILDING THE LAYOUT
+		
+		// Make sure the simulation is in VIEW mode
 		SimulationManager::SetUserState(UserState::VIEW);
 
+		// Clear all Simulation Events related to atom/bond selection so that none are carried over from another display function
+		SimulationManager::ClearAtomBondSelectionEvents();
+		// Events Set Below:
+		/*
+		AtomHoveredOverChangedEvent		= NOTHING (but it will have a colored outline)
+		AtomClickedEvent				= Sets clicked atom to be primary selected atom
+		PrimarySelectedAtomChangedEvent = 
+				(DisplayAddAtomsControlsAtomInfoButtonClick) => Updates atom listview, position/velocity sliders, and element type combobox
+				(DisplayAddAtomsControlsBondInfoButtonClick) => 
 
+		BondHoveredOverChangedEvent		= NOTHING
+		BondClickedEvent				= NOTHING
+		PrimarySelectedBondChangedEvent = NOTHING (Should not be able to select a primary bond)
+		*/
+
+
+		//====================================================================================
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 
@@ -665,10 +684,23 @@ namespace LayoutConfiguration
 		// Must set a layout cleared event for the right pane layout
 		// If the layout is cleared, then we must undo the SimulationManager::AtomClickEvent
 		// because the list view has been destroyed
+		/*
+		* Not necessary any more because we call ClearAtomBondSelectionEvents at the beginning of the function
+		* 
 		layout->SetLayoutClearedEvent([]()
 			{
 				SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom) {});
 				SimulationManager::SetPrimarySelectedAtomChangedEvent([](std::shared_ptr<Atom> atom) {});
+			}
+		);
+		*/
+
+		SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom)
+			{
+				SimulationManager::SetPrimarySelectedAtom(atom);
+
+				// Don't need to update the listview or other controls because I think they get updated
+				// on the selectedAtomChanged event
 			}
 		);
 	}
@@ -1088,9 +1120,27 @@ namespace LayoutConfiguration
 	}
 	void DisplayCreateBondControls(const std::shared_ptr<ContentWindow>& window)
 	{
-		// Make sure the simulation is just in EDIT_BONDS mode
+		//====================================================================================
+		// SETUP REQUIRED BEFORE BUILDING THE LAYOUT
+
+		// Make sure the simulation is in VIEW mode
 		SimulationManager::SetUserState(UserState::EDIT_BONDS);
 
+		// Clear all Simulation Events related to atom/bond selection so that none are carried over from another display function
+		SimulationManager::ClearAtomBondSelectionEvents();
+		// Events Set Below:
+		/*
+		AtomHoveredOverChangedEvent		= 
+		AtomClickedEvent				= 
+		PrimarySelectedAtomChangedEvent = 
+
+		BondHoveredOverChangedEvent		= 
+		BondClickedEvent				= 
+		PrimarySelectedBondChangedEvent = 
+		*/
+
+
+		//====================================================================================
 		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"RightSideLayout"));
 		assert(layout != nullptr);
 

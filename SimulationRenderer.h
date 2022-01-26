@@ -85,13 +85,16 @@ private:
 	// Render steps
 	void DrawBackground();
 	void DrawAtoms();
-	void DrawHoveredAtom();
-	void DrawSelectedAtoms();
+	//void DrawHoveredAtom();
+	//void DrawSelectedAtoms();
 	void DrawAtomVelocityArrows();
 	void DrawBonds();
-	void DrawHoveredBond();
-	void DrawSelectedBonds();
+	//void DrawHoveredBond();
+	//void DrawSelectedBonds();
 	void DrawBox();
+
+	void DrawStencilMask();
+	void DrawHoveredAndSelectedAtomsAndBonds();
 
 	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush> m_backgroundColorBrush;
 

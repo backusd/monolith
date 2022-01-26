@@ -29,7 +29,26 @@ std::function<void(std::shared_ptr<Bond>)> SimulationManager::BondHoveredOverCha
 std::function<void(std::shared_ptr<Bond>)> SimulationManager::BondClickedEvent = [](std::shared_ptr<Bond> bond) {};
 std::function<void(std::shared_ptr<Bond>)> SimulationManager::PrimarySelectedBondChangedEvent = [](std::shared_ptr<Bond> bond) {};
 
+void SimulationManager::ClearAtomBondSelectionEvents()
+{
+	AtomHoveredOverChangedEvent		= [](std::shared_ptr<Atom> atom) {};
+	AtomClickedEvent				= [](std::shared_ptr<Atom> atom) {};
+	PrimarySelectedAtomChangedEvent = [](std::shared_ptr<Atom> atom) {};
 
+	BondHoveredOverChangedEvent		= [](std::shared_ptr<Bond> bond) {};
+	BondClickedEvent				= [](std::shared_ptr<Bond> bond) {};
+	PrimarySelectedBondChangedEvent = [](std::shared_ptr<Bond> bond) {};
+}
+
+void SimulationManager::DeleteBond(const std::shared_ptr<Bond>& bond)
+{ 
+	if (bond == m_primarySelectedBond)
+		SimulationManager::ClearPrimarySelectedBond();
+	else if (SimulationManager::BondIsSelected(bond))
+		SimulationManager::UnselectBond(bond);
+
+	m_simulation->DeleteBond(bond); 
+}
 
 void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 {
@@ -39,7 +58,6 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 		m_atomHoveredOver = atom;
 		AtomHoveredOverChangedEvent(atom); // CAN be nullptr
 	}
-
 
 	switch (m_userState)
 	{
@@ -219,7 +237,7 @@ void SimulationManager::RemoveAtom(std::shared_ptr<Atom> atom)
 		switch (m_userState)
 		{
 			// If we are in VIEW, then we must make a new selection
-		case UserState::VIEW:			
+		case UserState::VIEW:
 
 			if (atomIndex == 0)
 			{
@@ -235,14 +253,16 @@ void SimulationManager::RemoveAtom(std::shared_ptr<Atom> atom)
 			PrimarySelectedAtomChangedEvent(m_primarySelectedAtom);
 			break;
 
-		
-		// Default should just be to set it to nullptr, although these modes should not allow
-		// you to delete an atom
+
+			// Default should just be to set it to nullptr, although these modes should not allow
+			// you to delete an atom
 		default:
 			m_primarySelectedAtom = nullptr;
 			break;
 		}
 	}
+	else if (SimulationManager::AtomIsSelected(atom)) // Make sure the atom is no longer selected
+		SimulationManager::UnselectAtom(atom);
 
 	// Removing the atom from the simulation will also delete all bonds to the atom
 	m_simulation->RemoveAtom(atom); 

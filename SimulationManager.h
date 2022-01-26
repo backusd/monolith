@@ -45,7 +45,7 @@ public:
 	static DirectX::XMFLOAT3 BoxDimensions() { return m_simulation->BoxDimensions(); }
 
 	static std::shared_ptr<Bond> CreateBond(const std::shared_ptr<Atom>& atom1, const std::shared_ptr<Atom>& atom2) { return m_simulation->CreateBond(atom1, atom2); }
-	static void DeleteBond(const std::shared_ptr<Bond>& bond) { m_simulation->DeleteBond(bond); }
+	static void DeleteBond(const std::shared_ptr<Bond>& bond);
 
 	template<typename T>
 	static std::shared_ptr<T> AddNewAtom(DirectX::XMFLOAT3 position, DirectX::XMFLOAT3 velocity);
@@ -106,8 +106,7 @@ public:
 	static std::shared_ptr<Atom> GetPrimarySelectedAtom() { return m_primarySelectedAtom; }
 	static std::shared_ptr<Bond> GetPrimarySelectedBond() { return m_primarySelectedBond; }
 
-
-
+	//       selected vector of atoms/bonds
 	static bool AtomIsSelected(std::shared_ptr<Atom> atom);
 	static bool BondIsSelected(std::shared_ptr<Bond> bond);
 
@@ -133,6 +132,7 @@ public:
 
 	// Event setters
 	static void SetPlayPauseChangedEvent(std::function<void(bool)> function) { PlayPauseChangedEvent = function; }
+	
 	static void SetAtomHoveredOverChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomHoveredOverChangedEvent = function; }
 	static void SetAtomClickedEvent(std::function<void(std::shared_ptr<Atom>)> function) { AtomClickedEvent = function; }
 	static void SetPrimarySelectedAtomChangedEvent(std::function<void(std::shared_ptr<Atom>)> function) { PrimarySelectedAtomChangedEvent = function; }
@@ -141,6 +141,8 @@ public:
 	static void SetBondClickedEvent(std::function<void(std::shared_ptr<Bond>)> function) { BondClickedEvent = function; }
 	static void SetPrimarySelectedBondChangedEvent(std::function<void(std::shared_ptr<Bond>)> function) { PrimarySelectedBondChangedEvent = function; }
 
+	// Clear all event handlers
+	static void ClearAtomBondSelectionEvents();
 private:
 	// Disallow creation of a SimulationManager object
 	SimulationManager() {}
