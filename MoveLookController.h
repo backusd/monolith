@@ -38,8 +38,11 @@ public:
 	void OnKeyUp(unsigned char keycode);
 
 	bool LButtonIsDown() { return m_mouseDown; }
+	bool ShiftIsDown() { return m_shift; }
 
 	DirectX::XMVECTOR Position() { return m_eyeVec; }
+
+	bool CTRLIsDown() { return m_ctrl; }
 
 private:
 	void ResetState();
@@ -82,6 +85,7 @@ private:
 	bool  m_up;
 	bool  m_down;
 	bool  m_shift;
+	bool  m_ctrl;
 	bool  m_movingToNewLocation; // zooming in/out, rotating 90', centering on closest face, etc.
 
 	// Keep track of total time to be able to compute the time delta

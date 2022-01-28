@@ -360,6 +360,28 @@ void ThemeManager::CreateNewSimulationThemes(const std::shared_ptr<DeviceResourc
 	atomListViewRemoveButtonGlyph->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	atomListViewRemoveButtonGlyph->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
 
+	// Atom ListView - Select/Unselect Button
+	std::shared_ptr<ColorTheme> atomListViewSelectUnselectButtonColor = ThemeManager::CreateTheme<ColorTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_COLOR, deviceResources);
+	atomListViewSelectUnselectButtonColor->SetColor(D2D1::ColorF(D2D1::ColorF::Gray));
+	atomListViewSelectUnselectButtonColor->SetColorPointerOver(D2D1::ColorF(D2D1::ColorF::DarkGray));
+	atomListViewSelectUnselectButtonColor->SetColorPointerDown(D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::shared_ptr<BorderTheme> atomListViewSelectUnselectButtonBorder = ThemeManager::CreateTheme<BorderTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_BORDER, deviceResources);
+	atomListViewSelectUnselectButtonBorder->SetStrokeWidth(0.0f);
+	atomListViewSelectUnselectButtonBorder->SetAllColors(D2D1::ColorF(D2D1::ColorF::White));
+
+	std::shared_ptr<TextTheme> atomListViewSelectUnselectButtonText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_TEXT, deviceResources);
+	atomListViewSelectUnselectButtonText->SetColor(D2D1::ColorF(D2D1::ColorF::White));
+	atomListViewSelectUnselectButtonText->SetFontFamily(FONT_FAMILY::SEGOE_UI);
+	atomListViewSelectUnselectButtonText->SetFontWeight(DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT);
+	atomListViewSelectUnselectButtonText->SetFontStyle(DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL);
+	atomListViewSelectUnselectButtonText->SetFontStretch(DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL);
+	atomListViewSelectUnselectButtonText->SetFontSize(13.0f);
+	atomListViewSelectUnselectButtonText->SetTextAlignment(DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER);
+	atomListViewSelectUnselectButtonText->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	atomListViewSelectUnselectButtonText->SetWordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
+	atomListViewSelectUnselectButtonText->SetTrimmingGranularity(DWRITE_TRIMMING_GRANULARITY::DWRITE_TRIMMING_GRANULARITY_NONE);
+
 	// Save Simulation Prompt
 	std::shared_ptr<TextTheme> saveSimulationPromptText = ThemeManager::CreateTheme<TextTheme>(THEME_NEW_SIMULATION_SAVE_SIMULATION_PROMPT_TEXT, deviceResources);
 	saveSimulationPromptText->SetColor(D2D1::ColorF(D2D1::ColorF::White));

@@ -61,6 +61,7 @@ public:
 
 	bool MouseIsOver(int x, int y) override;
 
+	bool CTRLIsDown() { return m_moveLookController->CTRLIsDown(); }
 
 private:
 	void CreateDeviceDependentResources();
@@ -85,13 +86,21 @@ private:
 	// Render steps
 	void DrawBackground();
 	void DrawAtoms();
-	//void DrawHoveredAtom();
-	//void DrawSelectedAtoms();
 	void DrawAtomVelocityArrows();
 	void DrawBonds();
-	//void DrawHoveredBond();
-	//void DrawSelectedBonds();
 	void DrawBox();
+
+	// Draw Helper functions
+	void Draw(std::shared_ptr<Atom> atom);
+	void DrawIfNotNull(std::shared_ptr<Atom> atom) { if (atom != nullptr) Draw(atom); }
+	void DrawOutline(std::shared_ptr<Atom> atom, DirectXColor color, float width);
+	void DrawOutlineIfNotNull(std::shared_ptr<Atom> atom, DirectXColor color, float width) { if (atom != nullptr) DrawOutline(atom, color, width); }
+
+	void Draw(std::shared_ptr<Bond> bond);
+	void DrawIfNotNull(std::shared_ptr<Bond> bond) { if (bond != nullptr) Draw(bond); }
+	void DrawOutline(std::shared_ptr<Bond> bond, DirectXColor color, float width);
+	void DrawOutlineIfNotNull(std::shared_ptr<Bond> bond, DirectXColor color, float width) { if (bond != nullptr) DrawOutline(bond, color, width); }
+
 
 	void DrawStencilMask();
 	void DrawHoveredAndSelectedAtomsAndBonds();

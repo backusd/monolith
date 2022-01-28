@@ -33,6 +33,7 @@ namespace LayoutConfiguration
 
 		// Simulation Window ================================================================
 		std::shared_ptr<SimulationRenderer> simulationRenderer = mainLayout->CreateControl<SimulationRenderer>(2, 0);
+		simulationRenderer->Name(L"SimulationRenderer");
 		
 	}
 
@@ -434,7 +435,8 @@ namespace LayoutConfiguration
 
 				// Text of the atom type
 				std::shared_ptr<Text> atomNameText = std::dynamic_pointer_cast<Text>(buttonLayout->GetChildControl(0));
-				atomNameText->SetText(atom->Name());
+				//atomNameText->SetText(atom->Name());
+				atomNameText->SetText(ElementAbbreviatedStrings[atom->ElementType()]);
 
 				// Atom position values
 				std::shared_ptr<Text> positionValueText = std::dynamic_pointer_cast<Text>(buttonLayout->GetChildControl(2));
@@ -449,6 +451,14 @@ namespace LayoutConfiguration
 				velocityOSS.precision(3);
 				velocityOSS << std::fixed << "(" << atom->Velocity().x << ", " << atom->Velocity().y << ", " << atom->Velocity().z << ")";
 				velocityValueText->SetText(velocityOSS.str());
+
+				// Group selected/unselected
+				std::shared_ptr<Button> groupSelectedUnselectedButton = std::dynamic_pointer_cast<Button>(buttonLayout->GetChildControl(5));
+				std::shared_ptr<Text> groupSelectedUnselectedText = std::dynamic_pointer_cast<Text>(groupSelectedUnselectedButton->GetLayout()->GetChildControl(0));
+				if (SimulationManager::AtomIsSelected(atom))
+					groupSelectedUnselectedText->SetText(L"Unselect");
+				else
+					groupSelectedUnselectedText->SetText(L"Select");
 			}
 		);
 		// Add each atom to the list view
@@ -599,9 +609,10 @@ namespace LayoutConfiguration
 			std::shared_ptr<Layout> newButtonLayout = newButton->GetLayout();
 
 			RowColDefinitions columnDefs;
-			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 75.0f);	// Name of the atom type
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);	// Name of the atom type
 			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 47.0f);	// Position: / Velocity:
 			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);	// Position / Velocity values
+			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 65.0f);	// Group Select/Unselect Button
 			columnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 30.0f);	// Remove Button
 			newButtonLayout->SetColumnDefinitions(columnDefs);
 
@@ -613,7 +624,7 @@ namespace LayoutConfiguration
 			// Text of the atom type
 			std::shared_ptr<Text> atomNameText = newButtonLayout->CreateControl<Text>(0, 0, 2, 1);
 			atomNameText->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_BUTTON_TEXT);
-			atomNameText->SetText(atom->Name());
+			atomNameText->SetText(ElementAbbreviatedStrings[atom->ElementType()]);
 			atomNameText->Margin(5.0f, 0.0f, 0.0f, 0.0f);
 
 
@@ -644,8 +655,38 @@ namespace LayoutConfiguration
 			velocityValueText->SetText(velocityOSS.str());
 
 
+			// Button to select / unselect the atom from the group selection
+			std::shared_ptr<Button> groupSelectUnselectButton = newButtonLayout->CreateControl<Button>(0, 3, 2, 1);
+			groupSelectUnselectButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_COLOR);
+			groupSelectUnselectButton->SetBorderTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_BORDER);
+			groupSelectUnselectButton->Margin(5.0f, 10.0f, 0.0f, 10.0f);
+
+			groupSelectUnselectButton->Click(
+				[weakListView = std::weak_ptr<ListView<Atom>>(listView),
+				weakAtom = std::weak_ptr<Atom>(atom)]()
+			{
+				auto atom = weakAtom.lock();
+				auto listview = weakListView.lock();
+
+				SimulationManager::SwitchAtomSelectedUnselected(atom);
+
+				// Trigger item changed event to reformat the list view item
+				auto listView = weakListView.lock();
+				listView->ItemChanged(atom);
+			}
+			);
+
+			std::shared_ptr<Text> groupSelectUnselect = groupSelectUnselectButton->GetLayout()->CreateControl<Text>();
+			groupSelectUnselect->SetTextTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_TEXT);
+			if (SimulationManager::AtomIsSelected(atom))
+				groupSelectUnselect->SetText(L"Unselect");
+			else
+				groupSelectUnselect->SetText(L"Select");
+
+
+
 			// Remove button with "X" in it to remove this listview item
-			std::shared_ptr<Button> removeButton = newButtonLayout->CreateControl<Button>(0, 3, 2, 1);
+			std::shared_ptr<Button> removeButton = newButtonLayout->CreateControl<Button>(0, 4, 2, 1);
 			removeButton->SetColorTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_COLOR);
 			removeButton->SetBorderTheme(THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_BORDER);
 			removeButton->Margin(5.0f, 10.0f);
@@ -695,9 +736,22 @@ namespace LayoutConfiguration
 		);
 		*/
 
-		SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom)
+		std::shared_ptr<SimulationRenderer> renderer = std::dynamic_pointer_cast<SimulationRenderer>(window->GetLayout()->GetChildControl(L"SimulationRenderer"));
+
+		SimulationManager::SetAtomClickedEvent(
+			[weakRenderer = std::weak_ptr<SimulationRenderer>(renderer)](std::shared_ptr<Atom> atom)
 			{
-				SimulationManager::SetPrimarySelectedAtom(atom);
+				auto renderer = weakRenderer.lock();
+
+				// If CTRL is being held down, add the atom to the group selected atoms
+				if (renderer->CTRLIsDown())
+				{
+					SimulationManager::SelectAtom(atom);
+				}
+				else
+				{
+					SimulationManager::SetPrimarySelectedAtom(atom);
+				}
 
 				// Don't need to update the listview or other controls because I think they get updated
 				// on the selectedAtomChanged event

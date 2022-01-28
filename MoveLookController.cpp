@@ -23,6 +23,7 @@ void MoveLookController::ResetState()
     m_up = false;
     m_down = false;
     m_shift = false;
+    m_ctrl = false;
     m_movingToNewLocation = false;
     m_updatedViewMatrixHasBeenRead = false;
     m_rotatingLeftRight = false;
@@ -400,6 +401,7 @@ void MoveLookController::OnKeyDown(unsigned char keycode)
     case VK_LEFT:  m_left = true; break;
     case VK_RIGHT: m_right = true; break;
     case VK_SHIFT: m_shift = true; break;
+    case VK_CONTROL: m_ctrl = true; break;
     }
 }
 
@@ -412,6 +414,7 @@ void MoveLookController::OnKeyUp(unsigned char keycode)
     case VK_LEFT:  m_left = false; break;
     case VK_RIGHT: m_right = false; break;
     case VK_SHIFT: m_shift = false; break;
+    case VK_CONTROL: m_ctrl = false; break;
     }
 
     // If no longer moving or rotating, reset the time to 0

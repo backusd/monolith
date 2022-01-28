@@ -36,6 +36,20 @@ static const std::wstring ElementStrings[] = {
 	L"Neon"
 };
 
+static const std::wstring ElementAbbreviatedStrings[] = {
+	L"Invalid",
+	L"H",
+	L"He",
+	L"Li",
+	L"Be",
+	L"B",
+	L"C",
+	L"N",
+	L"O",
+	L"F",
+	L"Ne"
+};
+
 namespace BondType
 {
 	enum VALUE

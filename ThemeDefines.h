@@ -56,6 +56,9 @@
 #define THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_BORDER "new-simulation-atom-listview-remove-button-border"
 #define THEME_NEW_SIMULATION_ATOM_LISTVIEW_REMOVE_BUTTON_GLYPH "new-simulation-atom-listview-remove-button-glyph"
 #define THEME_NEW_SIMULATION_ATOM_LISTVIEW_POSITION_VELOCITY_TEXT "new-simulation-atom-listview-position-velocity-text"
+#define THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_COLOR "new-simulation-atom-listview-select-unselect-button-color"
+#define THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_BORDER "new-simulation-atom-listview-select-unselect-button-border"
+#define THEME_NEW_SIMULATION_ATOM_LISTVIEW_SELECT_UNSELECT_BUTTON_TEXT "new-simulation-atom-listview-select-unselect-button-text"
 
 #define THEME_NEW_SIMULATION_SAVE_SIMULATION_PROMPT_TEXT "new-simulation-save-simulation-prompt-text"
 #define THEME_NEW_SIMULATION_SAVE_SIMULATION_BUTTON_COLOR "new-simulation-save-simulation-button-color"
