@@ -352,7 +352,7 @@ namespace LayoutConfiguration
 		AtomClickedEvent				= Sets clicked atom to be primary selected atom
 		PrimarySelectedAtomChangedEvent = 
 				(DisplayAddAtomsControlsAtomInfoButtonClick) => Updates atom listview, position/velocity sliders, and element type combobox
-				(DisplayAddAtomsControlsBondInfoButtonClick) => 
+				(DisplayAddAtomsControlsBondInfoButtonClick) => Updates bond info
 
 		BondHoveredOverChangedEvent		= NOTHING
 		BondClickedEvent				= If CTRL is down, a bond click will group select/unselect the bond
@@ -728,19 +728,7 @@ namespace LayoutConfiguration
 		}
 		);
 
-		// Must set a layout cleared event for the right pane layout
-		// If the layout is cleared, then we must undo the SimulationManager::AtomClickEvent
-		// because the list view has been destroyed
-		/*
-		* Not necessary any more because we call ClearAtomBondSelectionEvents at the beginning of the function
-		* 
-		layout->SetLayoutClearedEvent([]()
-			{
-				SimulationManager::SetAtomClickedEvent([](std::shared_ptr<Atom> atom) {});
-				SimulationManager::SetPrimarySelectedAtomChangedEvent([](std::shared_ptr<Atom> atom) {});
-			}
-		);
-		*/
+
 
 		std::shared_ptr<SimulationRenderer> renderer = std::dynamic_pointer_cast<SimulationRenderer>(window->GetLayout()->GetChildControl(L"SimulationRenderer"));
 
@@ -1147,13 +1135,202 @@ namespace LayoutConfiguration
 	}
 	void DisplayAddAtomsControlsBondInfoButtonClick(const std::shared_ptr<ContentWindow>& window)
 	{
-		std::shared_ptr<Layout> mainLayout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"AddAtomsControlsBottomContentLayout"));
-		assert(mainLayout != nullptr);
-		mainLayout->Clear();
+		// Look up the atom list view
+		std::shared_ptr<ListView<Atom>> atomListView = std::dynamic_pointer_cast<ListView<Atom>>(window->GetLayout()->GetChildControl(L"AtomListView"));
+		assert(atomListView != nullptr);
 
-		std::shared_ptr<Text> atomInfoButtonText = mainLayout->CreateControl<Text>();
-		atomInfoButtonText->SetTextTheme(THEME_NEW_SIMULATION_ADD_BUTTON_TEXT);
-		atomInfoButtonText->SetText(L"Bond Info");
+		// Whenever the selected atom changes, just re-run this code to update the layout
+		SimulationManager::SetPrimarySelectedAtomChangedEvent(
+			[weakListView = std::weak_ptr<ListView<Atom>>(atomListView), 
+			weakWindow = std::weak_ptr<ContentWindow>(window)](std::shared_ptr<Atom> atom)
+		{
+			auto window = weakWindow.lock();
+			auto listView = weakListView.lock();
+
+			// Highlight the correct atom in the listview
+			listView->HighlightItem(atom);
+
+			DisplayAddAtomsControlsBondInfoButtonClick(window);
+		}
+		);
+
+
+		std::shared_ptr<Layout> layout = std::dynamic_pointer_cast<Layout>(window->GetLayout()->GetSubLayout(L"AddAtomsControlsBottomContentLayout"));
+		assert(layout != nullptr);
+		layout->Clear();
+
+		std::shared_ptr<Atom> atom = SimulationManager::GetPrimarySelectedAtom();
+
+		// First just check if atom is nullptr
+		if (atom == nullptr)
+		{
+			std::shared_ptr<Text> noSelectedAtomText = layout->CreateControl<Text>(0, 0);
+			noSelectedAtomText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+			noSelectedAtomText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+			noSelectedAtomText->SetText(L"No Selected Atom");
+			return;
+		}
+
+
+		float rowHeight = 40.0f;
+		RowColDefinitions rowDefs;
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Atom: " & Atom type
+
+		// If the atom has no bonds, just display that message. Otherwise create rows dependent on the number of bonds
+		std::vector<std::shared_ptr<Bond>> bonds = atom->Bonds();
+		if (bonds.size() == 0)
+			rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Atom has no bonds"
+		else
+		{
+			// 
+			for (unsigned int iii = 0; iii < bonds.size(); ++iii)
+			{
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Bond #" & Go To Button
+				rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, rowHeight);	// "Atom:" & Atom type & Go To Button
+			}
+		}
+
+		rowDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f); // filler
+		layout->SetRowDefinitions(rowDefs);
+
+		// Create sublayout for "Atom: " header
+		std::shared_ptr<Layout> atomHeaderSublayout = layout->CreateSubLayout(0, 0);
+		RowColDefinitions atomHeaderSublayoutColumnDefs;
+		atomHeaderSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// "Atom:"
+		atomHeaderSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Atom type
+		atomHeaderSublayout->SetColumnDefinitions(atomHeaderSublayoutColumnDefs);
+
+		std::shared_ptr<Text> atomHeaderText = atomHeaderSublayout->CreateControl<Text>(0, 0);
+		atomHeaderText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+		atomHeaderText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+		atomHeaderText->SetText(L"Selected Atom:");
+
+		std::shared_ptr<Text> atomElementText = atomHeaderSublayout->CreateControl<Text>(0, 1);
+		atomElementText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+		atomElementText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+		atomElementText->SetText(ElementStrings[atom->ElementType()]);
+
+		if (bonds.size() == 0)
+		{
+			std::shared_ptr<Text> noBondsText = layout->CreateControl<Text>(1, 0);
+			noBondsText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+			noBondsText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+			noBondsText->SetText(L"Atom has no bonds");
+		}
+		else
+		{
+			for (unsigned int iii = 0; iii < bonds.size(); ++iii)
+			{
+				// Create sublayout for "Bond #" and Go To button
+				std::shared_ptr<Layout> bondNumberSublayout = layout->CreateSubLayout(2 * iii + 1, 0);
+				RowColDefinitions atomHeaderSublayoutColumnDefs;
+				atomHeaderSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 70.0f);	// "Bond #"
+				atomHeaderSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Group Select/Unselect button
+				atomHeaderSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Edit button
+				bondNumberSublayout->SetColumnDefinitions(atomHeaderSublayoutColumnDefs);
+
+				std::shared_ptr<Text> bondHeaderText = bondNumberSublayout->CreateControl<Text>(0, 0);
+				bondHeaderText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				bondHeaderText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+				std::ostringstream bondNumberOSS;
+				bondNumberOSS << "Bond " << iii + 1;
+				bondHeaderText->SetText(bondNumberOSS.str());
+
+
+				std::shared_ptr<Button> selectUnselectButton = bondNumberSublayout->CreateControl<Button>(0, 1);
+				selectUnselectButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
+				selectUnselectButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
+				selectUnselectButton->Margin(10.0f, 10.0f, 10.0f, 10.0f);
+				selectUnselectButton->Click(
+					[weakBond = std::weak_ptr<Bond>(bonds[iii]),
+					weakButton = std::weak_ptr<Button>(selectUnselectButton)]()
+				{
+					auto bond = weakBond.lock();
+					auto button = weakButton.lock();
+
+					SimulationManager::SwitchBondSelectedUnselected(bond);
+
+					std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(button->GetLayout()->GetChildControl(0));
+
+					if (SimulationManager::BondIsSelected(bond))
+						text->SetText(L"Unselect");
+					else
+						text->SetText(L"Select");
+				}
+				);
+
+				std::shared_ptr<Text> selectUnselectButtonText = selectUnselectButton->GetLayout()->CreateControl<Text>(0, 0);
+				selectUnselectButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
+				if (SimulationManager::BondIsSelected(bonds[iii]))
+					selectUnselectButtonText->SetText(L"Unselect");
+				else
+					selectUnselectButtonText->SetText(L"Select");
+
+
+
+
+				std::shared_ptr<Button> editBondButton = bondNumberSublayout->CreateControl<Button>(0, 2);
+				editBondButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
+				editBondButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
+				editBondButton->Margin(0.0f, 10.0f, 20.0f, 10.0f);
+				editBondButton->Click(
+					[weakWindow = std::weak_ptr<ContentWindow>(window), 
+					weakBond = std::weak_ptr<Bond>(bonds[iii])]()
+				{
+					auto window = weakWindow.lock();
+					auto bond = weakBond.lock();
+					SimulationManager::SetPrimarySelectedBond(bond);
+					DisplayCreateBondControls(window);
+				}
+				);
+
+				std::shared_ptr<Text> atom2SelectButtonText = editBondButton->GetLayout()->CreateControl<Text>(0, 0);
+				atom2SelectButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
+				atom2SelectButtonText->SetText(L"Edit");
+
+
+
+
+
+				// Create sublayout for "Bond #" and Go To button
+				std::shared_ptr<Atom> otherAtom = (atom == bonds[iii]->Atom1()) ? bonds[iii]->Atom2() : bonds[iii]->Atom1();
+
+				std::shared_ptr<Layout> atomInfoSublayout = layout->CreateSubLayout(2 * iii + 2, 0);
+				RowColDefinitions atomInfoSublayoutColumnDefs;
+				atomInfoSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 80.0f);		// "Atom:"
+				atomInfoSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_FIXED, 100.0f);	// Atom type
+				atomInfoSublayoutColumnDefs.AddDefinition(ROW_COL_TYPE::ROW_COL_TYPE_STAR, 1.0f);		// Go To button
+				atomInfoSublayout->SetColumnDefinitions(atomInfoSublayoutColumnDefs);
+
+				std::shared_ptr<Text> atomHeaderText = atomInfoSublayout->CreateControl<Text>(0, 0);
+				atomHeaderText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atomHeaderText->Margin(40.0f, 0.0f, 0.0f, 0.0f);
+				atomHeaderText->SetText(L"Atom:");
+
+				std::shared_ptr<Text> atomTypeText = atomInfoSublayout->CreateControl<Text>(0, 1);
+				atomTypeText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_HEADERS_TEXT);
+				atomTypeText->Margin(10.0f, 0.0f, 0.0f, 0.0f);
+				atomTypeText->SetText(ElementStrings[otherAtom->ElementType()]);
+
+
+
+				std::shared_ptr<Button> goToAtomButton = atomInfoSublayout->CreateControl<Button>(0, 2);
+				goToAtomButton->SetColorTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_COLOR);
+				goToAtomButton->SetBorderTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_BORDER);
+				goToAtomButton->Margin(10.0f, 10.0f, 10.0f, 10.0f);
+				goToAtomButton->Click(
+					[weakAtom = std::weak_ptr<Atom>(otherAtom)]()
+				{
+					auto atom = weakAtom.lock();
+					SimulationManager::SetPrimarySelectedAtom(atom);
+				}
+				);
+
+				std::shared_ptr<Text> goToAtomButtonText = goToAtomButton->GetLayout()->CreateControl<Text>(0, 0);
+				goToAtomButtonText->SetTextTheme(THEME_NEW_SIMULATION_CREATE_BONDS_SELECT_ATOM_BUTTON_TEXT);
+				goToAtomButtonText->SetText(L"Go To");
+			}
+		}
 	}
 
 
@@ -1192,13 +1369,19 @@ namespace LayoutConfiguration
 		// Events Set Below:
 		/*
 		AtomHoveredOverChangedEvent		= NOTHING
-		AtomClickedEvent				= ** If CTRL is down, add atom to group selected. Else, populate atom info on right to list available bonds
+		AtomClickedEvent				= If CTRL is down, add atom to group selected. Else, populate atom info on right to list available bonds
 		PrimarySelectedAtomChangedEvent = NOTHING (not allowed to change primary selected atom in this state)
 
 		BondHoveredOverChangedEvent		= NOTHING (but always show outline)
 		BondClickedEvent				= Set as primary bond (then let PrimarySelectedBondChangedEvent handle loading the info on the right)
 		PrimarySelectedBondChangedEvent = Update layout on right to show bond info
 		*/
+
+		// On some occassions, the primary bond is selected prior to running this code (for example, on the AddAtoms page, there is an "Edit" button
+		// when looking up bond info for an atom that sets the primary selected bond and then calls this function). In these cases, what needs to
+		// happen is that we need to store the primary selected bond and at the end of this function after we have set the PrimarySelectedBondChangedEvent,
+		// we can reset the primary selected bond which will populate that bond's info
+		std::shared_ptr<Bond> previousPrimarySelectedBond = SimulationManager::GetPrimarySelectedBond();
 
 		// Clear the primary selected atom and bond so we can click on it and trigger PrimarySelectedAtomChangedEvent
 		SimulationManager::SetPrimarySelectedAtom(nullptr);
@@ -1869,6 +2052,10 @@ namespace LayoutConfiguration
 				}
 			}
 		});
+
+
+		// If there was a previous primary selected bond, then we populate its info by resetting it here
+		SimulationManager::SetPrimarySelectedBond(previousPrimarySelectedBond);
 	}
 	void DisplayEditVelocityArrowsControls(const std::shared_ptr<ContentWindow>& window)
 	{
