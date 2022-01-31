@@ -44,7 +44,8 @@ void SimulationManager::DeleteBond(const std::shared_ptr<Bond>& bond)
 { 
 	if (bond == m_primarySelectedBond)
 		SimulationManager::ClearPrimarySelectedBond();
-	else if (SimulationManager::BondIsSelected(bond))
+	
+	if (SimulationManager::BondIsSelected(bond))
 		SimulationManager::UnselectBond(bond);
 
 	m_simulation->DeleteBond(bond); 
@@ -87,7 +88,7 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 
 					// Stop tracking the bond being created
 					m_newBond = nullptr;
-					PrimarySelectedBondChangedEvent(m_newBond);
+					SetPrimarySelectedBond(m_newBond);
 				}
 			} // we are hovering over a different atom
 			else
@@ -108,7 +109,7 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 						m_bondAlreadyExisted = false;
 					}
 
-					PrimarySelectedBondChangedEvent(m_newBond);
+					SetPrimarySelectedBond(m_newBond);
 				}
 				else
 				{
@@ -135,7 +136,7 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 							m_bondAlreadyExisted = false;
 						}
 
-						PrimarySelectedBondChangedEvent(m_newBond);
+						SetPrimarySelectedBond(m_newBond);
 					}
 				}
 			}
@@ -151,23 +152,11 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 
 void SimulationManager::BondHoveredOver(std::shared_ptr<Bond> bond)
 {
-	switch (m_userState)
+	// Regardless of what state we are in, update the hovered bond if it is different
+	if (bond != m_bondHoveredOver)
 	{
-		// In VIEW and EDIT_BONDS, allow the bond to be hovered over
-	case UserState::VIEW:
-	case UserState::EDIT_BONDS:
-		// Only update and trigger the event if the atom changed
-		if (bond != m_bondHoveredOver)
-		{
-			m_bondHoveredOver = bond;
-			BondHoveredOverChangedEvent(bond); // CAN be nullptr
-		}
-		break;
-	
-	case UserState::EDIT_VELOCITY_ARROWS:
-		// In the edit velocity arrows, don't allow bonds to be hovered over and selected
-		m_bondHoveredOver = nullptr;
-		break;
+		m_bondHoveredOver = bond;
+		BondHoveredOverChangedEvent(bond); // CAN be nullptr
 	}
 }
 
@@ -194,6 +183,9 @@ void SimulationManager::SimulationClickDown()
 		m_bondAtom1 = m_atomHoveredOver;
 		m_bondAlreadyExisted = false;
 		m_newBond = nullptr;
+
+		m_atomBeingClicked = m_atomHoveredOver;
+
 		break;
 	}
 }
@@ -208,7 +200,16 @@ void SimulationManager::SimulationClickUp()
 		m_bondAlreadyExisted = false;
 
 		// Update the selected bond
-		SimulationManager::SetPrimarySelectedBond(m_bondHoveredOver);
+
+		// If we are hovering over a bond, select it
+		if (m_bondHoveredOver != nullptr)
+		{
+			BondClickedEvent(m_bondHoveredOver);
+		}
+		else if (m_atomBeingClicked != nullptr && m_atomBeingClicked == m_atomHoveredOver)
+		{
+			AtomClickedEvent(m_atomBeingClicked);
+		}
 
 		break;
 
@@ -220,9 +221,15 @@ void SimulationManager::SimulationClickUp()
 		{
 			AtomClickedEvent(m_atomBeingClicked);
 		}
+		else if (m_bondHoveredOver != nullptr)
+		{
+			BondClickedEvent(m_bondHoveredOver);
+		}
+
 
 		// Set the atom being clicked to nullptr
 		m_atomBeingClicked = nullptr;
+
 		break;
 	}
 }
@@ -261,7 +268,8 @@ void SimulationManager::RemoveAtom(std::shared_ptr<Atom> atom)
 			break;
 		}
 	}
-	else if (SimulationManager::AtomIsSelected(atom)) // Make sure the atom is no longer selected
+	
+	if (SimulationManager::AtomIsSelected(atom)) // Make sure the atom is no longer selected
 		SimulationManager::UnselectAtom(atom);
 
 	// Removing the atom from the simulation will also delete all bonds to the atom
@@ -287,7 +295,9 @@ void SimulationManager::SetPrimarySelectedAtom(std::shared_ptr<Atom> atom)
 	if (m_primarySelectedAtom != atom)
 	{
 		m_primarySelectedAtom = atom;
-		PrimarySelectedAtomChangedEvent(atom);
+
+		if (atom != nullptr)
+			PrimarySelectedAtomChangedEvent(atom);
 	}
 }
 void SimulationManager::SetPrimarySelectedBond(std::shared_ptr<Bond> bond)
@@ -295,7 +305,9 @@ void SimulationManager::SetPrimarySelectedBond(std::shared_ptr<Bond> bond)
 	if (m_primarySelectedBond != bond)
 	{
 		m_primarySelectedBond = bond;
-		PrimarySelectedBondChangedEvent(bond);
+
+		if (bond != nullptr)
+			PrimarySelectedBondChangedEvent(bond);
 	} 
 }
 

@@ -563,8 +563,10 @@ void SimulationRenderer::DrawStencilMask()
 	// 2: Draw stencil for primary selected atom =====================================================
 	switch (SimulationManager::GetUserState())
 	{
-		// In the view state, only draw the stencil if shift is held down
+	// In the view, edit bond, and edit velocity state, only draw the stencil if shift is held down
 	case UserState::VIEW:
+	case UserState::EDIT_BONDS:
+	case UserState::EDIT_VELOCITY_ARROWS:
 		if (m_moveLookController->ShiftIsDown())
 			DrawIfNotNull(SimulationManager::GetPrimarySelectedAtom());
 		break;
@@ -581,8 +583,11 @@ void SimulationRenderer::DrawStencilMask()
 	// 4: Draw stencil for hovered bond ==============================================================
 	switch (SimulationManager::GetUserState())
 	{
-		// Don't draw the outline for the hovered bond in the VIEW state
+	// In the view and edit velocity arrows state, only draw the hovered bond if CTRL is down
 	case UserState::VIEW:
+	case UserState::EDIT_VELOCITY_ARROWS:
+		if (m_moveLookController->CTRLIsDown())
+			DrawIfNotNull(SimulationManager::BondHoveredOver());
 		break;
 
 	default:
@@ -592,8 +597,14 @@ void SimulationRenderer::DrawStencilMask()
 	// 5: Draw stencil for primary selected bond =====================================================
 	switch (SimulationManager::GetUserState())
 	{
-		// Don't draw the outline for the primary selected bond in the VIEW state
+	// Don't draw the outline for the primary selected bond in the VIEW state
 	case UserState::VIEW:
+		break;
+
+	// Draw the outline for the primary selected bond when shift is down
+	case UserState::EDIT_BONDS:
+		if (m_moveLookController->ShiftIsDown())
+			DrawIfNotNull(SimulationManager::GetPrimarySelectedBond());
 		break;
 
 	default:
@@ -621,8 +632,10 @@ void SimulationRenderer::DrawHoveredAndSelectedAtomsAndBonds()
 	// 2: Draw outline for primary selected atom ========================================================
 	switch (SimulationManager::GetUserState())
 	{
-		// In the view state, only draw the outline if shift is held down
+	// In the view, edit bond, and edit velocity state, only draw the outline if shift is held down
 	case UserState::VIEW:
+	case UserState::EDIT_BONDS:
+	case UserState::EDIT_VELOCITY_ARROWS:
 		if (m_moveLookController->ShiftIsDown())
 			DrawOutlineIfNotNull(SimulationManager::GetPrimarySelectedAtom(), DirectX::Colors::Red, 0.01f);
 		break;
@@ -642,8 +655,11 @@ void SimulationRenderer::DrawHoveredAndSelectedAtomsAndBonds()
 	// 4: Draw outline for hovered bond =================================================================
 	switch (SimulationManager::GetUserState())
 	{
-		// Don't draw the outline for the hovered bond in the VIEW state
+		// In the view and edit velocity arrows state, only draw the hovered bond if CTRL is down
 	case UserState::VIEW:
+	case UserState::EDIT_VELOCITY_ARROWS:
+		if (m_moveLookController->CTRLIsDown())
+			DrawOutlineIfNotNull(SimulationManager::BondHoveredOver(), DirectX::Colors::Purple, 0.01f);
 		break;
 
 	default:
@@ -658,6 +674,12 @@ void SimulationRenderer::DrawHoveredAndSelectedAtomsAndBonds()
 	case UserState::VIEW:
 		break;
 
+		// Draw the outline for the primary selected bond when shift is down
+	case UserState::EDIT_BONDS:
+		if (m_moveLookController->ShiftIsDown())
+			DrawOutlineIfNotNull(SimulationManager::GetPrimarySelectedBond(), DirectX::Colors::Red, 0.01f);
+		break;
+
 	default:
 		DrawOutlineIfNotNull(SimulationManager::GetPrimarySelectedBond(), DirectX::Colors::Red, 0.01f);
 	}	
@@ -666,7 +688,7 @@ void SimulationRenderer::DrawHoveredAndSelectedAtomsAndBonds()
 	// 6: Draw outline for all group selected bonds ======================================================
 	for (std::shared_ptr<Bond> b : SimulationManager::GetSelectedBonds())
 	{
-		DrawOutlineIfNotNull(b, DirectX::Colors::Blue, 0.005f);
+		DrawOutline(b, DirectX::Colors::Blue, 0.005f);
 	}
 }
 
@@ -809,6 +831,7 @@ OnMessageResult SimulationRenderer::OnLButtonDown(std::shared_ptr<MouseState> mo
 	{
 	// If we are just viewing the simulation, inform the moveLookController
 	case UserState::VIEW:
+	case UserState::EDIT_VELOCITY_ARROWS:
 		m_moveLookController->OnLButtonDown(_x, _y);
 		break;
 
