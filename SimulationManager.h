@@ -167,14 +167,15 @@ private:
 	// only be responsible for itself and not hold state info regarding human interaction
 	//static std::shared_ptr<Atom> m_selectedAtom;
 	static std::shared_ptr<Atom> m_atomHoveredOver;
-	static std::shared_ptr<Atom> m_atomBeingClicked;
+	static std::shared_ptr<Atom> m_atomSelectedOnClickDown;
+
+	
 
 	// Track which bond is being hovered over
-	//static std::shared_ptr<Bond> m_selectedBond;
 	static std::shared_ptr<Bond> m_bondHoveredOver;
+	static std::shared_ptr<Bond> m_bondSelectedOnClickDown;
 
 	// Additional data to track which atoms the user is creating bonds for
-	static std::shared_ptr<Atom> m_bondAtom1;
 	static std::shared_ptr<Bond> m_newBond;
 	static bool m_bondAlreadyExisted;
 

@@ -3,14 +3,11 @@
 UserState SimulationManager::m_userState = UserState::VIEW;
 
 std::unique_ptr<Simulation> SimulationManager::m_simulation = nullptr;
-//std::shared_ptr<Atom> SimulationManager::m_selectedAtom = nullptr;
 std::shared_ptr<Atom> SimulationManager::m_atomHoveredOver = nullptr;
-std::shared_ptr<Atom> SimulationManager::m_atomBeingClicked = nullptr;
+std::shared_ptr<Atom> SimulationManager::m_atomSelectedOnClickDown = nullptr;
 
-//std::shared_ptr<Bond> SimulationManager::m_selectedBond = nullptr;
 std::shared_ptr<Bond> SimulationManager::m_bondHoveredOver = nullptr;
-
-std::shared_ptr<Atom> SimulationManager::m_bondAtom1 = nullptr;
+std::shared_ptr<Bond> SimulationManager::m_bondSelectedOnClickDown = nullptr;
 std::shared_ptr<Bond> SimulationManager::m_newBond = nullptr;
 bool SimulationManager::m_bondAlreadyExisted = false;
 
@@ -67,19 +64,19 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 		break;
 
 	case UserState::EDIT_BONDS:
-		// If m_atomHoveredOver is not nullptr and is different from m_bondAtom1, first check if 
+		// If m_atomHoveredOver is not nullptr and is different from m_atomSelectedOnClickDown, first check if 
 		// a bond already exists between both atoms. If a bond already exists, then just 
 		// populate that bond in the right pane for editing. Otherwise, create a new bond and
 		// populate the info on the right pane
 		
-		// if m_bondAtom1 is not null, then we have begun dragging to attempt to create a bond
-		if (m_bondAtom1 != nullptr)
+		// if m_atomSelectedOnClickDown is not null, then we have begun dragging to attempt to create a bond
+		if (m_atomSelectedOnClickDown != nullptr)
 		{
-			// m_atomHoveredOver is nullptr then we are not hovering over an atom
+			// if m_atomHoveredOver is nullptr then we are not hovering over an atom
 			// AND check if we are hovering over the original atom 
-			if (m_atomHoveredOver == nullptr || m_atomHoveredOver == m_bondAtom1)
+			if (m_atomHoveredOver == nullptr || m_atomHoveredOver == m_atomSelectedOnClickDown)
 			{
-				// if the bond is not nullptr, then we must update m_newBond
+				// if the bond is not nullptr, then we must update m_newBond to be nullptr
 				if (m_newBond != nullptr)
 				{
 					// if the bond did not previously exist, delete it
@@ -96,16 +93,16 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 				// if m_newBond is nullptr, we need to create a new bond
 				if (m_newBond == nullptr)
 				{
-					// if a bond already exists between m_bondAtom1 and m_atomHoveredOver, just load that bond info
-					if (m_bondAtom1->HasBondWithAtom(m_atomHoveredOver))
+					// if a bond already exists between m_atomSelectedOnClickDown and m_atomHoveredOver, just load that bond info
+					if (m_atomSelectedOnClickDown->HasBondWithAtom(m_atomHoveredOver))
 					{
-						m_newBond = m_bondAtom1->GetBondWithAtom(m_atomHoveredOver);
+						m_newBond = m_atomSelectedOnClickDown->GetBondWithAtom(m_atomHoveredOver);
 						m_bondAlreadyExisted = true;						
 					}
 					else
 					{
 						// Create a new bond 
-						m_newBond = SimulationManager::CreateBond(m_bondAtom1, m_atomHoveredOver);
+						m_newBond = SimulationManager::CreateBond(m_atomSelectedOnClickDown, m_atomHoveredOver);
 						m_bondAlreadyExisted = false;
 					}
 
@@ -123,16 +120,16 @@ void SimulationManager::AtomHoveredOver(std::shared_ptr<Atom> atom)
 						// Clear the current bond
 						m_newBond = nullptr;
 
-						// check if there is already a bond between m_bondAtom1 and m_atomHoveredOver
-						if (m_bondAtom1->HasBondWithAtom(m_atomHoveredOver))
+						// check if there is already a bond between m_atomSelectedOnClickDown and m_atomHoveredOver
+						if (m_atomSelectedOnClickDown->HasBondWithAtom(m_atomHoveredOver))
 						{
-							m_newBond = m_bondAtom1->GetBondWithAtom(m_atomHoveredOver);
+							m_newBond = m_atomSelectedOnClickDown->GetBondWithAtom(m_atomHoveredOver);
 							m_bondAlreadyExisted = true;
 						}
 						else
 						{
 							// Create a new bond 
-							m_newBond = SimulationManager::CreateBond(m_bondAtom1, m_atomHoveredOver);
+							m_newBond = SimulationManager::CreateBond(m_atomSelectedOnClickDown, m_atomHoveredOver);
 							m_bondAlreadyExisted = false;
 						}
 
@@ -162,76 +159,38 @@ void SimulationManager::BondHoveredOver(std::shared_ptr<Bond> bond)
 
 void SimulationManager::SimulationClickDown()
 {
-	switch (m_userState)
-	{
-		// For both the EDIT_VELOCTY_ARROWS and VIEW state, just set the atomBeingClicked to the one that is hovered
-	case UserState::EDIT_VELOCITY_ARROWS:
-	case UserState::VIEW:
-		// On the down click, we simply want to keep track of what atom is being clicked
-		// If the user is just grabbing the simulation to rotate it, the mouse will likely
-		// be moved off the atom and therefore will not actually click the atom when the mouse
-		// is released
-		m_atomBeingClicked = m_atomHoveredOver;
+	// A click down should simply reset all of the selection variables that are used for all states
+	//
+	// Update the atom/bond that is being selected - CAN be nullptr
+	m_atomSelectedOnClickDown = m_atomHoveredOver;
+	m_bondSelectedOnClickDown = m_bondHoveredOver;
 
-		// During the VIEW state, don't worry about bond hovering/selection
-		break;
-
-	case UserState::EDIT_BONDS:
-		// Set bondAtom1 to atomHoveredOver
-		//		If atomHoveredOver is not nullptr, then we will start making a bond. Otherwise, bondAtom1 will
-		//		be nullptr and we will just move the scene around and not make any bond
-		m_bondAtom1 = m_atomHoveredOver;
-		m_bondAlreadyExisted = false;
-		m_newBond = nullptr;
-
-		m_atomBeingClicked = m_atomHoveredOver;
-
-		break;
-	}
+	m_bondAlreadyExisted = false;
+	m_newBond = nullptr;
 }
 void SimulationManager::SimulationClickUp()
 {
-	switch (m_userState)
+	// Regardless of state, test which variables are not nullptr and trigger the correct event
+	//
+	// Only select an atom/bond if the one being hovered over is the one that was hovered over when
+	// the click down occurred
+	if (m_bondSelectedOnClickDown != nullptr && m_bondSelectedOnClickDown == m_bondHoveredOver)
 	{
-	case UserState::EDIT_BONDS:		
-		// Reset variables
-		m_bondAtom1 = nullptr;
-		m_newBond = nullptr;
-		m_bondAlreadyExisted = false;
-
-		// Update the selected bond
-
-		// If we are hovering over a bond, select it
-		if (m_bondHoveredOver != nullptr)
-		{
-			BondClickedEvent(m_bondHoveredOver);
-		}
-		else if (m_atomBeingClicked != nullptr && m_atomBeingClicked == m_atomHoveredOver)
-		{
-			AtomClickedEvent(m_atomBeingClicked);
-		}
-
-		break;
-
-	case UserState::EDIT_VELOCITY_ARROWS:
-	case UserState::VIEW:
-		// if the atom that was hovered over when the mouse was clicked down is still being
-		// hovered over, then trigger the necessary click event
-		if (m_atomBeingClicked != nullptr && m_atomBeingClicked == m_atomHoveredOver)
-		{
-			AtomClickedEvent(m_atomBeingClicked);
-		}
-		else if (m_bondHoveredOver != nullptr)
-		{
-			BondClickedEvent(m_bondHoveredOver);
-		}
-
-
-		// Set the atom being clicked to nullptr
-		m_atomBeingClicked = nullptr;
-
-		break;
+		BondClickedEvent(m_bondSelectedOnClickDown);
 	}
+	else if (m_atomSelectedOnClickDown != nullptr && m_atomSelectedOnClickDown == m_atomHoveredOver)
+	{
+		AtomClickedEvent(m_atomSelectedOnClickDown);
+	}
+
+
+	// Reset variables
+	m_newBond = nullptr;
+	m_bondAlreadyExisted = false;
+
+	// Set the atom/bond being clicked to nullptr
+	m_atomSelectedOnClickDown = nullptr;
+	m_bondSelectedOnClickDown = nullptr;
 }
 
 void SimulationManager::RemoveAtom(std::shared_ptr<Atom> atom) 
